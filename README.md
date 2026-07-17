@@ -121,3 +121,8 @@ adopter owns: IdP federation and aid-officer role mapping; validated connectors 
 information system / COD; the authoritative award rules/thresholds and their compliance review; computer-
 system validation; and production authorization to operate. `verify_isir` and system-of-record
 connectors ship as labeled stubs. Pell figures and SAP thresholds are illustrative federal defaults.
+
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
