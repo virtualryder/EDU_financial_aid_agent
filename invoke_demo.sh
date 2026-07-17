@@ -9,8 +9,8 @@ if [ -f "$RT/.venv/Scripts/agentcore.exe" ]; then AC="$RT/.venv/Scripts/agentcor
 TOK="$(aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id "$CLIENT_ID" \
   --auth-parameters "USERNAME=aid_officer,PASSWORD=${FA_REVIEWER_PW:-ChangeMe-Reviewer1!}" --region us-east-1 \
   --query 'AuthenticationResult.AccessToken' --output text | tr -d '\r')"
-APP="Applicant Jane Doe, SSN 555-12-3456, 10 Oak Ave. FAFSA for federal student aid. Student Aid Index 3000. Cost of attendance 25000. Enrollment full-time. GPA 3.4, pace 90%."
-PROMPT="Process this financial-aid application for award AID-2026-0700. Raw application text: $APP  Run the full governed workflow end to end (intake_fafsa, mask_pii, assess_aid, draft_award_notice, write_audit, request_signoff) and request aid-officer sign-off with record id AID-2026-0700 and requester aid_officer."
+APP="Applicant Jane Doe, SSN 555-12-3456, 10 Oak Ave. FAFSA for federal student aid at University of Michigan-Ann Arbor. Student Aid Index 3000. Enrollment full-time. GPA 3.4, pace 90%."
+PROMPT="Process this financial-aid application for award AID-2026-0700. Raw application text: $APP  Run the full governed workflow end to end: intake_fafsa, then lookup_coa for the institution to get the real cost of attendance from College Scorecard, then mask_pii, then assess_aid (pass the real cost_of_attendance and coa_source), draft_award_notice, write_audit (include the coa_source provenance), and request_signoff. Request aid-officer sign-off with record id AID-2026-0700 and requester aid_officer."
 PAYLOAD="$("$PY" -c "import json,sys;print(json.dumps({'access_token':sys.argv[1],'case_id':'AID-2026-0700','requester':'aid_officer','prompt':sys.argv[2]}))" "$TOK" "$PROMPT")"
 cd "$RT"
 "$AC" invoke --bearer-token "$TOK" "$PAYLOAD" 2>&1

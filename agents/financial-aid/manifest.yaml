@@ -61,6 +61,18 @@ tools:
         input: { application: { type: string, description: "Raw FAFSA/ISIR or aid application text or JSON." } }
         required: [application]
 
+  - target: lookup-coa
+    lambda: fa-lookup-coa
+    handler: lookup_coa.py
+    kind: domain
+    mcp_tools:
+      - name: lookup_coa
+        description: "Fetch a real institutional Cost of Attendance from the U.S. Dept of Education College Scorecard API (authoritative). School name/IPEDS unitid is non-PII, so run this before mask_pii; pass the returned cost_of_attendance and coa_source to assess_aid."
+        input:
+          school: { type: string, description: "Institution name (e.g. 'University of Michigan-Ann Arbor')." }
+          unitid: { type: string, description: "IPEDS unitid, if known (preferred over name)." }
+        required: []
+
   - target: mask-pii
     lambda: fa-mask-pii
     handler: mask_pii.py
@@ -85,6 +97,7 @@ tools:
           sap_gpa: { type: number, description: "Cumulative GPA for Satisfactory Academic Progress." }
           sap_pace: { type: number, description: "Completion pace (percent of attempted credits earned)." }
           selected_for_verification: { type: boolean, description: "True if the application was selected for verification." }
+          coa_source: { type: string, description: "Provenance of the cost_of_attendance (e.g. from lookup_coa), echoed into the determination for the audit trail." }
           deidentified: { type: boolean, description: "True if masked by mask_pii." }
         required: [deidentified]
 
@@ -142,9 +155,10 @@ workflow:
   entrypoint: agent.py
   consequential_action: finalize_award
   steps:
-    - "intake_fafsa - extract the non-PII decision fields from the raw FAFSA/aid application."
+    - "intake_fafsa - extract the non-PII decision fields (including the institution) from the raw FAFSA/aid application."
+    - "lookup_coa - fetch the real Cost of Attendance for the student's institution from College Scorecard (non-PII); keep the returned cost_of_attendance and coa_source."
     - "mask_pii - de-identify the raw record; use the returned masked_case for the notice and audit."
-    - "assess_aid - on the extracted fields with deidentified true, determine Pell eligibility, SAP status, and the verification track."
+    - "assess_aid - on the extracted fields with deidentified true, using the real cost_of_attendance and coa_source from lookup_coa, determine Pell eligibility, SAP status, and the verification track."
     - "draft_award_notice - draft the award/determination notice, passing the masked case and deidentified true."
     - "write_audit - record an INTENT audit entry for the award determination."
     - "request_signoff - request aid-officer sign-off to commit (a DIFFERENT qualified person must approve)."

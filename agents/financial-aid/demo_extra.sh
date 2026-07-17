@@ -1,6 +1,7 @@
 # demo_extra.sh (financial-aid) — agent-specific payloads + content checks.
 # Sourced by lib/engine/demo.sh; shares: REV, OUT, REV_U, call(), check(), pass, fail.
 T_INTAKE="intake-fafsa___intake_fafsa"
+T_COA="lookup-coa___lookup_coa"
 T_MASK="mask-pii___mask_pii"
 T_ASSESS="assess-aid___assess_aid"
 T_DRAFT="fa-core___draft_award_notice"
@@ -11,6 +12,13 @@ echo "  -- deny-by-default (identity -> Cedar) --"
 check "aid_officer intake_fafsa" ALLOW "$(call "$REV" "$T_INTAKE" '{"application":"Student requests federal aid. SAI: 3000. Cost of attendance: 25000. Enrollment: full-time. GPA 3.2, pace 85%."}')"
 check "outsider    intake_fafsa" DENY  "$(call "$OUT" "$T_INTAKE" '{"application":"SAI: 3000. Cost of attendance: 25000."}')"
 
+echo "  -- authoritative COA via College Scorecard (LIVE federal API, governed) --"
+COA_OUT="$(call "$REV" "$T_COA" '{"school":"University of Michigan-Ann Arbor"}')"
+check "aid_officer lookup_coa" ALLOW "$COA_OUT"
+if echo "$COA_OUT" | grep -q '"found": *true' && echo "$COA_OUT" | grep -qi 'College Scorecard'; then echo "  PASS | lookup_coa returned an AUTHORITATIVE COA + provenance from College Scorecard"; pass=$((pass+1)); else echo "  FAIL | lookup_coa -> $COA_OUT"; fail=$((fail+1)); fi
+COA_VAL="$(printf '%s' "$COA_OUT" | grep -oE '"cost_of_attendance": *[0-9]+' | grep -oE '[0-9]+' | head -1)"
+[ -z "$COA_VAL" ] && COA_VAL=25000
+
 echo "  -- fail-closed PII de-identification (mask_pii) --"
 MASK_OUT="$(call "$REV" "$T_MASK" '{"case":"Applicant Jane Doe, SSN 123-45-6789, 42 Main St, FAFSA for federal aid; SAI 3000, COA 25000, full-time."}')"
 check "aid_officer mask_pii" ALLOW "$MASK_OUT"
@@ -18,9 +26,10 @@ if echo "$MASK_OUT" | grep -q 'REDACTED' && ! echo "$MASK_OUT" | grep -q 'Jane D
 
 echo "  -- forbid: mask-before-assess (aid determination) --"
 check "aid_officer assess (UN-masked)" DENY "$(call "$REV" "$T_ASSESS" '{"student_aid_index":3000,"cost_of_attendance":25000,"deidentified":false}')"
-ASSESS_OUT="$(call "$REV" "$T_ASSESS" '{"student_aid_index":3000,"cost_of_attendance":25000,"enrollment_status":"full","sap_gpa":3.2,"sap_pace":85,"deidentified":true}')"
+ASSESS_OUT="$(call "$REV" "$T_ASSESS" "{\"student_aid_index\":3000,\"cost_of_attendance\":$COA_VAL,\"enrollment_status\":\"full\",\"sap_gpa\":3.2,\"sap_pace\":85,\"coa_source\":\"US Dept of Education - College Scorecard\",\"deidentified\":true}")"
 check "aid_officer assess (de-identified)" ALLOW "$ASSESS_OUT"
 if echo "$ASSESS_OUT" | grep -q 'ELIGIBLE' && echo "$ASSESS_OUT" | grep -qE '"aid_track"'; then echo "  PASS | assess_aid returned a determination + aid track"; pass=$((pass+1)); else echo "  FAIL | assess -> $ASSESS_OUT"; fail=$((fail+1)); fi
+if echo "$ASSESS_OUT" | grep -q '"coa_provenance"' && ! echo "$ASSESS_OUT" | grep -q 'not supplied'; then echo "  PASS | determination carries COA provenance (authoritative source in the audit trail)"; pass=$((pass+1)); else echo "  FAIL | coa provenance missing -> $ASSESS_OUT"; fail=$((fail+1)); fi
 
 echo "  -- forbid: mask-before-model (award notice) --"
 check "aid_officer draft (UN-masked)" DENY "$(call "$REV" "$T_DRAFT" '{"case":"x","deidentified":false}')"

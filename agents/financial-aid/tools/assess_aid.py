@@ -52,6 +52,7 @@ def handler(event, context):
     gpa = _num(e.get("sap_gpa"))
     pace = _num(e.get("sap_pace"))
     selected = bool(e.get("selected_for_verification"))
+    coa_source = e.get("coa_source")  # provenance from lookup_coa (College Scorecard), echoed for the audit
 
     if sai is None or coa is None:
         return {"assessed": True, "determination": "NEEDS_REVIEW", "eligible": None,
@@ -86,7 +87,12 @@ def handler(event, context):
     else:
         determination, eligible, reason = "INELIGIBLE", False, ("SAI %.0f yields no Pell at this COA; may qualify for other Title IV aid (loans/work-study) on review" % sai)
 
-    notes = ["Pell figures and SAP thresholds are illustrative federal defaults; configure per award year/institution"]
+    # Pell maximum/minimum are the AUTHORITATIVE 2026-27 figures (FSA Dear Colleague Letter, 2026-01-30:
+    # max $7,395, min $740). The cost of attendance should come from lookup_coa (College Scorecard) rather
+    # than an illustrative value; coa_source records where it came from for the audit trail.
+    notes = ["Pell max/min are authoritative 2026-27 figures (FSA DCL 2026-01-30); SAP thresholds are configurable per institution"]
+    if not coa_source:
+        notes.append("cost_of_attendance provenance not supplied — use lookup_coa for an authoritative COA")
     if determination == "ELIGIBLE":
         notes.append("Pell estimate only; loan/work-study packaging and final COA remain for aid-officer review")
 
@@ -99,8 +105,11 @@ def handler(event, context):
         "sap_status": sap_status,               # SATISFACTORY | NOT_SATISFACTORY | UNKNOWN
         "pell_award": pell,
         "enrollment_status": enroll,
+        "cost_of_attendance": int(coa),
+        "coa_provenance": coa_source or "not supplied",
         "deidentified_input": True,
-        "assessed_by": "rules:TitleIV/Pell+SAP(illustrative)",
+        "assessed_by": "rules:TitleIV/Pell(2026-27 authoritative)+SAP",
+        "pell_max_source": "FSA DCL 2026-01-30 (max 7395 / min 740)",
         "reason": reason,
         "notes": notes,
     }

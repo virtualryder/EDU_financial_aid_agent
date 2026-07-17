@@ -25,19 +25,24 @@ award**. This agent keeps the human in charge and makes the platform enforce it.
 ## The governed workflow
 
 ```
-intake_fafsa -> mask_pii -> assess_aid -> draft_award_notice -> write_audit -> request_signoff
-                                                                                    |
-                                            aid officer (a DIFFERENT person) approves -> finalize_award
+intake_fafsa -> lookup_coa -> mask_pii -> assess_aid -> draft_award_notice -> write_audit -> request_signoff
+                                                                                                  |
+                                                  aid officer (a DIFFERENT person) approves -> finalize_award
 ```
 
-- **intake_fafsa** — extract the non-PII decision fields (Student Aid Index, cost of attendance,
-  enrollment status, SAP GPA and pace, dependency) from the raw FAFSA/ISIR or application.
+- **intake_fafsa** — extract the non-PII decision fields (Student Aid Index, institution, enrollment
+  status, SAP GPA and pace, dependency) from the raw FAFSA/ISIR or application.
+- **lookup_coa** — fetch the student's **real Cost of Attendance** from the U.S. Department of Education
+  **College Scorecard API** (authoritative, live). The institution is non-PII, so this runs before
+  masking; the real COA drives the Pell math and its **provenance is written into the audit** — even
+  reaching real federal data is a Cedar-authorized, audited Gateway tool, not a side-channel.
 - **mask_pii** — fail-closed PII de-identification (Amazon Comprehend `DetectPiiEntities`: name, SSN,
   address, DOB…). If masking can't run, nothing downstream proceeds.
 - **assess_aid** — a deterministic rules engine (public Title IV formulas: Pell scheduled award =
   min(COA, max) − SAI, prorated by enrollment; the SAP test) returning ELIGIBLE / INELIGIBLE /
-  NEEDS_REVIEW, the estimated Pell award, the SAP status, and the **verification track**. No model, no
-  licensed data.
+  NEEDS_REVIEW, the estimated Pell award, the SAP status, and the **verification track**. Uses the
+  **authoritative 2026-27 Pell maximum ($7,395) / minimum ($740)** (FSA DCL 2026-01-30) and the real COA
+  from `lookup_coa`, and echoes the COA provenance. No model, no licensed data.
 - **draft_award_notice** — a real Bedrock (Claude) award/determination notice, through a fail-closed
   output guardrail, on de-identified data only.
 - **write_audit** — append-only DynamoDB ledger + S3 Object Lock (WORM) copy of every decision.
@@ -51,11 +56,12 @@ Authorization is **Cedar deny-by-default** at the AgentCore Gateway: `aid_office
 ## Tests — proven live in ENFORCE
 
 `bash lib/engine/demo.sh agents/financial-aid` exercises the full governed workflow against the deployed
-system with Cedar in **ENFORCE**, and reports `21 passed, 0 failed / GOVERNANCE DEMO: PASS`:
-deny-by-default (aid-officer ALLOW / outsider DENY), fail-closed PII masking, both mask-before forbids
-firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded Bedrock
-notice, the immutable WORM audit (write-once + duplicate rejection), `no_self_commit`, and the human
-sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
+system with Cedar in **ENFORCE**, and reports `24 passed, 0 failed / GOVERNANCE DEMO: PASS`:
+deny-by-default (aid-officer ALLOW / outsider DENY), a **live authoritative COA lookup from College
+Scorecard** with provenance carried into the determination, fail-closed PII masking, both mask-before
+forbids firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded
+Bedrock notice, the immutable WORM audit (write-once + duplicate rejection), `no_self_commit`, and the
+human sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
 **AgentCore Runtime**: an aid officer runs the full governed workflow; an outsider gets ACCESS DENIED.
 
 ## Deploy / prove / run / tear down
