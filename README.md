@@ -1,0 +1,101 @@
+# Financial Aid Agent — Governed Agentic AI on Amazon Bedrock AgentCore
+
+A **governed** Title IV / federal student-aid eligibility & awarding agent for Higher Education. It
+intakes a FAFSA/aid application, de-identifies PII, determines Pell eligibility, Satisfactory Academic
+Progress (SAP), and the verification track, drafts an award/determination notice, and **pauses at a
+human sign-off gate** — a financial-aid officer makes and commits the award; the agent never
+self-adjudicates. Built on the same governed-hero-agent pattern as the pharmacovigilance and benefits
+agents, from a reusable, manifest-driven template — this is the **third vertical** proven on the pattern.
+
+> **Accelerator, not a certification.** Reference implementation of the *pattern*. Not a
+> production-certified system. Computer-system validation, IdP federation, connectors to the student
+> information system / COD, the authoritative award rules, and authorization to operate (StateRAMP /
+> ATO where applicable) remain the adopter's responsibility. Pell figures and SAP thresholds here are
+> **illustrative federal defaults** — configure per award year and institution.
+
+## Why this agent
+
+Federal student-aid processing is high-volume, deadline-driven, and heavily regulated (Title IV of the
+Higher Education Act, FERPA for education records, the GLBA Safeguards Rule, and IRS Pub 1075 where tax
+data is used). It's an obvious place for an AI agent — but a financial-aid office cannot adopt an
+ungoverned one: PII and education records must never leak, every determination needs a tamper-evident
+audit, tool access must be least-privilege, and a **qualified aid officer must make and commit the
+award**. This agent keeps the human in charge and makes the platform enforce it.
+
+## The governed workflow
+
+```
+intake_fafsa -> mask_pii -> assess_aid -> draft_award_notice -> write_audit -> request_signoff
+                                                                                    |
+                                            aid officer (a DIFFERENT person) approves -> finalize_award
+```
+
+- **intake_fafsa** — extract the non-PII decision fields (Student Aid Index, cost of attendance,
+  enrollment status, SAP GPA and pace, dependency) from the raw FAFSA/ISIR or application.
+- **mask_pii** — fail-closed PII de-identification (Amazon Comprehend `DetectPiiEntities`: name, SSN,
+  address, DOB…). If masking can't run, nothing downstream proceeds.
+- **assess_aid** — a deterministic rules engine (public Title IV formulas: Pell scheduled award =
+  min(COA, max) − SAI, prorated by enrollment; the SAP test) returning ELIGIBLE / INELIGIBLE /
+  NEEDS_REVIEW, the estimated Pell award, the SAP status, and the **verification track**. No model, no
+  licensed data.
+- **draft_award_notice** — a real Bedrock (Claude) award/determination notice, through a fail-closed
+  output guardrail, on de-identified data only.
+- **write_audit** — append-only DynamoDB ledger + S3 Object Lock (WORM) copy of every decision.
+- **request_signoff** — starts a Step Functions separation-of-duties gate; a *different* aid officer
+  approves with a single-use token before `finalize_award` ever runs.
+
+Authorization is **Cedar deny-by-default** at the AgentCore Gateway: `aid_officer_permit` (role-gated),
+`mask_before_assess` and `mask_before_draft` forbids (no processing/drafting on un-masked data), and
+`no_self_commit` (the agent can never finalize an award). See `policies/`.
+
+## Tests — proven live in ENFORCE
+
+`bash lib/engine/demo.sh agents/financial-aid` exercises the full governed workflow against the deployed
+system with Cedar in **ENFORCE**, and reports `21 passed, 0 failed / GOVERNANCE DEMO: PASS`:
+deny-by-default (aid-officer ALLOW / outsider DENY), fail-closed PII masking, both mask-before forbids
+firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded Bedrock
+notice, the immutable WORM audit (write-once + duplicate rejection), `no_self_commit`, and the human
+sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
+**AgentCore Runtime**: an aid officer runs the full governed workflow; an outsider gets ACCESS DENIED.
+
+## Deploy / prove / run / tear down
+
+Requirements: AWS CLI v2 (admin, us-east-1), Python 3.12 + `pyyaml`, Bedrock model access, Bash
+(Git-Bash on Windows). One agent = one manifest (`agents/financial-aid/manifest.yaml`) + domain tool
+bodies + Cedar policies; the engine, control library, and runtime are reused.
+
+```bash
+bash lib/engine/deploy.sh  agents/financial-aid   # spine: engine -> gateway -> targets -> policies -> ENFORCE
+bash lib/engine/demo.sh    agents/financial-aid   # 21-check governance proof
+# Runtime (from a fresh venv):
+bash lib/runtime/setup_venv.sh
+bash lib/runtime/_obs_setup.sh  agents/financial-aid
+bash lib/runtime/_configure.sh  agents/financial-aid
+bash lib/runtime/_launch.sh     agents/financial-aid
+bash lib/runtime/_invoke.sh     agents/financial-aid aid_officer   # or: bash invoke_demo.sh (with sample data)
+bash lib/engine/destroy.sh agents/financial-aid   # zero-residual teardown (identity preserved)
+```
+
+Test-user passwords are env-driven with placeholder defaults (`ChangeMe-*1!`) — rotate before shared
+use. Region/account resolve dynamically.
+
+## Layout
+
+```
+lib/engine/     manifest-driven engine: render.py + deploy/demo/destroy + deploy_identity + signoff.asl.tmpl
+lib/controls/   shared control tools: mask_pii, write_audit, request/approve/finalize sign-off, mcp_client
+lib/runtime/    generic Strands agent on AgentCore Runtime (agent.py + Dockerfile + toolkit helpers)
+agents/financial-aid/
+                manifest.yaml (single source of truth) + tools/ (intake_fafsa, assess_aid, aid_core) + demo_extra.sh
+policies/       the four Cedar policies (rendered from the manifest), human-readable + a README
+docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance) + decks
+```
+
+## Honesty boundary
+
+The accelerator owns the governed agent, the Cedar policies, the tools, the fail-closed masking, the
+human-gate workflow, the WORM audit design, the deterministic aid rules engine, the IaC, the tests. The
+adopter owns: IdP federation and aid-officer role mapping; validated connectors to the student
+information system / COD; the authoritative award rules/thresholds and their compliance review; computer-
+system validation; and production authorization to operate. `verify_isir` and system-of-record
+connectors ship as labeled stubs. Pell figures and SAP thresholds are illustrative federal defaults.

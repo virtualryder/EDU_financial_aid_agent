@@ -1,0 +1,155 @@
+# financial-aid/manifest.yaml
+# EDU flagship: a governed Title IV / federal student-aid eligibility & awarding agent, built on the
+# same governed-hero-agent pattern as the pharmacovigilance and benefits agents. The agent intakes,
+# de-identifies, screens, and drafts; a financial-aid officer makes and commits the award determination
+# at the human sign-off gate. render.py turns this manifest into the deploy inputs.
+
+agent:
+  slug: financial-aid
+  title: Title IV Financial Aid Eligibility and Awarding
+  industry: EDU
+  region: us-east-1
+  prefix: fa
+
+identity:                          # stable, long-lived (own lifecycle)
+  pool_name: fa-financial-aid
+  client_name: fa-gw
+  reviewer_group: aid_officer
+  users:                           # placeholder passwords — override via env / rotate before shared use
+    - { name: aid_officer, password: "ChangeMe-Reviewer1!", in_group: true }
+    - { name: approver,    password: "ChangeMe-Approver1!", in_group: true }
+    - { name: outsider,    password: "ChangeMe-Outsider1!", in_group: false }
+
+engine:
+  name: fa_financial_aid_authz
+  description: Deny-by-default Cedar authz for the Title IV financial-aid agent
+
+gateway:
+  name: fa-financial-aid-gw
+  description: Financial-aid governed tool gateway
+  ssm_discovery_param: /fa-financial-aid/gateway-url
+
+guardrail:
+  name: fa-financial-aid-guardrail
+  description: "Fail-closed output control for award notices: PII anonymize + prompt-attack"
+  pii_anonymize: [NAME, AGE, EMAIL, PHONE, US_SOCIAL_SECURITY_NUMBER, ADDRESS]
+  prompt_attack: HIGH
+
+controls:
+  fail_closed_masking: true
+  worm_audit: true
+  human_signoff_gate: true
+
+audit:
+  object_lock_mode: GOVERNANCE
+  retention_days: 1
+
+model:
+  draft_model_id: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+
+runtime:
+  name: financial_aid_runtime_agent
+
+tools:
+  - target: intake-fafsa
+    lambda: fa-intake-fafsa
+    handler: intake_fafsa.py
+    kind: domain
+    mcp_tools:
+      - name: intake_fafsa
+        description: "Extract the non-PII decision fields (Student Aid Index, cost of attendance, enrollment status, SAP GPA and pace, dependency) from a raw FAFSA/ISIR or aid application."
+        input: { application: { type: string, description: "Raw FAFSA/ISIR or aid application text or JSON." } }
+        required: [application]
+
+  - target: mask-pii
+    lambda: fa-mask-pii
+    handler: mask_pii.py
+    kind: control
+    mcp_tools:
+      - name: mask_pii
+        description: "Fail-closed PII de-identification of a student aid record (name, SSN, address, DOB, etc.); sets deidentified=true only if masking succeeded."
+        input: { case: { type: string, description: "Student aid record text that may contain PII/education records." } }
+        required: [case]
+
+  - target: assess-aid
+    lambda: fa-assess-aid
+    handler: assess_aid.py
+    kind: domain
+    mcp_tools:
+      - name: assess_aid
+        description: "Deterministic Title IV aid determination (Pell eligibility + Satisfactory Academic Progress + verification track) on de-identified decision fields; case must be masked first (deidentified true)."
+        input:
+          student_aid_index: { type: number, description: "Student Aid Index (SAI) from the FAFSA." }
+          cost_of_attendance: { type: number, description: "Institutional cost of attendance (annual)." }
+          enrollment_status: { type: string, description: "full | three_quarter | half | less_than_half" }
+          sap_gpa: { type: number, description: "Cumulative GPA for Satisfactory Academic Progress." }
+          sap_pace: { type: number, description: "Completion pace (percent of attempted credits earned)." }
+          selected_for_verification: { type: boolean, description: "True if the application was selected for verification." }
+          deidentified: { type: boolean, description: "True if masked by mask_pii." }
+        required: [deidentified]
+
+  - target: fa-core
+    lambda: fa-core-tools
+    handler: aid_core.py
+    kind: domain
+    guardrailed: true
+    mcp_tools:
+      - name: draft_award_notice
+        description: "Draft a de-identified financial-aid award/determination notice; case must be masked first."
+        input:
+          case: { type: string, description: "De-identified case + aid determination JSON/text." }
+          deidentified: { type: boolean, description: "True if masked by mask_pii." }
+        required: [case, deidentified]
+      - name: finalize_award
+        description: "Commit a financial-aid award; agent must never call this directly."
+        input: { award_id: { type: string, description: "Award/record id." } }
+        required: [award_id]
+
+  - target: write-audit
+    lambda: fa-write-audit
+    handler: write_audit.py
+    kind: control
+    mcp_tools:
+      - name: write_audit
+        description: "Append a tamper-evident audit record (append-only ledger + WORM copy); returns stored=false if the exact record already exists."
+        input:
+          icsr_id: { type: string, description: "Case/record id." }
+          action: { type: string, description: "Governed action being recorded." }
+          phase: { type: string, description: "INTENT or COMMITTED." }
+          actor: { type: string, description: "Who acted." }
+          payload: { type: string, description: "Evidence payload (JSON string)." }
+        required: [icsr_id, action, phase]
+
+  - target: request-signoff
+    lambda: fa-request-signoff
+    handler: request_signoff.py
+    kind: control
+    mcp_tools:
+      - name: request_signoff
+        description: "Request aid-officer sign-off before committing an award; starts a separation-of-duties approval workflow. The agent can never commit directly."
+        input:
+          icsr_id: { type: string, description: "Case/record id." }
+          requester: { type: string, description: "The aid officer requesting the commit." }
+        required: [icsr_id, requester]
+
+policies:
+  - { name: aid_officer_permit,  kind: permit, role_group: aid_officer }
+  - { name: mask_before_assess,  kind: forbid, action: assess_aid,        unless_deidentified: true }
+  - { name: mask_before_draft,   kind: forbid, action: draft_award_notice, unless_deidentified: true }
+  - { name: no_self_commit,      kind: forbid, action: finalize_award }
+
+workflow:
+  entrypoint: agent.py
+  consequential_action: finalize_award
+  steps:
+    - "intake_fafsa - extract the non-PII decision fields from the raw FAFSA/aid application."
+    - "mask_pii - de-identify the raw record; use the returned masked_case for the notice and audit."
+    - "assess_aid - on the extracted fields with deidentified true, determine Pell eligibility, SAP status, and the verification track."
+    - "draft_award_notice - draft the award/determination notice, passing the masked case and deidentified true."
+    - "write_audit - record an INTENT audit entry for the award determination."
+    - "request_signoff - request aid-officer sign-off to commit (a DIFFERENT qualified person must approve)."
+
+honesty_boundary:
+  stubbed: [verify_isir, connect_system_of_record]
+  connectors: "COD / ISIR / student information system integration is customer engagement work"
+  not_certified: true
