@@ -62,6 +62,12 @@ def _draft(e):
 
 def handler(event, context):
     e = _coerce(event)
+    if "pj_id" in e:
+        # commit_professional_judgment is a consequential, HUMAN-ONLY discretionary action. The agent can
+        # never commit a professional-judgment adjustment; a senior aid officer does, through the human
+        # gate. Forbidden to the agent by Cedar (no_self_professional_judgment); refused here too.
+        return {"error": "refused: committing a professional-judgment adjustment is a senior-aid-officer decision; the agent cannot commit",
+                "pj_id": e.get("pj_id"), "committed": False}
     if "award_id" in e and "case" not in e:
         # finalize_award is never a real inline call — the human sign-off gate owns it.
         return {"error": "refused: finalize_award must go through the human sign-off gate",

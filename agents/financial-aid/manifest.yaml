@@ -101,6 +101,34 @@ tools:
           deidentified: { type: boolean, description: "True if masked by mask_pii." }
         required: [deidentified]
 
+  - target: verify-docs
+    lambda: fa-verify-docs
+    handler: verify_documents.py
+    kind: domain
+    mcp_tools:
+      - name: verify_documents
+        description: "Title IV verification: track required vs received documents and return whether aid is on HOLD (PENDING) or COMPLETE. Operates on document-type flags (non-PII)."
+        input:
+          required_documents: { type: string, description: "Comma-separated required document types (or JSON list)." }
+          received_documents: { type: string, description: "Comma-separated received document types (or JSON list)." }
+          required_count: { type: integer, description: "Alternative to lists: number of required documents." }
+          received_count: { type: integer, description: "Alternative to lists: number of received documents." }
+        required: []
+
+  - target: record-pj
+    lambda: fa-record-pj
+    handler: professional_judgment.py
+    kind: domain
+    mcp_tools:
+      - name: record_professional_judgment
+        description: "PREPARE a documented Professional Judgment (HEA 479A) recommendation on de-identified data; requires a written rationale and returns a record a DIFFERENT senior aid officer must approve. Never commits. Case must be masked first."
+        input:
+          circumstance: { type: string, description: "The special circumstance (e.g. job loss, medical)." }
+          proposed_adjustment: { type: string, description: "The proposed data-element adjustment." }
+          rationale: { type: string, description: "The documented, case-specific rationale (required)." }
+          deidentified: { type: boolean, description: "True if masked by mask_pii." }
+        required: [deidentified]
+
   - target: fa-core
     lambda: fa-core-tools
     handler: aid_core.py
@@ -117,6 +145,10 @@ tools:
         description: "Commit a financial-aid award; agent must never call this directly."
         input: { award_id: { type: string, description: "Award/record id." } }
         required: [award_id]
+      - name: commit_professional_judgment
+        description: "Commit a professional-judgment adjustment; a senior-aid-officer decision — the agent must never call this."
+        input: { pj_id: { type: string, description: "Professional-judgment record id." } }
+        required: [pj_id]
 
   - target: write-audit
     lambda: fa-write-audit
@@ -146,10 +178,12 @@ tools:
         required: [icsr_id, requester]
 
 policies:
-  - { name: aid_officer_permit,  kind: permit, role_group: aid_officer }
-  - { name: mask_before_assess,  kind: forbid, action: assess_aid,        unless_deidentified: true }
-  - { name: mask_before_draft,   kind: forbid, action: draft_award_notice, unless_deidentified: true }
-  - { name: no_self_commit,      kind: forbid, action: finalize_award }
+  - { name: aid_officer_permit,            kind: permit, role_group: aid_officer }
+  - { name: mask_before_assess,            kind: forbid, action: assess_aid,          unless_deidentified: true }
+  - { name: mask_before_pj,                kind: forbid, action: record_professional_judgment, unless_deidentified: true }
+  - { name: mask_before_draft,             kind: forbid, action: draft_award_notice,  unless_deidentified: true }
+  - { name: no_self_commit,                kind: forbid, action: finalize_award }
+  - { name: no_self_professional_judgment, kind: forbid, action: commit_professional_judgment }
 
 workflow:
   entrypoint: agent.py

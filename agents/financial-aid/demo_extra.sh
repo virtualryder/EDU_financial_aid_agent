@@ -49,3 +49,24 @@ if echo "$A2" | grep -q '"stored": *false' && echo "$A2" | grep -qi 'append-only
 
 echo "  -- forbid: no self-commit --"
 check "aid_officer finalize_award" DENY "$(call "$REV" "$T_FINAL" '{"award_id":"AID-2026-0002"}')"
+
+echo "  == STEP TWO: deeper caseload workflows =="
+T_VERIFY="verify-docs___verify_documents"
+T_PJ="record-pj___record_professional_judgment"
+T_PJCOMMIT="fa-core___commit_professional_judgment"
+
+echo "  -- Title IV verification hold --"
+VER_OUT="$(call "$REV" "$T_VERIFY" '{"required_documents":"tax_return,verification_worksheet,w2","received_documents":"tax_return"}')"
+check "aid_officer verify_documents" ALLOW "$VER_OUT"
+if echo "$VER_OUT" | grep -q 'PENDING' && echo "$VER_OUT" | grep -q '"hold": *true'; then echo "  PASS | verification incomplete -> aid HELD pending documents"; pass=$((pass+1)); else echo "  FAIL | verify -> $VER_OUT"; fail=$((fail+1)); fi
+
+echo "  -- professional judgment: documented, human-approved (HEA 479A) --"
+check "aid_officer record_pj (UN-masked)" DENY "$(call "$REV" "$T_PJ" '{"circumstance":"job loss","rationale":"documented layoff reduces income","deidentified":false}')"
+PJ_OUT="$(call "$REV" "$T_PJ" '{"circumstance":"parent job loss","proposed_adjustment":"reduce AGI","rationale":"Documented 2026 layoff; income reduced 40 percent per severance letter","deidentified":true}')"
+check "aid_officer record_pj (de-identified)" ALLOW "$PJ_OUT"
+if echo "$PJ_OUT" | grep -q '"status": *"PREPARED"' && echo "$PJ_OUT" | grep -q '"requires_senior_approval": *true'; then echo "  PASS | PJ prepared + documented -> a DIFFERENT senior officer must approve"; pass=$((pass+1)); else echo "  FAIL | record_pj -> $PJ_OUT"; fail=$((fail+1)); fi
+PJ_NORAT="$(call "$REV" "$T_PJ" '{"circumstance":"job loss","deidentified":true}')"
+if echo "$PJ_NORAT" | grep -qi 'requires a documented'; then echo "  PASS | PJ refused without a documented rationale (mandatory)"; pass=$((pass+1)); else echo "  FAIL | PJ no-rationale not refused -> $PJ_NORAT"; fail=$((fail+1)); fi
+
+echo "  -- forbid: no self professional-judgment commit (senior-human-only) --"
+check "aid_officer commit_professional_judgment" DENY "$(call "$REV" "$T_PJCOMMIT" '{"pj_id":"PJ-2026-0002"}')"

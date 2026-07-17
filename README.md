@@ -56,13 +56,29 @@ Authorization is **Cedar deny-by-default** at the AgentCore Gateway: `aid_office
 ## Tests — proven live in ENFORCE
 
 `bash lib/engine/demo.sh agents/financial-aid` exercises the full governed workflow against the deployed
-system with Cedar in **ENFORCE**, and reports `24 passed, 0 failed / GOVERNANCE DEMO: PASS`:
+system with Cedar in **ENFORCE**, and reports `31 passed, 0 failed / GOVERNANCE DEMO: PASS`:
 deny-by-default (aid-officer ALLOW / outsider DENY), a **live authoritative COA lookup from College
-Scorecard** with provenance carried into the determination, fail-closed PII masking, both mask-before
+Scorecard** with provenance carried into the determination, fail-closed PII masking, the mask-before
 forbids firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded
 Bedrock notice, the immutable WORM audit (write-once + duplicate rejection), `no_self_commit`, and the
 human sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
 **AgentCore Runtime**: an aid officer runs the full governed workflow; an outsider gets ACCESS DENIED.
+
+### Deeper caseload workflows (each a governed tool + its own Cedar control)
+
+The higher-risk the action, the stronger the governance. Beyond intake/awarding, the agent adds:
+
+- **`verify_documents`** — Title IV verification (34 CFR 668.51–.61): tracks required vs received
+  documents and returns a **HOLD** while verification is PENDING (no disbursement until it clears).
+- **`record_professional_judgment`** — prepares a documented Professional Judgment (HEA §479A)
+  recommendation. It **requires a written rationale** (refuses without one) and returns a record a
+  **different senior aid officer must approve**. Fail-closed (`mask_before_pj`).
+- **`commit_professional_judgment`** — a **consequential, senior-human-only** action: the agent can
+  **never** commit a professional-judgment adjustment. Forbidden by Cedar `no_self_professional_judgment`
+  — the same deny-by-default pattern as `no_self_commit`, showing the model scales to every new
+  high-risk action.
+
+All are proven live in the 31-check demo.
 
 ## Deploy / prove / run / tear down
 
@@ -72,7 +88,7 @@ bodies + Cedar policies; the engine, control library, and runtime are reused.
 
 ```bash
 bash lib/engine/deploy.sh  agents/financial-aid   # spine: engine -> gateway -> targets -> policies -> ENFORCE
-bash lib/engine/demo.sh    agents/financial-aid   # 21-check governance proof
+bash lib/engine/demo.sh    agents/financial-aid   # 31-check governance proof
 # Runtime (from a fresh venv):
 bash lib/runtime/setup_venv.sh
 bash lib/runtime/_obs_setup.sh  agents/financial-aid
@@ -92,8 +108,8 @@ lib/engine/     manifest-driven engine: render.py + deploy/demo/destroy + deploy
 lib/controls/   shared control tools: mask_pii, write_audit, request/approve/finalize sign-off, mcp_client
 lib/runtime/    generic Strands agent on AgentCore Runtime (agent.py + Dockerfile + toolkit helpers)
 agents/financial-aid/
-                manifest.yaml (single source of truth) + tools/ (intake_fafsa, assess_aid, aid_core) + demo_extra.sh
-policies/       the four Cedar policies (rendered from the manifest), human-readable + a README
+                manifest.yaml (single source of truth) + tools/ (intake_fafsa, lookup_coa, assess_aid, verify_documents, professional_judgment, aid_core) + demo_extra.sh
+policies/       the six Cedar policies (rendered from the manifest), human-readable + a README
 docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance) + decks
 ```
 
