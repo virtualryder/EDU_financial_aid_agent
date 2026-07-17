@@ -59,7 +59,21 @@ AWS ships, in Amazon Bedrock AgentCore, the governance primitives a regulated ag
 
 ## 6. The aid rules engine (deterministic, illustrative)
 
-`assess_aid` is a **deterministic rules engine**, not a model. It applies the public Title IV formulas — the Pell scheduled-award calculation (min(Cost of Attendance, maximum award) − Student Aid Index, prorated by enrollment intensity) and the Satisfactory Academic Progress test (cumulative GPA and completion pace) — to the de-identified decision fields, and returns a determination (ELIGIBLE / INELIGIBLE / NEEDS_REVIEW), the estimated Pell award, the SAP status, and the **verification track** (STANDARD vs. VERIFICATION_HOLD). It fails closed if the case is not marked de-identified. The figures shipped here are illustrative federal defaults (maximum/minimum Pell, the SAP GPA and pace floors) — the institution configures the authoritative rules per award year. This is the financial-aid counterpart to the PV agent's seriousness/reporting-clock step and the benefits agent's FPL engine: a transparent, auditable, non-model determination a financial-aid officer can defend on appeal.
+`assess_aid` is a **deterministic rules engine**, not a model. It applies the public Title IV formulas — the Pell scheduled-award calculation (min(Cost of Attendance, maximum award) − Student Aid Index, prorated by enrollment intensity) and the Satisfactory Academic Progress test (cumulative GPA and completion pace) — to the de-identified decision fields, and returns a determination (ELIGIBLE / INELIGIBLE / NEEDS_REVIEW), the estimated Pell award, the SAP status, and the **verification track** (STANDARD vs. VERIFICATION_HOLD). It uses the **authoritative 2026‑27 Pell figures** (maximum $7,395 / minimum $740, FSA Dear Colleague Letter 2026‑01‑30). It fails closed if the case is not marked de-identified. The SAP GPA/pace floors remain configurable per institution. This is the financial-aid counterpart to the PV agent's seriousness/reporting-clock step and the benefits agent's FPL engine: a transparent, auditable, non-model determination a financial-aid officer can defend on appeal.
+
+### 6a. Authoritative Cost of Attendance — a live, governed federal source
+
+The cost of attendance is not a hardcoded number: a governed Gateway tool, **`lookup_coa`**, calls the **U.S. Department of Education College Scorecard API** (`api.data.gov/ed/collegescorecard/v1`) and returns the student's institution's **real academic-year Cost of Attendance** (field `COSTT4_A`), with a fallback to reported tuition. The institution identifier is non‑PII, so `lookup_coa` runs *before* masking; the real COA then drives the Pell math, and its **provenance (source, school, IPEDS unitid, field) is written into the WORM audit** so a determination is traceable to a named, authoritative source — not a magic number. The point for an adopter: even "reach out to real federal data" is a Cedar‑authorized, audited tool, not an ungoverned side‑channel. (Evaluation uses College Scorecard's shared `DEMO_KEY`; a pilot sets a free `api.data.gov` key via `SCORECARD_API_KEY`.)
+
+## 6b. Deeper caseload workflows (step two)
+
+Beyond intake, lookup, and awarding, the agent adds the workflows a real aid office needs — each a **new governed tool with its own Cedar control**, following one rule: the higher-risk the action, the stronger the governance.
+
+- **`verify_documents`** — Title IV verification (34 CFR 668.51–.61). Tracks required vs received documents and returns a **HOLD** while verification is PENDING; no disbursement until it clears.
+- **`record_professional_judgment`** — Professional Judgment (HEA §479A), the highest-risk discretionary act in aid. It **requires a documented rationale** (refuses without one), prepares the recommendation, and returns a record that a **different senior aid officer must approve**. Fail-closed (`mask_before_pj`).
+- **`commit_professional_judgment`** — a **consequential, senior-human-only** action. The agent can **never** commit a PJ adjustment; it is forbidden outright by `no_self_professional_judgment`, exactly mirroring `no_self_commit`.
+
+The governance model scales to new workflows with no new plumbing — a tool body plus a deny-by-default forbid — and each new forbid fires *by name* in ENFORCE.
 
 ## 7. Cedar policy model for financial aid (illustrative)
 
