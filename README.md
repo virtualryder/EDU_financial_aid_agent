@@ -117,7 +117,7 @@ lib/connector/  reusable governed OAuth connector: verify_source (token via Agen
 agents/financial-aid/
                 manifest.yaml (single source of truth) + tools/ (intake_fafsa, lookup_coa, assess_aid, verify_documents, professional_judgment, aid_core) + demo_extra.sh
 policies/       the six Cedar policies (rendered from the manifest), human-readable + a README
-docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager) + decks
+docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager; generators/ regenerates the guides & decks) + decks
 ```
 
 ## Honesty boundary
