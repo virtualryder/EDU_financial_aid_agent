@@ -120,14 +120,14 @@ lib/connector/  reusable governed OAuth connector: verify_source (token via Agen
 agents/financial-aid/
                 manifest.yaml (single source of truth) + tools/ (intake_fafsa, lookup_coa, assess_aid, verify_documents, professional_judgment, aid_core) + demo_extra.sh
 policies/       the six Cedar policies (rendered from the manifest), human-readable + a README
-docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager; generators/ regenerates the guides & decks) + decks
+docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager, IdP-federation reference; generators/ regenerates the guides & decks) + decks
 ```
 
 ## Honesty boundary
 
 The accelerator owns the governed agent, the Cedar policies, the tools, the fail-closed masking, the
 human-gate workflow, the WORM audit design, the deterministic aid rules engine, the IaC, the tests. The
-adopter owns: IdP federation and aid-officer role mapping; validated connectors to the student
+adopter owns: IdP federation to their own provider (a working OIDC/SAML → Cognito → Cedar reference ships as `lib/engine/deploy_federation.sh` + `docs/IdP-Federation-Reference.md`, so federated users hit the same deny-by-default policies as the built-in users) and aid-officer role mapping; validated connectors to the student
 information system / COD; the authoritative award rules/thresholds and their compliance review; computer-
 system validation; and production authorization to operate. `verify_isir` and connectors to the production student-information system / COD remain adopter work; the repo does ship a **real** governed OAuth connector — `verify_source` authenticates to a mock system of record via AgentCore Identity (no stored secret) and the SoR verifies the token's RS256 signature against the Cognito JWKS — as the reference pattern. Pell figures and SAP thresholds are illustrative federal defaults.
 
