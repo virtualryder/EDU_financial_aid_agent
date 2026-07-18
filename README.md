@@ -91,12 +91,16 @@ bodies + Cedar policies; the engine, control library, and runtime are reused.
 ```bash
 bash lib/engine/deploy.sh  agents/financial-aid   # spine: engine -> gateway -> targets -> policies -> ENFORCE
 bash lib/engine/demo.sh    agents/financial-aid   # 31-check governance proof
+bash lib/engine/redteam.sh agents/financial-aid   # adversarial proof: governance holds under attack
 # Runtime (from a fresh venv):
 bash lib/runtime/setup_venv.sh
 bash lib/runtime/_obs_setup.sh  agents/financial-aid
 bash lib/runtime/_configure.sh  agents/financial-aid
 bash lib/runtime/_launch.sh     agents/financial-aid
 bash lib/runtime/_invoke.sh     agents/financial-aid aid_officer   # or: bash invoke_demo.sh (with sample data)
+# Optional depth add-on — the governed OAuth connector (real outbound auth via AgentCore Identity, no stored secret):
+bash lib/connector/deploy_connector.sh agents/financial-aid   # mock OAuth SoR (MOCK-SIS-COD) + Identity provider + verify_source
+bash lib/connector/prove_connector.sh  agents/financial-aid   # proves OAuth + RS256/JWKS signature check + no secret + deny-by-default
 bash lib/engine/destroy.sh agents/financial-aid   # zero-residual teardown (identity preserved)
 ```
 
@@ -109,10 +113,11 @@ use. Region/account resolve dynamically.
 lib/engine/     manifest-driven engine: render.py + deploy/demo/destroy + deploy_identity + signoff.asl.tmpl
 lib/controls/   shared control tools: mask_pii, write_audit, request/approve/finalize sign-off, mcp_client
 lib/runtime/    generic Strands agent on AgentCore Runtime (agent.py + Dockerfile + toolkit helpers)
+lib/connector/  reusable governed OAuth connector: verify_source (token via AgentCore Identity, no stored secret) + deploy/prove scripts + RS256/JWKS-verified mock SoR
 agents/financial-aid/
                 manifest.yaml (single source of truth) + tools/ (intake_fafsa, lookup_coa, assess_aid, verify_documents, professional_judgment, aid_core) + demo_extra.sh
 policies/       the six Cedar policies (rendered from the manifest), human-readable + a README
-docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance) + decks
+docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager) + decks
 ```
 
 ## Honesty boundary
@@ -121,8 +126,7 @@ The accelerator owns the governed agent, the Cedar policies, the tools, the fail
 human-gate workflow, the WORM audit design, the deterministic aid rules engine, the IaC, the tests. The
 adopter owns: IdP federation and aid-officer role mapping; validated connectors to the student
 information system / COD; the authoritative award rules/thresholds and their compliance review; computer-
-system validation; and production authorization to operate. `verify_isir` and system-of-record
-connectors ship as labeled stubs. Pell figures and SAP thresholds are illustrative federal defaults.
+system validation; and production authorization to operate. `verify_isir` and connectors to the production student-information system / COD remain adopter work; the repo does ship a **real** governed OAuth connector — `verify_source` authenticates to a mock system of record via AgentCore Identity (no stored secret) and the SoR verifies the token's RS256 signature against the Cognito JWKS — as the reference pattern. Pell figures and SAP thresholds are illustrative federal defaults.
 
 
 ## License
