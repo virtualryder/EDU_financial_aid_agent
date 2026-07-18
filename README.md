@@ -1,5 +1,7 @@
 # Financial Aid Agent — Governed Agentic AI on Amazon Bedrock AgentCore
 
+[![CI](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml/badge.svg)](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml)
+
 A **governed** Title IV / federal student-aid eligibility & awarding agent for Higher Education. It
 intakes a FAFSA/aid application, de-identifies PII, determines Pell eligibility, Satisfactory Academic
 Progress (SAP), and the verification track, drafts an award/determination notice, and **pauses at a
