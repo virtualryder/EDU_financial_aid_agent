@@ -50,7 +50,7 @@ intake_fafsa -> lookup_coa -> mask_pii -> assess_aid -> draft_award_notice -> wr
   from `lookup_coa`, and echoes the COA provenance. No model, no licensed data.
 - **draft_award_notice** — a real Bedrock (Claude) award/determination notice, through a fail-closed
   output guardrail, on de-identified data only.
-- **write_audit** — append-only DynamoDB ledger + S3 Object Lock (WORM) copy of every decision.
+- **write_audit** — append-only DynamoDB ledger + S3 Object Lock (WORM) copy of every decision. Each record is **hash-chained** to the prior one (`chain_hash = SHA-256(prev_hash + entry_hash)`), so the ledger is tamper-evident by construction — not just un-deletable but provably un-editable — and `lib/controls/verify_chain.py` replays the links to prove INTACT (or name the first broken record).
 - **request_signoff** — starts a Step Functions separation-of-duties gate; a *different* aid officer
   approves with a single-use token before `finalize_award` ever runs.
 
