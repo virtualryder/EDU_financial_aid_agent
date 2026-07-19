@@ -65,7 +65,7 @@ system with Cedar in **ENFORCE**, and reports `31 passed, 0 failed / GOVERNANCE 
 deny-by-default (aid-officer ALLOW / outsider DENY), a **live authoritative COA lookup from College
 Scorecard** with provenance carried into the determination, fail-closed PII masking, the mask-before
 forbids firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded
-Bedrock notice, the immutable WORM audit (write-once + duplicate rejection), `no_self_commit`, and the
+Bedrock notice, the append-only, tamper-evident WORM audit (write-once + duplicate rejection), `no_self_commit`, and the
 human sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
 **AgentCore Runtime**: an aid officer runs the full governed workflow; an outsider gets ACCESS DENIED.
 
