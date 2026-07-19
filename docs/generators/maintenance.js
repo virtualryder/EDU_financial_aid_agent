@@ -21,7 +21,7 @@ const body = [
   H1("2. Routine operations"),
   H2("2.1 Refresh the spine"),
   P("The safest way to apply most spine changes is a clean rebuild. Destroy leaves identity intact; deploy reuses it."),
-  ...codeBlock(["bash lib/engine/destroy.sh agents/financial-aid", "bash lib/engine/deploy.sh  agents/financial-aid", "bash lib/engine/demo.sh    agents/financial-aid   # smoke test: expect 31/31"]),
+  ...codeBlock(["bash lib/engine/destroy.sh agents/financial-aid", "bash lib/engine/deploy.sh  agents/financial-aid", "bash lib/engine/demo.sh    agents/financial-aid   # smoke test: expect 32/32"]),
   P([bold("Note: "), "run cycles serialized — never two concurrent spine deploys."]),
 
   H2("2.2 Change the aid rules or a tool"),
@@ -57,7 +57,7 @@ const body = [
   P("Observability is enabled on the Runtime (OpenTelemetry) and every governed step is logged with the acting identity."),
   bullet([bold("Runtime logs: "), code("aws logs tail /aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-<id>-DEFAULT --since 1h"), " — per-step, identity-tagged, OTel-correlated (trace/span IDs)."]),
   bullet([bold("GenAI dashboard: "), "the CloudWatch GenAI Observability console surfaces agent/tool spans (requires CloudWatch Transaction Search enabled in the account)."]),
-  bullet([bold("Spine smoke test: "), code("bash lib/engine/demo.sh agents/financial-aid"), " is the fastest health check — 31/31 means the whole governed path is intact."]),
+  bullet([bold("Spine smoke test: "), code("bash lib/engine/demo.sh agents/financial-aid"), " is the fastest health check — 32/32 means the whole governed path is intact."]),
   bullet([bold("Watch for: "), "repeated ", code("ACCESS DENIED"), " (identity/authorization drift), ", code("draft failed"), " (model access or inference-parameter issues), guardrail blocks on the notice, and any ", code("assess"), " call arriving with ", code("deidentified=false"), " (a masking-order regression)."]),
 
   H1("5. Audit-evidence management"),

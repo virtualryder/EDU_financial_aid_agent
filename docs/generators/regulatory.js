@@ -56,7 +56,7 @@ const body = [
     ["Encryption & data protection", "PII is masked before any model call; the audit copy is Object-Lock protected; runs inside the institution's account.", [{ text: "Institution: ", bold: true }, "KMS keys, TLS, and network segmentation."]],
     ["Audit & monitoring", "Immutable WORM audit of every decision and state change, with identity-tagged, OTel-correlated logs.", "Live; institution sets retention and log aggregation."],
     ["Minimize / safeguard FTI", "mask_pii removes SSN and other identifiers before the model and the audit; least-privilege limits who and what can process it.", [{ text: "Institution: ", bold: true }, "the Pub 1075 safeguarding program and safeguard security report, where FTI is used."]],
-    ["Written security program & assessment", "Reproducible, manifest-driven infrastructure-as-code and a 31-check governance test harness that runs in enforcement mode.", [{ text: "Institution: ", bold: true }, "the WISP, risk assessment, and qualified individual per the Safeguards Rule."]],
+    ["Written security program & assessment", "Reproducible, manifest-driven infrastructure-as-code and a 32-check governance test harness that runs in enforcement mode.", [{ text: "Institution: ", bold: true }, "the WISP, risk assessment, and qualified individual per the Safeguards Rule."]],
   ], [2500, 4240, 3700]),
 
   H1("7. Separation of duties & the human sign-off gate"),
@@ -76,7 +76,7 @@ const body = [
     ["The human sign-off workflow (separation of duties)", "Validated connectors to the SIS / Common Origination & Disbursement"],
     ["The deterministic aid rules engine (illustrative defaults)", "The authoritative award rules/thresholds and their compliance review"],
     ["The immutable WORM audit design", "Record-retention policy and program-review readiness"],
-    ["Reproducible IaC + the 31-check governance harness", "The GLBA written information-security program and Pub 1075 SSR (where FTI is used)"],
+    ["Reproducible IaC + the 32-check governance harness", "The GLBA written information-security program and Pub 1075 SSR (where FTI is used)"],
     ["Documentation (this guide, the runbook, maintenance)", "Notice language, SAP appeal rights, and the student appeal process"],
   ], [5220, 5220]),
 

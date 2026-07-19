@@ -61,7 +61,7 @@ Authorization is **Cedar deny-by-default** at the AgentCore Gateway: `aid_office
 ## Tests — proven live in ENFORCE
 
 `bash lib/engine/demo.sh agents/financial-aid` exercises the full governed workflow against the deployed
-system with Cedar in **ENFORCE**, and reports `31 passed, 0 failed / GOVERNANCE DEMO: PASS`:
+system with Cedar in **ENFORCE**, and reports `32 passed, 0 failed / GOVERNANCE DEMO: PASS`:
 deny-by-default (aid-officer ALLOW / outsider DENY), a **live authoritative COA lookup from College
 Scorecard** with provenance carried into the determination, fail-closed PII masking, the mask-before
 forbids firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded
@@ -83,7 +83,7 @@ The higher-risk the action, the stronger the governance. Beyond intake/awarding,
   — the same deny-by-default pattern as `no_self_commit`, showing the model scales to every new
   high-risk action.
 
-All are proven live in the 31-check demo.
+All are proven live in the 32-check demo.
 
 ## Deploy / prove / run / tear down
 
@@ -93,7 +93,7 @@ bodies + Cedar policies; the engine, control library, and runtime are reused.
 
 ```bash
 bash lib/engine/deploy.sh  agents/financial-aid   # spine: engine -> gateway -> targets -> policies -> ENFORCE
-bash lib/engine/demo.sh    agents/financial-aid   # 31-check governance proof
+bash lib/engine/demo.sh    agents/financial-aid   # 32-check governance proof
 bash lib/engine/redteam.sh agents/financial-aid   # adversarial proof: governance holds under attack
 # Runtime (from a fresh venv):
 bash lib/runtime/setup_venv.sh

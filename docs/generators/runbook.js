@@ -4,7 +4,7 @@ const { H1, H2, H3, P, bold, code, bullet, num, codeBlock, callout, table, space
 const cover = coverAndToc(
   ["Financial Aid Agent", "on Amazon Bedrock AgentCore"],
   "Solution Architect Deployment Runbook",
-  "Step-by-step deployment of the governed Title IV financial-aid accelerator into an AWS account — identity, governance spine, tools, and the Runtime agent — from one manifest. Region: us-east-1. Every command in this runbook was run end to end to stand the agent up and prove 31/31 in ENFORCE. Accelerator reference; not production-certified. Version 1.2 · 2026.",
+  "Step-by-step deployment of the governed Title IV financial-aid accelerator into an AWS account — identity, governance spine, tools, and the Runtime agent — from one manifest. Region: us-east-1. Every command in this runbook was run end to end to stand the agent up and prove 32/32 in ENFORCE. Accelerator reference; not production-certified. Version 1.2 · 2026.",
   ["1. Overview", "2. Prerequisites", "3. What gets deployed", "4. Deployment procedure", "5. Configuration reference", "6. Validation checklist", "7. Teardown", "8. Windows / Git-Bash operational notes"]
 );
 
@@ -14,7 +14,7 @@ const body = [
   bullet([bold("Identity stack "), "— a stable Amazon Cognito user pool, app client, and test users. Long-lived; created (or reused) by the spine deploy and not torn down with it."]),
   bullet([bold("Governance spine "), "— the Cedar policy engine, AgentCore Gateway, tool Lambdas, Bedrock Guardrail, WORM audit stores, and the Step Functions human sign-off gate. Reproducible; stood up and torn down as a unit."]),
   bullet([bold("Runtime agent "), "— the generic Strands agent, containerized (ARM64 via CodeBuild) and deployed to AgentCore Runtime with a Cognito JWT inbound authorizer; its workflow prompt is rendered from the manifest."]),
-  P(["The whole spine deploys with ", code("deploy.sh"), " (it also creates the stable identity), proves itself with a 31-check governance demo, and tears down with zero residual. Everything is driven from ", code("agents/financial-aid/manifest.yaml"), " — the engine, control library, and runtime are shared across agents."]),
+  P(["The whole spine deploys with ", code("deploy.sh"), " (it also creates the stable identity), proves itself with a 32-check governance demo, and tears down with zero residual. Everything is driven from ", code("agents/financial-aid/manifest.yaml"), " — the engine, control library, and runtime are shared across agents."]),
   callout("Honesty boundary", [["This is an accelerator, not a production-certified system. Title IV program participation, IdP federation, validated connectors to the SIS / COD, the authoritative award rules, and compliance review of notices are institution responsibilities. See the Regulatory-Adherence Guide."]], G.colors.AMBER, "FBF3E7"),
 
   H1("2. Prerequisites"),
@@ -64,12 +64,12 @@ const body = [
   P([bold("Result: "), "ends with ", code("[deploy] DONE"), " and a line like ", code("Gateway URL: https://fa-financial-aid-gw-….gateway.bedrock-agentcore.us-east-1.amazonaws.com/mcp   (mode ENFORCE)"), ". Takes roughly three to four minutes."]),
   callout("Run cycles serialized", [["Do not run two spine deploys concurrently — overlapping runs collide on the policy-engine name. If a deploy is interrupted, run ", code("destroy.sh"), " then re-deploy (the deploy is idempotent and re-uses the pool and IAM roles by name)."]], G.colors.TEAL),
 
-  H2("Step 2 — Prove the governance (31 checks)"),
-  P("Mints aid-officer and outsider tokens and exercises the full governed workflow live, in ENFORCE mode. Expect 31 passed / 0 failed."),
+  H2("Step 2 — Prove the governance (32 checks)"),
+  P("Mints aid-officer and outsider tokens and exercises the full governed workflow live, in ENFORCE mode. Expect 32 passed / 0 failed."),
   ...codeBlock(["bash lib/engine/demo.sh agents/financial-aid"]),
   P("The demo proves deny-by-default (aid_officer ALLOW / outsider DENY), a LIVE authoritative Cost-of-Attendance lookup from the U.S. Department of Education College Scorecard API (governed through the Gateway, with the source stamped into the determination), the mask-before forbids and no-self-commit (each denial names the exact Cedar policy), real PII masking (name/SSN redaction), the aid determination (ELIGIBLE, estimated Pell using the authoritative 2026-27 figures + SAP status + verification track), a real Bedrock award notice through the Guardrail, the immutable WORM audit (write-once + duplicate rejection), and the human sign-off gate (separation of duties + single-use token)."),
   P([bold("Deeper caseload workflows (step two). "), "The demo also exercises the deeper workflows, each a governed tool with its own control: ", code("verify_documents"), " (Title IV verification — returns a HOLD while documents are outstanding), ", code("record_professional_judgment"), " (HEA §479A — requires a documented rationale and returns a record a DIFFERENT senior aid officer must approve; fail-closed via ", code("mask_before_pj"), "), and ", code("commit_professional_judgment"), " — a senior-human-only action the agent can never take (forbidden by ", code("no_self_professional_judgment"), "). Every new high-risk action is a tool body plus its own deny-by-default forbid."]),
-  P([{ text: "It ends with ", size: 21 }, code("=== 31 passed, 0 failed ===   GOVERNANCE DEMO: PASS"), { text: ".", size: 21 }]),
+  P([{ text: "It ends with ", size: 21 }, code("=== 32 passed, 0 failed ===   GOVERNANCE DEMO: PASS"), { text: ".", size: 21 }]),
 
   P([bold("Tamper-evident audit. "), "The demo also proves the audit ledger is ", bold("hash-chained"), ": each record embeds the prior record’s hash (", code("chain_hash = SHA-256(prev_hash + entry_hash)"), "), so editing, reordering, or deleting any record breaks every link after it — on top of the append-only + Object-Lock guarantees. ", code("lib/controls/verify_chain.py"), " replays the links and reports INTACT or the first broken record."]),
   H2("Step 3 — Deploy the Runtime agent"),
@@ -108,7 +108,7 @@ const body = [
 
   H1("6. Validation checklist"),
   bullet([code("deploy.sh"), " → ends with a ", code("Gateway URL: … (mode ENFORCE)"), " line; ", code("identity-state.env"), " + ", code("spine-state.env"), " written."]),
-  bullet([code("demo.sh"), " → ", code("31 passed, 0 failed"), " / ", code("GOVERNANCE DEMO: PASS"), "."]),
+  bullet([code("demo.sh"), " → ", code("32 passed, 0 failed"), " / ", code("GOVERNANCE DEMO: PASS"), "."]),
   bullet(["SSM parameter ", code("/fa-financial-aid/gateway-url"), " exists and matches the live gateway."]),
   bullet(["Runtime invoke: aid_officer → workflow summary with ", code("finalize_award"), " absent from tools; outsider → ACCESS DENIED, empty tools."]),
   bullet(["CloudWatch log group ", code("/aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-*-DEFAULT"), " shows per-step, identity-tagged logs."]),
