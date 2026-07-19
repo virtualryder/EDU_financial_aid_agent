@@ -15,9 +15,14 @@ check "outsider    intake_fafsa" DENY  "$(call "$OUT" "$T_INTAKE" '{"application
 echo "  -- authoritative COA via College Scorecard (LIVE federal API, governed) --"
 COA_OUT="$(call "$REV" "$T_COA" '{"school":"University of Michigan-Ann Arbor"}')"
 check "aid_officer lookup_coa" ALLOW "$COA_OUT"
-if echo "$COA_OUT" | grep -q '"found": *true' && echo "$COA_OUT" | grep -qi 'College Scorecard'; then echo "  PASS | lookup_coa returned an AUTHORITATIVE COA + provenance from College Scorecard"; pass=$((pass+1)); else echo "  FAIL | lookup_coa -> $COA_OUT"; fail=$((fail+1)); fi
-COA_VAL="$(printf '%s' "$COA_OUT" | grep -oE '"cost_of_attendance": *[0-9]+' | grep -oE '[0-9]+' | head -1)"
-[ -z "$COA_VAL" ] && COA_VAL=25000
+# P0-3: a real lookup returns authoritative:true + a SIGNED coa_source token. If College Scorecard is
+# unavailable (found:false, no signed token) we do NOT fabricate a COA; the assess step below then
+# correctly refuses to issue an authoritative determination.
+if echo "$COA_OUT" | grep -q '"found": *true' && echo "$COA_OUT" | grep -q '"authoritative": *true'; then
+  echo "  PASS | lookup_coa returned an AUTHORITATIVE COA + a SIGNED provenance token"; pass=$((pass+1))
+else
+  echo "  INFO | live College Scorecard unavailable — demonstrating the P0-3 NEEDS_REVIEW path below (no fabricated COA)"
+fi
 
 echo "  -- fail-closed PII de-identification (mask_pii) --"
 MASK_OUT="$(call "$REV" "$T_MASK" '{"case":"Applicant Jane Doe, SSN 123-45-6789, 42 Main St, FAFSA for federal aid; SAI 3000, COA 25000, full-time."}')"
@@ -26,10 +31,15 @@ if echo "$MASK_OUT" | grep -q 'REDACTED' && ! echo "$MASK_OUT" | grep -q 'Jane D
 
 echo "  -- forbid: mask-before-assess (aid determination) --"
 check "aid_officer assess (UN-masked)" DENY "$(call "$REV" "$T_ASSESS" '{"student_aid_index":3000,"cost_of_attendance":25000,"deidentified":false}')"
-ASSESS_OUT="$(call "$REV" "$T_ASSESS" "{\"student_aid_index\":3000,\"cost_of_attendance\":$COA_VAL,\"enrollment_status\":\"full\",\"sap_gpa\":3.2,\"sap_pace\":85,\"coa_source\":\"US Dept of Education - College Scorecard\",\"deidentified\":true}")"
-check "aid_officer assess (de-identified)" ALLOW "$ASSESS_OUT"
-if echo "$ASSESS_OUT" | grep -q 'ELIGIBLE' && echo "$ASSESS_OUT" | grep -qE '"aid_track"'; then echo "  PASS | assess_aid returned a determination + aid track"; pass=$((pass+1)); else echo "  FAIL | assess -> $ASSESS_OUT"; fail=$((fail+1)); fi
-if echo "$ASSESS_OUT" | grep -q '"coa_provenance"' && ! echo "$ASSESS_OUT" | grep -q 'not supplied'; then echo "  PASS | determination carries COA provenance (authoritative source in the audit trail)"; pass=$((pass+1)); else echo "  FAIL | coa provenance missing -> $ASSESS_OUT"; fail=$((fail+1)); fi
+
+echo "  -- P0-3: assess trusts ONLY a lookup-signed COA provenance token (never a fabricated source) --"
+# A hand-typed College-Scorecard-looking COA + source string, WITHOUT a valid lookup signature, must NOT
+# produce an aid determination — the fabrication the old demo committed (fallback COA + a source label ->
+# ELIGIBLE). Now it routes to NEEDS_REVIEW, authoritative:false.
+FAB_OUT="$(call "$REV" "$T_ASSESS" '{"student_aid_index":3000,"cost_of_attendance":25000,"enrollment_status":"full","sap_gpa":3.2,"sap_pace":85,"coa_source":"US Dept of Education - College Scorecard","deidentified":true}')"
+check "aid_officer assess (fabricated provenance)" ALLOW "$FAB_OUT"
+if echo "$FAB_OUT" | grep -q '"determination": *"NEEDS_REVIEW"' && echo "$FAB_OUT" | grep -q '"authoritative": *false'; then echo "  PASS | fabricated/unsigned COA -> NEEDS_REVIEW, authoritative:false (no fabricated aid determination)"; pass=$((pass+1)); else echo "  FAIL | fabricated COA provenance was trusted -> $FAB_OUT"; fail=$((fail+1)); fi
+if echo "$FAB_OUT" | grep -q '"determination": *"ELIGIBLE"'; then echo "  FAIL | UNVERIFIED COA produced an ELIGIBLE determination -> $FAB_OUT"; fail=$((fail+1)); else echo "  PASS | no aid issued on an unverified COA (P0-3)"; pass=$((pass+1)); fi
 
 echo "  -- forbid: mask-before-model (award notice) --"
 check "aid_officer draft (UN-masked)" DENY "$(call "$REV" "$T_DRAFT" '{"case":"x","deidentified":false}')"

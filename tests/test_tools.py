@@ -1,5 +1,23 @@
 """Unit tests for the financial-aid governed tools — contract + fail-closed behavior. No AWS."""
-from toolkit import call
+import json
+import os
+
+os.environ.setdefault("PROVENANCE_SECRET", "p0-unit-provenance-secret")  # aligns with conftest; before import
+
+from toolkit import call, CONTROLS  # noqa: E402
+import sys  # noqa: E402
+sys.path.insert(0, str(CONTROLS))
+import provenance  # noqa: E402
+
+SOURCE = "US Dept of Education — College Scorecard"
+
+
+def _signed_coa_source(unitid="170976", school="University of Michigan-Ann Arbor", coa=25000):
+    """Mint the signed coa_source token exactly as lookup_coa would."""
+    fields = {"unitid": str(unitid), "school": school, "cost_of_attendance": coa}
+    tok = provenance.sign(SOURCE, fields)
+    return json.dumps({"source": SOURCE, "school": school, "unitid": unitid,
+                       "authoritative": tok["authoritative"], "sig": tok["sig"], "alg": tok["alg"]})
 
 
 def test_intake_extracts_fields():
@@ -13,10 +31,22 @@ def test_assess_fail_closed_on_unmasked():
     assert r["assessed"] is False
 
 
-def test_assess_eligible_pell():
+def test_assess_unsigned_coa_goes_to_review():
+    # P0-3: a COA with NO signed provenance (or a hand-typed source string) must NOT be trusted.
     r = call("assess_aid", {"student_aid_index": 3000, "cost_of_attendance": 25000, "enrollment_status": "full",
-                            "sap_gpa": 3.2, "sap_pace": 85, "deidentified": True})
+                            "sap_gpa": 3.2, "sap_pace": 85, "coa_source": "US Dept of Education - College Scorecard",
+                            "deidentified": True})
+    assert r["determination"] == "NEEDS_REVIEW"
+    assert r["authoritative"] is False
+    assert r["provenance_verified"] is False
+
+
+def test_assess_verified_eligible_pell():
+    r = call("assess_aid", {"student_aid_index": 3000, "cost_of_attendance": 25000, "enrollment_status": "full",
+                            "sap_gpa": 3.2, "sap_pace": 85, "coa_source": _signed_coa_source(coa=25000),
+                            "deidentified": True})
     assert r["determination"] == "ELIGIBLE"
+    assert r["authoritative"] is True
     assert r["pell_award"] == 4395
 
 
