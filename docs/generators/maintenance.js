@@ -9,7 +9,7 @@ const cover = coverAndToc(
 );
 
 const body = [
-  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (git checkout v0.1.0-pilot-rc1; cdk deploy/destroy --all). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
+  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (`git checkout v0.1.0-pilot-rc1` then `cdk deploy`/`destroy --all`). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
   H1("1. Operating model"),
   P("The deployment has three lifecycles, and keeping them straight is the key to safe operations:"),
   table(["Lifecycle", "What it contains", "Cadence"], [
@@ -20,8 +20,8 @@ const body = [
   callout("Why this matters", [["Because identity is stable and the Runtime discovers the gateway from SSM, you can rebuild the entire spine as often as you like without ever redeploying the Runtime or invalidating aid-officer tokens."]], G.colors.TEAL),
 
   H1("2. Routine operations"),
-  H2("2.1 Refresh the spine"),
-  P("The safest way to apply most spine changes is a clean rebuild. Destroy leaves identity intact; deploy reuses it."),
+  H2("2.1 Refresh the spine (SUPPORTED: cdk deploy at the tag; shell shown is LEGACY)"),
+  P("SUPPORTED PATH: redeploy a new validated release tag with cdk deploy --all (change-sets are reviewable). The shell rebuild below is LEGACY internal reference. Destroy leaves identity intact; deploy reuses it."),
   ...codeBlock(["bash lib/engine/destroy.sh agents/financial-aid", "bash lib/engine/deploy.sh  agents/financial-aid", "bash lib/engine/demo.sh    agents/financial-aid   # smoke test: expect 32/32"]),
   P([bold("Note: "), "run cycles serialized — never two concurrent spine deploys."]),
 
@@ -58,7 +58,7 @@ const body = [
   P("Observability is enabled on the Runtime (OpenTelemetry) and every governed step is logged with the acting identity."),
   bullet([bold("Runtime logs: "), code("aws logs tail /aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-<id>-DEFAULT --since 1h"), " — per-step, identity-tagged, OTel-correlated (trace/span IDs)."]),
   bullet([bold("GenAI dashboard: "), "the CloudWatch GenAI Observability console surfaces agent/tool spans (requires CloudWatch Transaction Search enabled in the account)."]),
-  bullet([bold("Spine smoke test: "), code("bash lib/engine/demo.sh agents/financial-aid"), " is the fastest health check — 32/32 means the whole governed path is intact."]),
+  bullet([bold("Health check (SUPPORTED): "), code("python scripts/validate_deployment.py --env <env>"), " emits the machine PASS/FAIL verdict (masking, forged-ref denial, ingest pass-by-reference, workflow fail-closed). The legacy shell smoke test was ", code("bash lib/engine/demo.sh agents/financial-aid"), "."]),
   bullet([bold("Watch for: "), "repeated ", code("ACCESS DENIED"), " (identity/authorization drift), ", code("draft failed"), " (model access or inference-parameter issues), guardrail blocks on the notice, and any ", code("assess"), " call arriving with ", code("deidentified=false"), " (a masking-order regression)."]),
 
   H1("5. Audit-evidence management"),
