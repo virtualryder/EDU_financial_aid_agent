@@ -5,21 +5,24 @@ import os
 
 # provenance.py — the SHARED authoritative-source provenance signer/verifier (P0-3).
 #
-# THE DEFECT THIS FIXES: a determination tool (assess_housing_eligibility, and the analogous
-# EDU / benefits / PV assessors) used to trust income limits + an `il_source` label that arrived in
-# the tool CALL BODY. Any caller could hand it fabricated numbers plus a string that says
-# "US Dept of Housing and Urban Development — authoritative" and the determination would be issued —
-# and written to the WORM audit — as if it came from the real federal source. Provenance you can type
-# is not provenance.
+# THE DEFECT THIS FIXES: a determination tool (assess_aid — the financial-aid assessor) used to trust a
+# cost-of-attendance figure + a `coa_source` label that arrived in the tool CALL BODY. Any caller could
+# hand it a fabricated COA number plus a string that says "US Dept of Education College Scorecard —
+# authoritative" and the aid estimate would be issued — and written to the WORM audit — as if it came
+# from the real reference source. Provenance you can type is not provenance. (The same signer/verifier
+# is reused unchanged by the Housing/benefits/PV assessors this pattern was first proven on; the
+# mechanism is source-agnostic.)
 #
-# THE FIX: the ONLY component that actually reached the authoritative source (lookup_income_limit,
-# which alone made the HUD USER API call) SIGNS the exact values it fetched with a per-deploy secret
+# THE FIX: the ONLY component that actually reached the reference source (lookup_coa, which alone made
+# the College Scorecard api.data.gov call) SIGNS the exact values it fetched with a per-deploy secret
 # (env PROVENANCE_SECRET, injected into the lookup + assess Lambdas at deploy time, never in the repo).
 # The downstream assessor VERIFIES that signature against the values it was handed before it will treat
-# them as authoritative. A caller without the secret cannot forge the signature, and cannot alter a
-# single limit number without breaking it. No valid signature -> the values are UNVERIFIED -> the
+# them as reference-verified. A caller without the secret cannot forge the signature, and cannot alter a
+# single COA number without breaking it. No valid signature -> the values are UNVERIFIED -> the
 # determination is NEEDS_REVIEW with authoritative:false. Fail-closed: secret absent, token missing,
-# or any mismatch all resolve to "not authoritative", never to a fabricated authoritative determination.
+# or any mismatch all resolve to "not verified", never to a fabricated authoritative determination.
+# (College Scorecard is verified REFERENCE data, not institutional COA — a verified signature proves the
+# figure is unaltered from the real API; the output remains an AID ESTIMATE, not an award-package COA.)
 #
 # HMAC (symmetric) is deliberate: signer and verifier are two Lambdas in the SAME deployment/account
 # that already share a trust boundary; a per-deploy shared secret is the least machinery that binds the
@@ -32,10 +35,10 @@ _ALG = "HMAC-SHA256"
 _sm_cache = {}
 
 # GA-2 — SEPARATE SIGNING KEYS PER TRUST DOMAIN. The de-identification proof (sanitized_ref, minted
-# by mask_pii) and the authoritative-source proof (HUD limits, minted by lookup_income_limit) are
+# by mask_pii) and the reference-source proof (the COA figure, minted by lookup_coa) are
 # DIFFERENT trust statements made by DIFFERENT components. Under a single shared key, any holder of
 # that key can mint EITHER proof — a compromised lookup could forge "this was masked" and a
-# compromised masker could forge "these limits came from HUD". Domain-scoped keys make each proof
+# compromised masker could forge "this COA came from Scorecard". Domain-scoped keys make each proof
 # forgeable only by its own minter. Verifiers resolve the key for THEIR domain, so a cross-domain
 # token simply fails verification (fail-closed), it is never "close enough".
 _DOMAINS = {

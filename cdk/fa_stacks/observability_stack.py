@@ -47,9 +47,9 @@ class ObservabilityStack(cdk.Stack):
                        f"({'masking' if label == 'Mask' else 'audit trail' if label == 'WriteAudit' else 'pipeline'} impact; fail-closed but investigate).")
 
         # ── R3-3 security metrics: guard failures ARE security signals ───────
-        # workflow_guards emits EMF (Housing/Governance :: GuardFailed{Guard}) on every evaluation.
+        # workflow_guards emits EMF (FinancialAid/Governance :: GuardFailed{Guard}) on every evaluation.
         # A nonzero sum means forged/tampered/missing evidence hit a guard — page immediately.
-        guard_failed = cw.Metric(namespace="Housing/Governance", metric_name="GuardFailed",
+        guard_failed = cw.Metric(namespace="FinancialAid/Governance", metric_name="GuardFailed",
                                  statistic="Sum", period=cdk.Duration.minutes(5))
         alarm("GuardFailures", guard_failed,
               desc="A workflow guard REFUSED evidence (forged sanitized_ref, tampered HUD provenance, "

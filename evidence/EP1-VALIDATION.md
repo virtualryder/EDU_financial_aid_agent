@@ -5,6 +5,12 @@ posture ported from Housing v0.9.4 + the EDU-specific VerificationHold path. Dep
 `-c env=val1 retention_profile=sandbox-demo kms=customer-managed network_mode=private
 identity_mode=pilot tenant=uni-example-state`.*
 
+> **Provenance of this evidence.** This is **author-produced** validation: the builder deployed to a
+> clean AWS account, exercised the pipeline, and captured the results below. It has **not** been
+> independently audited, penetration-tested, or reviewed by a third-party assessor, and it uses
+> **synthetic** data only — no real student records (FERPA/PII) were processed. Independent security
+> testing and a real-data shadow run are tracked as pre-production gates in `EDU-PILOT-READINESS-PLAN.md`.
+
 ## Deployment — 7 stacks, CDK-synthesized templates via CloudFormation
 
 | Stack | Status | Proof carried |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CDK app — the PRIMARY customer deployment path for the Housing eligibility agent (P0-5).
+"""CDK app — the PRIMARY customer deployment path for the EDU Financial Aid Verification & Student Communication Assistant (P0-5).
 
 Replaces the imperative shell engine for customer deployments with reviewable, parameterized IaC:
 explicit IAM, exact-ARN outputs (P0-7), configurable audit retention profiles incl. COMPLIANCE (P0-12),

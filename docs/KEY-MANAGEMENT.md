@@ -25,7 +25,7 @@ and verifiers refuse cross-tenant artifacts even under a shared key (B5, tested)
 
 ## 2. Key-version stamping (rotation forensics)
 
-Every token and sanitized ref records `key_version` — `deid:sm:<VersionId>` /` hud:sm:<VersionId>`
+Every token and sanitized ref records `key_version` — `deid:sm:<VersionId>` / `scorecard:sm:<VersionId>`
 for the Secrets Manager path, `<domain>:env` for env-supplied dev keys. The field is INFORMATIONAL
 (not part of the signed canon — verification depends on the key itself), and it lets an auditor
 answer, for any artifact ever written to the WORM ledger: *which key version minted this, and was
@@ -75,7 +75,7 @@ manual review or requires a human," never to "wrong determinations committed sil
 
 - **Every signing-secret read is CloudTrail-visible** (`secretsmanager:GetSecretValue` on the two
   signing ARNs); alert on reads by ANY principal other than the granted function roles.
-- **Guard failures are paged** (`Housing/Governance :: GuardFailed` — R3-3): a forged-ref spike is
+- **Guard failures are paged** (`FinancialAid/Governance :: GuardFailed` — R3-3): a forged-ref spike is
   the runtime symptom of key misuse.
 - **KMS:** CloudTrail on `ScheduleKeyDeletion`/`DisableKey` for the data CMK (deny-of-service
   attempt); Config rule on rotation staying enabled.

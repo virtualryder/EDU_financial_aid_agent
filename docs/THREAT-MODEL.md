@@ -1,4 +1,4 @@
-# Threat model (P0-8) — Housing eligibility agent
+# Threat model (P0-8) — Financial Aid Verification & Student Communication Assistant
 
 *Scope: the governed agent spine (AgentCore Runtime + Gateway + Cedar + tool Lambdas + Step Functions
 sign-off + evidence ledger) and its external dependencies (College Scorecard API (api.data.gov), Cognito). Assets: student FAFSA
@@ -14,7 +14,7 @@ control(s) → proof.*
 | T5 | **Authoritative-data poisoning** — fabricated/tampered reference-COA figures skew an aid estimate | HMAC-signed provenance minted only by the real lookup; verifier rebuilds fields from the values it will use; unverified → `NEEDS_REVIEW` | `test_provenance_gate.py` (13 cases) |
 | T6 | **Audit tampering / fork** — rewrite or fork history after the fact | Server-read hash-chain head + atomic `TransactWriteItems` CAS; `attribute_not_exists` immutability; IAM Deny on update/delete/governance-bypass; WORM S3 copy; `verify_chain` replay | `test_audit_chain.py` |
 | T7 | **PII in telemetry** — traces/logs become a second copy of sensitive data | Masking before model + audit; `token_present` boolean logging; P0-3 scrub keeps credentials out of tool-call telemetry; Guardrail anonymizes model output | `test_token_boundary.py` redaction tests (extend under P1-5 with span-capture tests) |
-| T8 | **Fraud-referral abuse** — agent (or injected prompt) refers a household as suspected fraud | Cedar `no_self_fraud_referral` + Lambda refusal (human-only) | `test_tools.py::test_core_refer_fraud_refused` |
+| T8 | **Autonomous professional judgment** — agent (or injected prompt) commits a Professional Judgment / special-circumstances adjustment (HEA 479A) instead of only *preparing* one for an aid officer | Cedar `no_self_professional_judgment` forbid + tool refusal (agent may prepare a PJ package + rationale, never commit it); `aid_core` refuses a `pj_id` it did not receive from a human-signed action; PJ is human-only by 34 CFR 668 / HEA 479A | `test_tools.py::test_core_commit_pj_refused`; `test_tools.py::test_professional_judgment_requires_rationale` |
 | T9 | **Replay / duplicate commit** — same approval or audit event applied twice | Single-use sign-off token; idempotent evidence writes (exact-replay returns stored:false-noop) | `test_audit_chain.py`; P1-6 extends with exactly-once commit tests |
 | T10 | **Deployment-path compromise** — wrong role modified (prefix lookup), default creds abused | P0-7 exact-ARN role resolution (refuses discovery); P0-6 sandbox-only default-cred guard (`SANDBOX_IDENTITY=1` acknowledgment); CDK explicit IAM (P0-5) | `test_token_boundary.py::test_no_role_lookup_by_name_prefix_in_deploy_paths`; `test_p0_compliance.py` |
 

@@ -1,8 +1,15 @@
 # START HERE — Financial Aid Verification & Student Communication Assistant
 
 *One page. What this is, what's proven, how to evaluate it, and what a pilot looks like. Target
-validated release: **[`v0.1.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.0-pilot-rc1)** (cut after the EP1 live validation; deploy tags, never
+validated release: **[`v0.1.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.0-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
 `main`). Supported deployment path: **AWS CDK** (`cdk/`); the shell engine is legacy/internal.*
+
+> **Evaluating for a pilot?** Read [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — it
+> lays out the operating model (configuration, SME validation, training, change management,
+> accessibility, support, maintenance, annual award-year updates, incident response, audit prep), the
+> pilot-metrics framework, the security/architecture/GTM Q&A, and the staged gates before internal
+> share → synthetic pilot → real-data shadow → production. It also states plainly what is **not yet
+> true** (no independent audit, no SME sign-off, synthetic data only, no measured productivity number).
 
 ## What this is (and is not)
 
@@ -21,9 +28,8 @@ Scorecard figures are reference data, never institutional COA
 
 The control plane is a PORT of the Housing pattern (github.com/virtualryder/Housing_eligibility_agent
 `v0.9.4`), which carries five external review cycles and three live clean-account validations
-including a strict zero-PII telemetry canary. **EDU's own live validation (EP1) has not run yet** —
-current proof is the offline suite (132 tests incl. full CDK assertions). Nothing on this page
-claims live evidence EDU hasn't captured.
+including a strict zero-PII telemetry canary. **EDU's own live validation (EP1) is CAPTURED (2026-07-26, evidence/EP1-VALIDATION.md)** —
+proof is the 137-test offline suite (incl. full CDK assertions) PLUS the captured EP1 live run. Independent third-party reproduction (the OIDC release-validation workflow) is the remaining validation step.
 
 ## Reading order by role
 

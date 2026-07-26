@@ -16,9 +16,9 @@ the public internet:
   the audit ledger and the WORM bucket.
 - **Interface endpoints** (PrivateLink, one ENI per subnet, SG-guarded): `bedrock-runtime` (draft/guardrail),
   `comprehend` + `comprehendmedical` (PII/PHI masking), `states` (sign-off Step Functions), `ssm`
-  (provenance secret / gateway URL), `secretsmanager` (HUD/API tokens), `sts`, `logs` (CloudWatch),
+  (provenance secret / gateway URL), `secretsmanager` (Scorecard api.data.gov key), `sts`, `logs` (CloudWatch),
   `kms`, and `bedrock-agentcore` (the gateway/policy-engine control plane).
-- **Egress to genuinely external authoritative sources** (HUD USER, College Scorecard, openFDA) is the one
+- **Egress to genuinely external authoritative sources** (College Scorecard via api.data.gov) is the one
   case that needs the public internet. Route it through a **NAT gateway in a single egress subnet** with an
   allow-list (or a forward proxy), so the blast radius is one controlled path, not per-Lambda egress. The
   connector's outbound OAuth stays minted by AgentCore Identity — no secret on the wire.

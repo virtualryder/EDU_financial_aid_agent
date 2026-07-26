@@ -46,7 +46,7 @@ which stops ALL tool access; snapshot logs; preserve the WORM ledger which canno
 notification obligations per the institution's breach policy; post-incident chain verification
 (`lib/controls/verify_chain.py`). Owner: joint — institution security + operating SA.
 
-**Access review.** Quarterly: every member of the `housing_specialist` group re-attested by the institution
+**Access review.** Quarterly: every member of the `aid_officer` group re-attested by the institution
 program manager; IdP group mapping reviewed; Cognito sign-in audit (threat-protection logs) sampled.
 Owner: institution program manager.
 

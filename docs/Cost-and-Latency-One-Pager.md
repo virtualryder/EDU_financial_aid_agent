@@ -42,7 +42,7 @@ End-to-end **37–55 seconds** per transaction (benefits 37.5s · pharmacovigila
 | WORM audit write (DynamoDB + S3 Object Lock) | ~4.3 s | ~9% |
 | Open the human sign-off gate (Step Functions) | ~3.8 s | ~8% |
 | Fail-closed PII/PHI masking (Comprehend) | ~3.0 s | ~6% |
-| Live authoritative-data lookup (openFDA / College Scorecard / HUD) | ~1.2–1.8 s | ~3% |
+| Live authoritative-data lookup (College Scorecard) | ~1.2–1.8 s | ~3% |
 | Deterministic intake + rules-engine assessment | <1 s | ~2% |
 
 The full control stack — masking, Cedar auth on every call, WORM audit, opening the separation-of-duties

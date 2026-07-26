@@ -11,7 +11,7 @@ keeping a throwaway account cleanable. Real deployments select a profile below (
 | `pilot` | GOVERNANCE | 90 days | Scoped customer pilot; bypass restricted to a break-glass role, every use CloudTrail-logged |
 | `production-reference` | **COMPLIANCE** | per records schedule (e.g. 2,555 days / 7 years) | Operational deployments; NO principal (including root) can shorten or bypass until expiry |
 
-**Choosing the number:** housing-assistance records retention is set by the institution's state
+**Choosing the number:** Title IV / financial-aid records retention is set by the institution's state
 records-management schedule and program requirements — the customer's records officer supplies the
 duration; we supply the mechanism. Document the chosen schedule in the deployment record.
 

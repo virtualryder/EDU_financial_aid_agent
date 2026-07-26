@@ -124,32 +124,38 @@ The higher-risk the action, the stronger the governance. Beyond intake/awarding,
   — the same deny-by-default pattern as `no_self_commit`, showing the model scales to every new
   high-risk action.
 
-All are proven live in the 32-check demo.
+All are proven live in the EP1 validation run ([`evidence/EP1-VALIDATION.md`](evidence/EP1-VALIDATION.md)).
 
-## Deploy / prove / run / tear down
+## Deploy / validate / run / tear down (the supported CDK path)
 
-Requirements: AWS CLI v2 (admin, us-east-1), Python 3.12 + `pyyaml`, Bedrock model access, Bash
-(Git-Bash on Windows). One agent = one manifest (`agents/financial-aid/manifest.yaml`) + domain tool
-bodies + Cedar policies; the engine, control library, and runtime are reused.
+Full step-by-step: [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md). Short version:
 
 ```bash
-bash lib/engine/deploy.sh  agents/financial-aid   # spine: engine -> gateway -> targets -> policies -> ENFORCE
-bash lib/engine/demo.sh    agents/financial-aid   # 32-check governance proof
-bash lib/engine/redteam.sh agents/financial-aid   # adversarial proof: governance holds under attack
-# Runtime (from a fresh venv):
-bash lib/runtime/setup_venv.sh
-bash lib/runtime/_obs_setup.sh  agents/financial-aid
-bash lib/runtime/_configure.sh  agents/financial-aid
-bash lib/runtime/_launch.sh     agents/financial-aid
-bash lib/runtime/_invoke.sh     agents/financial-aid aid_officer   # or: bash invoke_demo.sh (with sample data)
-# Optional depth add-on — the governed OAuth connector (real outbound auth via AgentCore Identity, no stored secret):
-bash lib/connector/deploy_connector.sh agents/financial-aid   # mock OAuth SoR (MOCK-SIS-COD) + Identity provider + verify_source
-bash lib/connector/prove_connector.sh  agents/financial-aid   # proves OAuth + RS256/JWKS signature check + no secret + deny-by-default
-bash lib/engine/destroy.sh agents/financial-aid   # zero-residual teardown (identity preserved)
+git checkout v0.1.0-pilot-rc1            # deploy a VALIDATED RELEASE TAG, never main
+cd cdk && pip install -r requirements.txt
+cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
+  -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>
+# stage the OPTIONAL Scorecard key (DEMO_KEY works without it), then:
+python scripts/validate_deployment.py --env pilot   # machine PASS/FAIL — any FAIL blocks use
+# run a case: ingest (raw FAFSA -> opaque ref) -> start execution with the ref -> aid officer approves
+#   (DEPLOYMENT-GUIDE §5 has the exact commands)
+cdk destroy --all -c env=pilot                       # teardown; RETAIN'd evidence per records policy
 ```
 
-Test-user passwords are env-driven with placeholder defaults (`ChangeMe-*1!`) — rotate before shared
-use. Region/account resolve dynamically.
+Independent verification without trusting a laptop: the **GitHub-OIDC release-validation workflow**
+([`.github/workflows/release-validation.yml`](.github/workflows/release-validation.yml)).
+
+<details>
+<summary><b>Legacy shell engine</b> (internal reference only — NOT for customer deployments)</summary>
+
+```bash
+bash lib/engine/deploy.sh  agents/financial-aid   # spine -> gateway -> policies -> ENFORCE
+bash lib/engine/demo.sh    agents/financial-aid   # legacy governance demo
+bash lib/engine/destroy.sh agents/financial-aid   # teardown
+```
+Shell-path test-user passwords are env-driven `ChangeMe-*` placeholders — sandbox only (the CDK path
+ships ZERO users).
+</details>
 
 ## Layout
 

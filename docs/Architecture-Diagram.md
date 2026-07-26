@@ -44,7 +44,7 @@ flowchart TB
   GW -->|"authorized (Cedar) invoke"| RT
   RT --> LAM
   LAM --> VPE
-  T2 -.->|"HUD / Scorecard / openFDA"| NAT
+  T2 -.->|"College Scorecard (api.data.gov)"| NAT
   NAT -.-> EXT["External authoritative sources<br/>(public internet, controlled path)"]
 
   subgraph GOV["Governance / audit account (separation of duties)"]

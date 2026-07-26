@@ -28,7 +28,7 @@
 
 Optional enterprise-OIDC federation as IaC: `-c oidc_issuer_url=… -c oidc_client_id=…
 -c oidc_client_secret_arn=<SecretsManager ARN>` (the client secret enters the template only as a
-CloudFormation dynamic reference). The Gate-B posture is ported from the Housing pattern (validated live there); EDU live validation = EP1. See
+CloudFormation dynamic reference). The Gate-B posture was validated live in EDU's own EP1 run (evidence/EP1-VALIDATION.md). See
 [`evidence/GATE-B-VALIDATION.md`](evidence/GATE-B-VALIDATION.md).
 
 Secrets (created by the compute stack, values operator-managed):
@@ -105,7 +105,7 @@ aws dynamodb get-item --table-name $P-audit-ledger --region $R \
 ```
 
 A rejected case: send `"approved":false,"decision":"REJECT"` — nothing commits. A case the guards
-refuse (unverifiable HUD data, unproven masking) never reaches the gate: it ends in `ManualReview`
+refuse (unverifiable reference COA, unproven masking) never reaches the gate: it ends in `ManualReview`
 for ordinary human processing. Synthetic test cases with expected results: `data/synthetic/`.
 
 ## 6. Operate
@@ -129,7 +129,7 @@ Subscribe ops to the `fa-<env>-ops-alarms` SNS topic; dashboard `fa-<env>-operat
 | finalize returns idempotent:true | case already finalized — original submission returned (by design) |
 | Stack delete leaves table/bucket | RETAIN by design — records disposition is a human decision |
 
-**Known limitations:** preliminary income screening only (see `PILOT-SCOPE.md`); EIV/PIC/HMIS stubs;
+**Known limitations:** verification + estimation + communication assistance only (see `PILOT-SCOPE.md`); SIS/ISIR/COD integration is adopter work;
 AgentCore attachment steps in `cdk/README.md`; enterprise IdP is engagement work.
 **Support:** pilot operated by the deploying SA/partner; escalation owner named in the pilot SOW
 (`CONFIG-WORKSHEET.md` §ownership).

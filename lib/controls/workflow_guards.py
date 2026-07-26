@@ -9,10 +9,11 @@ import sanitized
 # on `ok` — a stage cannot be skipped, reordered, or passed on asserted (unverified) state, because the
 # transition itself demands cryptographic or structural proof:
 #
-#   extracted      -> the intake actually produced the decision fields
-#   authoritative  -> the HUD limits carry a VERIFIED lookup-minted provenance signature (P0-3 pattern)
+#   extracted      -> the FAFSA intake actually produced the Student Aid Index decision field
+#   reference_coa  -> the Scorecard COA carries a VERIFIED lookup-minted provenance signature (P0-3 pattern)
 #   deidentified   -> a VERIFIED mask_pii-signed sanitized_ref exists (P0-1; boolean never accepted)
 #   rules_executed -> the deterministic rules engine ran and yielded a legal determination
+#   verification   -> a case selected for verification / with missing docs HOLDS (34 CFR 668 work queue)
 #
 # Fail-closed: any missing/forged/tampered evidence -> ok:false; the controller routes to ManualReview
 # (NEEDS_REVIEW) — never onward. Pure logic + the shared verifiers, fully unit-testable offline.
@@ -128,7 +129,7 @@ _GUARDS = {
 
 def _emit_metric(guard, ok):
     """R3-3 security telemetry: every guard evaluation emits a CloudWatch EMF metric
-    (Housing/Governance :: GuardFailed{Guard}). A failed guard is a SECURITY SIGNAL — forged
+    (FinancialAid/Governance :: GuardFailed{Guard}). A failed guard is a SECURITY SIGNAL — forged
     sanitized_ref, tampered provenance, spoofed boolean — not just an ops event; the
     ObservabilityStack alarms on any nonzero sum. Metric only (no payload content), so this adds
     nothing to the telemetry PII surface."""
@@ -137,7 +138,7 @@ def _emit_metric(guard, ok):
     try:
         print(_json.dumps({
             "_aws": {"Timestamp": int(_time.time() * 1000),
-                     "CloudWatchMetrics": [{"Namespace": "Housing/Governance",
+                     "CloudWatchMetrics": [{"Namespace": "FinancialAid/Governance",
                                             "Dimensions": [["Guard"]],
                                             "Metrics": [{"Name": "GuardFailed", "Unit": "Count"}]}]},
             "Guard": guard, "GuardFailed": 0 if ok else 1}))
