@@ -38,7 +38,7 @@ proof is the 150-test offline suite (incl. full CDK assertions) PLUS the capture
 | **Solution Architect** | [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md) → [`cdk/README.md`](cdk/README.md) → [`EDU-PRODUCTION-PLAN.md`](EDU-PRODUCTION-PLAN.md) |
 | **CISO / security** | [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md) → [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md) → [`docs/KEY-MANAGEMENT.md`](docs/KEY-MANAGEMENT.md) → [`docs/DATA-SOURCE-POLICY.md`](docs/DATA-SOURCE-POLICY.md) |
 | **CIO / VP Enrollment / FA Director** | [`PILOT-SCOPE.md`](PILOT-SCOPE.md) → README §controls → the pilot offer below |
-| **Auditor / compliance** | [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md) → `docs/Financial-Aid-AgentCore-Regulatory-Adherence.docx` → [`docs/RETENTION-PROFILES.md`](docs/RETENTION-PROFILES.md) |
+| **Auditor / compliance** | [`RELEASE-MANIFEST.md`](RELEASE-MANIFEST.md) (authoritative counts + limitations) → [`docs/AUDIT-READINESS.md`](docs/AUDIT-READINESS.md) → [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md) → `docs/Financial-Aid-AgentCore-Regulatory-Adherence.docx` |
 
 **Regulatory frame:** FERPA (education records) · GLBA Safeguards Rule (Title IV → the institution
 is a financial institution for FAFSA data) · NIST SP 800-171 (FSA expectation for FAFSA/FTI data)

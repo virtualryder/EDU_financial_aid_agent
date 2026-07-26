@@ -1,6 +1,6 @@
 # Financial Aid Agent — AgentCore-Native Architecture
 
-*Target architecture for the Title IV / federal student-aid eligibility & awarding hero agent, built natively on Amazon Bedrock AgentCore. This note is the anchor design — it doubles as the opening of the leadership deck and the first section of the SA runbook. It is the Higher-Education (EDU) counterpart to the pharmacovigilance (HCLS) and benefits-eligibility (SLG) agents — the **third vertical** produced from the same reusable governed-hero-agent template. Draft v1.0 · 2026-07.*
+*Target architecture for the Financial Aid Verification & Student Communication Assistant (Title IV aid office), built natively on Amazon Bedrock AgentCore. It assists — verification, aid estimation, and draft communications under human sign-off — and never awards or adjudicates eligibility. This note is the anchor design — it doubles as the opening of the leadership deck and the first section of the SA runbook. It is the Higher-Education (EDU) counterpart to the pharmacovigilance (HCLS) and benefits-eligibility (SLG) agents — the **third vertical** produced from the same reusable governed-hero-agent template. Draft v1.0 · 2026-07.*
 
 ---
 

@@ -18,5 +18,11 @@ control(s) → proof.*
 | T9 | **Replay / duplicate commit** — same approval or audit event applied twice | Single-use sign-off token; idempotent evidence writes (exact-replay returns stored:false-noop) | `test_audit_chain.py`; P1-6 extends with exactly-once commit tests |
 | T10 | **Deployment-path compromise** — wrong role modified (prefix lookup), default creds abused | P0-7 exact-ARN role resolution (refuses discovery); P0-6 sandbox-only default-cred guard (`SANDBOX_IDENTITY=1` acknowledgment); CDK explicit IAM (P0-5) | `test_token_boundary.py::test_no_role_lookup_by_name_prefix_in_deploy_paths`; `test_p0_compliance.py` |
 
-Residual risks (tracked, not closed): telemetry span-content capture proof on a live deploy (P1-5);
-exactly-once commit under partial failure (P1-6); enterprise IdP/MFA (P1-1); pen-test (P2).
+Residual risks. **Demonstrated in the EP1 live run (2026-07-26, evidence/EP1-VALIDATION.md):** the
+strict zero-PII telemetry canary passed (0 hits across Logs / X-Ray / DLQ / Step Functions execution
+history — the span-content concern behind T7); and exactly-once commit under a 10-way replay storm
+(FIRST:1 / IDEMPOTENT:9 — the concern behind T9). **Still open (require independent or production
+work):** independent penetration test and source/Cedar/prompt-injection security review; enterprise
+IdP/MFA federation round-trip (a pilot Cognito+OIDC reference ships, but institutional federation is
+adopter work); multi-account production separation; asymmetric-KMS signing evaluation for production.
+All EP1 evidence is **author-produced on synthetic data** — see RELEASE-MANIFEST.md.

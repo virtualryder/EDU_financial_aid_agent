@@ -9,8 +9,8 @@
 | Stack | Provisions | Controls carried |
 |---|---|---|
 | `fa-<env>-data` | append-only audit ledger (PITR, RETAIN), **sanitized-artifacts store** (TTL), pending-approvals table, **WORM vault** (Object Lock, retention **profile**), optional customer-managed KMS (key policy pre-authorizes logs/cloudwatch service principals) | P0-1 store · P0-12 retention (`-c retention_profile=sandbox-demo\|pilot\|production-reference`, COMPLIANCE for production-reference) · Gate-B B2 |
-| `fa-<env>-network` *(optional, `-c network_mode=private`)* | 2-AZ VPC, governed Lambdas in ISOLATED subnets, **AWS Network Firewall deny-by-default egress allowlist = `.api.data.gov` ONLY**, S3/DDB gateway + 7 interface endpoints, 443-only SG | Gate-B B1 (ported; EP1 pending) |
-| `fa-<env>-compute` | one Lambda per governed tool, **explicit least-privilege IAM** per function, tamper **Deny** on the audit writer, **exact-ARN outputs**, **GA-2 domain-split signing secrets** (deid vs HUD — IAM prevents cross-domain reads), CMK env+logs under `kms=customer-managed`, `TENANT_ID` pinning | P0-5 · P0-7 · GA-2 · Gate-B B5 |
+| `fa-<env>-network` *(optional, `-c network_mode=private`)* | 2-AZ VPC, governed Lambdas in ISOLATED subnets, **AWS Network Firewall deny-by-default egress allowlist = `.api.data.gov` ONLY**, S3/DDB gateway + 7 interface endpoints, 443-only SG | Gate-B B1 (EP1 live-validated 2026-07-26) |
+| `fa-<env>-compute` | one Lambda per governed tool, **explicit least-privilege IAM** per function, tamper **Deny** on the audit writer, **exact-ARN outputs**, **GA-2 domain-split signing secrets** (deid vs Scorecard — IAM prevents cross-domain reads), CMK env+logs under `kms=customer-managed`, `TENANT_ID` pinning | P0-5 · P0-7 · GA-2 · Gate-B B5 |
 | `fa-<env>-workflow` | the **deterministic controller** state machine (guarded transitions → ManualReview on any unverified evidence) + the human sign-off gate (`waitForTaskToken`, SoD, content-hash binding) | P0-2 · GA-5 |
 | `fa-<env>-identity` | federation-ready Cognito pool + client + reviewer group — **zero users, zero passwords**; `-c identity_mode=pilot` = MFA REQUIRED (software token only) + threat protection ENFORCED; optional enterprise-OIDC IdP as IaC (client secret via Secrets Manager dynamic reference) | P0-6 · Gate-B B3 |
 | `fa-<env>-observability` | CloudWatch alarms → SNS ops topic (CMK-encrypted under `kms=customer-managed`) + operations dashboard. **Deploy AFTER workflow** (imports its export) | GA-6 |
@@ -22,7 +22,7 @@
 git checkout v0.1.0-pilot-rc1            # deploy the validated release, never main
 cd cdk && python -m pip install -r requirements.txt
 cdk synth  -c env=dev  -c retention_profile=sandbox-demo            # review the plan
-# full Gate-B posture (ported from Housing (live-validated there); EDU EP1 pending — ../docs/GATE-B-CHECKLIST.md):
+# full Gate-B posture (pattern ported from Housing; EDU-validated live in EP1 2026-07-26 — ../docs/GATE-B-CHECKLIST.md):
 cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
   -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>
 cdk destroy --all -c env=dev                                        # teardown (audit table/vault RETAIN)

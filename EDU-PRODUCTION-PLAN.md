@@ -21,12 +21,22 @@ REFERENCE data, not institutional cost of attendance.** The signature proves int
 uses it says `coa_basis: "College Scorecard reference data - institutional COA required for awards"`
 and the deterministic result is an **`AID_ESTIMATE`**, never an award.
 
-**Verified current state (2026-07-24):** shell-era spine, 57 offline tests, 32-check live demo.
-Already solved: signed Scorecard provenance; deterministic Pell/SAP with fail-closed NEEDS_REVIEW
-paths; PJ human-only (`no_self_professional_judgment.cedar` + tool refusal + rationale requirement);
-mask-before forbids; `no_self_commit`. **Present defects (same class Housing fixed):** spoofable
-`deidentified` boolean; `access_token` in the `request_signoff` manifest schema; model-orchestrated
-workflow; shell-only deployment; no pass-by-reference; no Gate-B posture.
+**ORIGINAL baseline (2026-07-24, at the START of this build — since REMEDIATED, kept for provenance):**
+shell-era spine, 57 offline tests, 32-check live demo. Already solved even then: signed Scorecard
+provenance; deterministic Pell/SAP with fail-closed NEEDS_REVIEW paths; PJ human-only
+(`no_self_professional_judgment.cedar` + tool refusal + rationale requirement); mask-before forbids;
+`no_self_commit`. Defects THEN (all now fixed, see below): spoofable `deidentified` boolean;
+`access_token` in the `request_signoff` manifest schema; model-orchestrated workflow; shell-only
+deployment; no pass-by-reference; no Gate-B posture.
+
+**CURRENT state (2026-07-26, `v0.1.0-pilot-rc1`) — every baseline defect above is CLOSED:** signed
+`sanitized_ref` replaces the spoofable boolean (P0-1); `access_token` removed from the schema +
+runtime token boundary (P0-3); **deterministic Step Functions controller** with fail-closed guards
+replaces model orchestration (P0-2); **AWS CDK** is the supported deployment path (P0-5), shell is
+legacy/internal; **zero-PII pass-by-reference** orchestration (R3-2); **full Gate-B posture** —
+private networking, `.api.data.gov`-only egress firewall, customer-managed KMS, MFA-enforced identity,
+tenant pinning — **validated live in EP1** (7 stacks, strict canary PASS, 10/10 load, exactly-once
+storm). Suite **150/150**. Single authoritative count matrix: `RELEASE-MANIFEST.md`.
 
 ## 1. Regulatory frame (what a university CISO will test against)
 

@@ -7,25 +7,30 @@ reading order by role, and the pilot offer.
 > validated release tag [`v0.1.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.0-pilot-rc1)**
 > (`cdk/` — includes the AgentCore Gateway/Cedar attachment as IaC), per
 > [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md) and [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md);
-> the tag is cut AFTER the EP1 live validation captures its evidence. The shell engine
-> (`lib/engine/`) is **legacy/internal reference only**. Product framing: a **Financial Aid
-> Verification & Student Communication Assistant** — verification, estimation, and drafting support;
-> NOT an awarding or eligibility-adjudication agent (`PILOT-SCOPE.md`).
+> the tag was cut AFTER the EP1 live validation captured its evidence (2026-07-26 — see
+> [`RELEASE-MANIFEST.md`](RELEASE-MANIFEST.md)). The shell engine (`lib/engine/`) is **legacy/internal
+> reference only**. Product framing: a **Financial Aid Verification & Student Communication Assistant**
+> — verification, estimation, and drafting support; NOT an awarding or eligibility-adjudication agent
+> (`PILOT-SCOPE.md`).
 
 
 [![CI](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml/badge.svg)](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml)
 
-> **Part of the Governed Agent Platform.** This agent is being consolidated into the [governed-agent-platform](https://github.com/virtualryder/governed-agent-platform) monorepo, where all four verticals share one versioned governance core (`governed-core`) and deploy via AWS CDK infrastructure-as-code (deployed + validated live) in place of the shell engine. This repo remains the standalone, shell-deployable reference.
+> **Part of the Governed Agent Platform.** This agent is being consolidated into the [governed-agent-platform](https://github.com/virtualryder/governed-agent-platform) monorepo, where all four verticals share one versioned governance core (`governed-core`) and deploy via AWS CDK infrastructure-as-code (deployed + validated live). **The one supported deployment path is AWS CDK** (`cdk/`); the shell engine (`lib/engine/`) is a legacy internal reference only and is not a customer deployment path.
 
 > **Continuous validation.** On every push CI runs the **governance-core integrity gate** (`lib/verify_core.py`, so the shared core must match its pinned `core.lock` and drift cannot merge unnoticed), manifest render, the unit + eval suite, and a bug-class lint, plus a **supply-chain job** that audits the pinned runtime dependencies (`pip-audit`) and emits a CycloneDX SBOM. An **opt-in** end-to-end job (`.github/workflows/e2e.yml`, manual `workflow_dispatch`) deploys the spine to a sandbox AWS account, proves it live with the demo in ENFORCE, and tears it down — see the workflow header for one-time setup.
 
 
-A **governed** Title IV / federal student-aid eligibility & awarding agent for Higher Education. It
-intakes a FAFSA/aid application, de-identifies PII, determines Pell eligibility, Satisfactory Academic
-Progress (SAP), and the verification track, drafts an award/determination notice, and **pauses at a
-human sign-off gate** — a financial-aid officer makes and commits the award; the agent never
-self-adjudicates. Built on the same governed-hero-agent pattern as the pharmacovigilance and benefits
-agents, from a reusable, manifest-driven template — this is the **third vertical** proven on the pattern.
+A **governed** Financial Aid Verification & Student Communication **Assistant** for the Title IV aid
+office in Higher Education. It intakes a FAFSA/aid application, de-identifies PII, checks
+verification-document completeness (34 CFR 668), produces a **Pell/SAP aid estimate** on verified
+College Scorecard **reference** data (an estimate for case preparation — never an institutional
+cost-of-attendance or a final award), prepares Professional Judgment documentation, and drafts a
+**human-reviewed student communication** — then **pauses at a human sign-off gate**. A financial-aid
+officer reviews and commits every consequential action; the assistant never awards, disburses, writes
+back to COD, adjudicates eligibility, or commits a Professional Judgment. Built on the same
+governed-hero-agent pattern as the pharmacovigilance and benefits agents, from a reusable,
+manifest-driven template — this is the **third vertical** proven on the pattern.
 
 > **Accelerator, not a certification.** Reference implementation of the *pattern*. Not a
 > production-certified system. Computer-system validation, IdP federation, connectors to the student
@@ -103,9 +108,10 @@ Authorization is **Cedar deny-by-default** at the AgentCore Gateway: `aid_office
 
 `bash lib/engine/demo.sh agents/financial-aid` exercises the full governed workflow against the deployed
 system with Cedar in **ENFORCE**, and reports `32 passed, 0 failed / GOVERNANCE DEMO: PASS`:
-deny-by-default (aid-officer ALLOW / outsider DENY), a **live authoritative COA lookup from College
-Scorecard** with provenance carried into the determination, fail-closed PII masking, the mask-before
-forbids firing *by name*, the aid determination (ELIGIBLE, estimated Pell + SAP + track), a real guarded
+deny-by-default (aid-officer ALLOW / outsider DENY), a **live REFERENCE COA lookup from College
+Scorecard** (reference data, never institutional COA) with provenance carried into the estimate,
+fail-closed PII masking, the mask-before forbids firing *by name*, the aid **estimate** (estimated Pell
++ SAP + track), a real guarded
 Bedrock notice, the append-only, tamper-evident WORM audit (write-once + duplicate rejection), `no_self_commit`, and the
 human sign-off gate (separation of duties + single-use token). The generic Strands agent also runs on
 **AgentCore Runtime**: an aid officer runs the full governed workflow; an outsider gets ACCESS DENIED.

@@ -29,10 +29,15 @@ no adverse action (denial/termination) · no fraud referral · no writes to any 
 (shadow mode reads nothing and writes nothing into the official case record) · no institutional or
 state aid packaging · no R2T4 · no overaward logic.
 
-**Not an eligibility engine:** household composition, citizenship/immigration status, SSN match,
-student restrictions, assets/deductions/adjusted income, criminal-history rules, local preferences,
-waiting lists, reasonable accommodation, VAWA, EIV discrepancies, hearings, recertification, and
-institutional administrative-plan provisions are institution-owned and NOT implemented.
+**Not an eligibility/awarding engine:** authoritative ISIR processing, federal match-flag resolution
+(citizenship/identity/Selective Service/NSLDS), Pell eligibility pathways (max-Pell, SAI-calculated,
+minimum-Pell, special-rule applicants, year-round Pell, Lifetime Eligibility Used), Direct Loan/PLUS
+annual and aggregate limits, institutional and state aid, scholarships, packaging, disbursement,
+COD origination, reconciliation, Return of Title IV (R2T4), overawards, conflicting-information
+resolution, and enrollment-change / new-ISIR-transaction re-evaluation are institution-owned and
+authoritative-system work — **NOT implemented here**. The assistant produces a Pell/SAP **estimate**
+for case preparation on College Scorecard **reference** data; it never adjudicates eligibility or
+commits an award.
 
 ## Adopter work (stated in every customer conversation)
 

@@ -14,7 +14,7 @@ clean-account validation run (EP1) and MUST NOT be asserted before capture.*
 |---|---|
 | Tag | `v0.1.0-pilot-rc1` (target; cut AFTER the EP1 validation capture). Single source of truth: repo-root `RELEASE`, enforced by `tests/test_release_consistency.py` |
 | Commit SHA | the commit carrying tag `v0.1.0-pilot-rc1` (`git rev-list -n1 v0.1.0-pilot-rc1`) |
-| Test count at tag | **132/132** as of EP0 completion (offline + CDK assertions); re-run at tag time |
+| Test count | **150/150** on current main (offline + CDK assertions). Authoritative count matrix: [`RELEASE-MANIFEST.md`](RELEASE-MANIFEST.md) (132 at EP0 → 137 → 150; do not cite older counts) |
 | Validation date | 2026-07-26 (EP1 clean-account run) |
 | Region | us-east-1 (target) |
 | Deployment configuration | CDK `--all`; EP1 target: `retention_profile=sandbox-demo kms=customer-managed network_mode=private identity_mode=pilot tenant=<institution-id>` |
