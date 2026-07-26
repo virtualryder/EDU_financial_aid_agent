@@ -1,0 +1,16 @@
+{
+  "case_id": "FA-SYN-0004",
+  "application": "FAFSA on file, SELECTED FOR VERIFICATION. SAI 2100. Full-time, Example State University unitid 123456. GPA 3.4, pace 90%.",
+  "selected_for_verification": true,
+  "required_documents": [
+    "tax-transcript",
+    "verification-worksheet"
+  ],
+  "received_documents": [
+    "verification-worksheet"
+  ],
+  "expected": {
+    "terminal": "VerificationHold",
+    "note": "missing tax-transcript - work queue, no estimate proceeds"
+  }
+}

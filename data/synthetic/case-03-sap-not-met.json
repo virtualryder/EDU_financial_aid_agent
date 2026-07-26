@@ -1,0 +1,8 @@
+{
+  "case_id": "FA-SYN-0003",
+  "application": "FAFSA on file. SAI 800. Full-time, Example State University unitid 123456. GPA 1.6, pace 55%.",
+  "expected": {
+    "determination": "NEEDS_REVIEW",
+    "note": "SAP not met - appeal/academic plan required"
+  }
+}

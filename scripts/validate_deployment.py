@@ -12,7 +12,7 @@ def main():
     ap.add_argument("--env", default="pilot"); ap.add_argument("--region", default="us-east-1")
     ap.add_argument("--release", default="dev"); ap.add_argument("--expect-absent", action="store_true")
     a = ap.parse_args()
-    p = f"hou-{a.env}"; out = {"release": a.release, "env": a.env}
+    p = f"fa-{a.env}"; out = {"release": a.release, "env": a.env}
     rc, stacks = aws("cloudformation", "describe-stacks", "--region", a.region,
                      "--query", f"Stacks[?starts_with(StackName,'{p}')].StackStatus", "--output", "json")
     statuses = json.loads(stacks) if rc == 0 and stacks.startswith("[") else []
@@ -23,10 +23,10 @@ def main():
     out["stacks"] = "COMPLETE" if statuses and all(s.endswith("_COMPLETE") for s in statuses) else f"FAIL:{statuses}"
     # GA-2: TWO domain-scoped signing secrets (deid + HUD) must both exist
     rc1, _ = aws("secretsmanager", "describe-secret", "--secret-id", f"{p}/provenance-signing-deid", "--region", a.region)
-    rc2, _ = aws("secretsmanager", "describe-secret", "--secret-id", f"{p}/provenance-signing-hud", "--region", a.region)
+    rc2, _ = aws("secretsmanager", "describe-secret", "--secret-id", f"{p}/provenance-signing-scorecard", "--region", a.region)
     out["secrets"] = "PRESENT" if rc1 == 0 and rc2 == 0 else "FAIL"
     # masking control probe: mask -> genuine ref ok; forged ref denied
-    payload = json.dumps({"case": "Probe Person, SSN 123-45-6789, household of 4, income 40000, county entityid 0603799999"})
+    payload = json.dumps({"case": "Probe Person, SSN 123-45-6789, SAI 2500, full-time at Example State University"})
     open("/tmp/_m.json", "w").write(payload)
     rc, _ = aws("lambda", "invoke", "--function-name", f"{p}-mask-pii", "--region", a.region,
                 "--cli-binary-format", "raw-in-base64-out", "--payload", f"file:///tmp/_m.json", "/tmp/_mo.json")
@@ -45,7 +45,7 @@ def main():
     # R3-2 pass-by-reference: raw content enters ONLY via ingest-case; the execution starts with
     # {case_id, requester, case_ref} — inline application text is no longer a valid input.
     open("/tmp/_i.json", "w").write(json.dumps(
-        {"application": "Household of 4. Annual household income: 40000. County entityid 0603799999.",
+        {"application": "Student Aid Index 2500. Enrolled full-time at Example State University unitid 123456.",
          "case_id": f"VAL-{int(time.time())}"}))
     rc, _ = aws("lambda", "invoke", "--function-name", f"{p}-ingest-case", "--region", a.region,
                 "--cli-binary-format", "raw-in-base64-out", "--payload", "file:///tmp/_i.json", "/tmp/_io.json")
@@ -69,8 +69,8 @@ def main():
         else:
             verdict = "PASS:RUNNING(awaiting human gate)"   # happy path paused at sign-off
     out["workflow_fail_closed"] = verdict
-    rc, _ = aws("secretsmanager", "get-secret-value", "--secret-id", f"{p}/hud-api-token", "--region", a.region)
-    out["hud_lookup"] = "CONFIGURED" if rc == 0 else "NOT-CONFIGURED (fail-closed to ManualReview)"
+    rc, _ = aws("secretsmanager", "get-secret-value", "--secret-id", f"{p}/scorecard-api-key", "--region", a.region)
+    out["coa_lookup"] = "CONFIGURED" if rc == 0 else "NOT-CONFIGURED (fail-closed to ManualReview)"
     out["deployment_status"] = "PASS" if all(str(v).startswith("PASS") or v in ("COMPLETE", "PRESENT")
                                              for k, v in out.items()
                                              if k in ("stacks", "secrets", "masking_control",

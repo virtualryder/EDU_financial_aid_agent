@@ -1,0 +1,8 @@
+{
+  "case_id": "FA-SYN-0001",
+  "application": "Student files a FAFSA. Student Aid Index 2500. Enrolled full-time at Example State University unitid 123456. GPA 3.1, pace 85%. Independent.",
+  "expected": {
+    "determination": "ELIGIBLE",
+    "aid_track": "STANDARD"
+  }
+}

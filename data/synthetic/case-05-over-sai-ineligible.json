@@ -1,0 +1,8 @@
+{
+  "case_id": "FA-SYN-0005",
+  "application": "FAFSA on file. SAI 9200. Full-time, Example State University unitid 123456. GPA 3.7, pace 95%.",
+  "expected": {
+    "determination": "INELIGIBLE",
+    "note": "SAI exceeds Pell range at reference COA; other Title IV on review"
+  }
+}

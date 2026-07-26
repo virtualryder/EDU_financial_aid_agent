@@ -1,5 +1,18 @@
 # Financial Aid Agent — Governed Agentic AI on Amazon Bedrock AgentCore
 
+**New here? → [`START-HERE.md`](START-HERE.md)** — one page: what this is, evidence provenance,
+reading order by role, and the pilot offer.
+
+> **SUPPORTED DEPLOYMENT PATH — read this first.** The ONE supported path is **AWS CDK at the
+> validated release tag [`v0.1.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.0-pilot-rc1)**
+> (`cdk/` — includes the AgentCore Gateway/Cedar attachment as IaC), per
+> [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md) and [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md);
+> the tag is cut AFTER the EP1 live validation captures its evidence. The shell engine
+> (`lib/engine/`) is **legacy/internal reference only**. Product framing: a **Financial Aid
+> Verification & Student Communication Assistant** — verification, estimation, and drafting support;
+> NOT an awarding or eligibility-adjudication agent (`PILOT-SCOPE.md`).
+
+
 [![CI](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml/badge.svg)](https://github.com/virtualryder/EDU_financial_aid_agent/actions/workflows/ci.yml)
 
 > **Part of the Governed Agent Platform.** This agent is being consolidated into the [governed-agent-platform](https://github.com/virtualryder/governed-agent-platform) monorepo, where all four verticals share one versioned governance core (`governed-core`) and deploy via AWS CDK infrastructure-as-code (deployed + validated live) in place of the shell engine. This repo remains the standalone, shell-deployable reference.

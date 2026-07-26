@@ -1,0 +1,8 @@
+{
+  "case_id": "FA-SYN-0002",
+  "application": "FAFSA on file. SAI 1200. Enrolled half-time at Example State University unitid 123456. GPA 2.8, pace 78%.",
+  "expected": {
+    "determination": "ELIGIBLE",
+    "note": "Pell prorated for half-time"
+  }
+}
