@@ -28,7 +28,23 @@ import provenance  # shared signer (bundled beside this handler at deploy; on sy
 # instead of a fabricated answer.
 
 API_BASE = "https://api.data.gov/ed/collegescorecard/v1/schools"
-API_KEY = os.environ.get("SCORECARD_API_KEY", "DEMO_KEY")
+def _resolve_key():
+    """api.data.gov key: env (dev) -> Secrets Manager ARN (production; cached, CloudTrail-visible)
+    -> DEMO_KEY (public fallback - acceptable ONLY because Scorecard is reference data; low rate limit)."""
+    v = os.environ.get("SCORECARD_API_KEY", "")
+    if v:
+        return v
+    arn = os.environ.get("SCORECARD_API_KEY_ARN", "")
+    if arn:
+        try:
+            import boto3
+            return boto3.client("secretsmanager").get_secret_value(SecretId=arn).get("SecretString") or "DEMO_KEY"
+        except Exception:
+            return "DEMO_KEY"
+    return "DEMO_KEY"
+
+
+API_KEY = _resolve_key()
 FIELDS = "id,school.name,school.state,latest.cost.attendance.academic_year,latest.cost.tuition.in_state,latest.cost.tuition.out_of_state"
 SOURCE = "US Dept of Education — College Scorecard"
 
@@ -92,10 +108,11 @@ def handler(event, context):
     coa = int(coa)
     # ---- SIGN the fetched figure. The signed field set is EXACTLY what assess re-derives and verifies. ----
     sig_fields = {"unitid": str(uid), "school": name, "cost_of_attendance": coa}
-    tok = provenance.sign(SOURCE, sig_fields)
+    tok = provenance.sign(SOURCE, sig_fields, domain="scorecard")   # GA-2 domain key
     coa_source_obj = {
         "source": SOURCE,
         "api": "api.data.gov/ed/collegescorecard/v1/schools",
+        "coa_basis": "College Scorecard REFERENCE data - not the institutional cost of attendance; institutional COA required for any award package",
         "field": field_used,
         "school": name,
         "unitid": uid,

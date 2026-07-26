@@ -1,5 +1,7 @@
 import json
 
+import sanitized   # P0-1: server-issued sanitized-artifact verification
+
 # record_professional_judgment — PREPARE a documented Professional Judgment (PJ) recommendation.
 # Under HEA Sec. 479A, a financial-aid officer may, on a case-by-case basis and with adequate
 # documentation, adjust data elements for special circumstances (job loss, unusual medical expenses,
@@ -23,9 +25,9 @@ def _coerce(e):
 
 def handler(event, context):
     e = _coerce(event)
-    if e.get("deidentified") is not True:
-        return {"prepared": False, "error": "refused: case is not de-identified (deidentified must be true)",
-                "deidentified_input": e.get("deidentified")}
+    if not sanitized.verify_ref(e.get("sanitized_ref")):
+        return {"prepared": False, "error": "refused: de-identification not proven - a valid sanitized_ref signed by mask_pii is required",
+                "deidentified_input": e.get("deidentified"), "sanitized_ref_verified": False}
 
     circumstance = str(e.get("circumstance", "")).strip()
     proposed_adjustment = str(e.get("proposed_adjustment", "")).strip()

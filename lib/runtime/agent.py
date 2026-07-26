@@ -11,6 +11,7 @@ import boto3
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent
 from strands.models import BedrockModel
+import token_boundary  # P0-3: trusted runtime credential boundary (bundled beside this file)
 from strands.tools.mcp import MCPClient
 from mcp.client.streamable_http import streamablehttp_client
 
@@ -66,6 +67,10 @@ def invoke(payload, context=None):
 
     model = BedrockModel(model_id=MODEL_ID, region_name=REGION, temperature=0.2)
     mcp_client = MCPClient(lambda: streamablehttp_client(gw, headers={"Authorization": "Bearer %s" % token}))
+    # P0-3: the runtime is the credential boundary. Model-supplied credential-shaped args are scrubbed
+    # from EVERY tool call, and the runtime-held access token is injected out-of-band into the sign-off
+    # call only — the model never sees, produces, or transports a bearer token.
+    token_boundary.wrap_mcp_client(mcp_client, token)
     with mcp_client:
         tools = mcp_client.list_tools_sync()
         names = [getattr(t, "tool_name", str(t)) for t in tools]

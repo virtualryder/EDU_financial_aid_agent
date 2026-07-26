@@ -1,4 +1,6 @@
 import json
+
+import sanitized   # P0-1 verification + server-side content channel
 import os
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
@@ -34,12 +36,19 @@ def _coerce(event):
 
 
 def _draft(e):
-    if e.get("deidentified") is not True:
-        return {"error": "refused: case is not de-identified (deidentified must be true)",
+    ref = sanitized.parse_ref(e.get("sanitized_ref"))
+    if not sanitized.verify_ref(ref):
+        return {"error": "refused: de-identification not proven - a valid sanitized_ref signed by mask_pii is required",
                 "drafted_by": None, "deidentified_input": e.get("deidentified")}
-    case = e.get("case", "")
-    if not isinstance(case, str):
-        case = json.dumps(case, ensure_ascii=False)
+    raw_case = e.get("case", "")
+    if not isinstance(raw_case, str):
+        raw_case = json.dumps(raw_case, ensure_ascii=False)
+    # content binding: the text used MUST hash to the signed digest; preferred channel is the
+    # server-side artifact store (content never re-enters the model context via the caller).
+    case = sanitized.load_text(ref, candidate_text=raw_case)
+    if case is None:
+        return {"error": "refused: case content does not match the signed sanitized artifact",
+                "drafted_by": None, "sanitized_ref_verified": True, "content_bound": False}
     kwargs = dict(
         modelId=DRAFT_MODEL_ID,
         system=[{"text": _SYSTEM}],
@@ -54,8 +63,18 @@ def _draft(e):
         notice = resp["output"]["message"]["content"][0]["text"].strip()
         if resp.get("stopReason") == "guardrail_intervened" and not notice:
             return {"error": "output guardrail blocked the draft (fail-closed)", "drafted_by": None, "guardrail": "BLOCKED"}
-        return {"drafted_by": DRAFT_MODEL_ID, "chars": len(notice),
-                "guardrail_applied": bool(GUARDRAIL_ID), "deidentified_input": True, "notice": notice}
+        out = {"drafted_by": DRAFT_MODEL_ID, "chars": len(notice),
+               "guardrail_applied": bool(GUARDRAIL_ID), "deidentified_input": True,
+               "coa_basis": "estimate on College Scorecard REFERENCE data - institutional COA required for any award"}
+        # R3-2 pass-by-reference: with a case store configured, the notice returns as an opaque
+        # notice_ref (content stored server-side); inline text only in dev/direct mode.
+        import os
+        if os.environ.get("CASE_TABLE"):
+            import case_store
+            out["notice_ref"] = case_store.put_case(notice, kind="notice")
+        else:
+            out["notice"] = notice
+        return out
     except (BotoCoreError, ClientError, KeyError, IndexError) as exc:
         return {"error": "draft failed: " + type(exc).__name__ + ": " + str(exc), "drafted_by": None}
 
@@ -72,6 +91,6 @@ def handler(event, context):
         # finalize_award is never a real inline call — the human sign-off gate owns it.
         return {"error": "refused: finalize_award must go through the human sign-off gate",
                 "award_id": e.get("award_id"), "committed": False}
-    if "case" in e or "deidentified" in e:
+    if "case" in e or "deidentified" in e or "sanitized_ref" in e:
         return _draft(e)
     return {"ok": True, "received": e, "note": "financial-aid core tool"}

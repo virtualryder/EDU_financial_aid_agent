@@ -4,7 +4,7 @@ import os
 
 os.environ.setdefault("PROVENANCE_SECRET", "p0-unit-provenance-secret")  # aligns with conftest; before import
 
-from toolkit import call, CONTROLS  # noqa: E402
+from toolkit import make_sanitized_ref, call, CONTROLS  # noqa: E402
 import sys  # noqa: E402
 sys.path.insert(0, str(CONTROLS))
 import provenance  # noqa: E402
@@ -35,7 +35,7 @@ def test_assess_unsigned_coa_goes_to_review():
     # P0-3: a COA with NO signed provenance (or a hand-typed source string) must NOT be trusted.
     r = call("assess_aid", {"student_aid_index": 3000, "cost_of_attendance": 25000, "enrollment_status": "full",
                             "sap_gpa": 3.2, "sap_pace": 85, "coa_source": "US Dept of Education - College Scorecard",
-                            "deidentified": True})
+                            "deidentified": True, "sanitized_ref": make_sanitized_ref()})
     assert r["determination"] == "NEEDS_REVIEW"
     assert r["authoritative"] is False
     assert r["provenance_verified"] is False
@@ -44,7 +44,7 @@ def test_assess_unsigned_coa_goes_to_review():
 def test_assess_verified_eligible_pell():
     r = call("assess_aid", {"student_aid_index": 3000, "cost_of_attendance": 25000, "enrollment_status": "full",
                             "sap_gpa": 3.2, "sap_pace": 85, "coa_source": _signed_coa_source(coa=25000),
-                            "deidentified": True})
+                            "deidentified": True, "sanitized_ref": make_sanitized_ref()})
     assert r["determination"] == "ELIGIBLE"
     assert r["authoritative"] is True
     assert r["pell_award"] == 4395
@@ -57,13 +57,13 @@ def test_verify_documents_hold():
 
 
 def test_professional_judgment_requires_rationale():
-    r = call("professional_judgment", {"circumstance": "job loss", "deidentified": True})
+    r = call("professional_judgment", {"circumstance": "job loss", "deidentified": True, "sanitized_ref": make_sanitized_ref()})
     assert r["prepared"] is False
 
 
 def test_professional_judgment_prepared():
     r = call("professional_judgment", {"circumstance": "job loss", "proposed_adjustment": "reduce AGI",
-                                       "rationale": "Documented 2026 layoff reduced income 40 percent", "deidentified": True})
+                                       "rationale": "Documented 2026 layoff reduced income 40 percent", "deidentified": True, "sanitized_ref": make_sanitized_ref()})
     assert r["status"] == "PREPARED"
     assert r["requires_senior_approval"] is True
 

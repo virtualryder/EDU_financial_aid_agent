@@ -31,6 +31,15 @@ def _num(s):
 
 def handler(event, context):
     e = _coerce(event)
+    # R3-2 pass-by-reference: the controller hands an OPAQUE case_ref (raw FAFSA content never
+    # travels through Step Functions state); fetch server-side. Inline text stays for direct/dev calls.
+    if not (e.get("application") or e.get("fafsa")) and e.get("case_ref"):
+        import case_store
+        _t = case_store.get_case(e["case_ref"]) or ""
+        if not _t:
+            return {"structured": False, "fields": {}, "missing_required": ["application"],
+                    "error": "case_ref unresolved (unknown ref or wrong tenant) - fail-closed"}
+        e = {**e, "application": _t}
     text = e.get("application", "")
     if not isinstance(text, str):
         text = json.dumps(text)

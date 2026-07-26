@@ -1,6 +1,7 @@
 import json
 
-import provenance  # shared verifier (bundled beside this handler at deploy; on sys.path in tests)
+import provenance
+import sanitized   # P0-1: server-issued sanitized-artifact verification  # shared verifier (bundled beside this handler at deploy; on sys.path in tests)
 
 # assess_aid — deterministic Title IV federal student-aid determination.
 # NO licensed data and NO model call: a rules engine over PUBLIC Title IV formulas — the Pell Grant
@@ -61,9 +62,9 @@ def handler(event, context):
     e = _coerce(event)
     # Fail-closed: refuse to operate on non-de-identified input. Cedar's mask_before_assess forbid blocks
     # this at the gateway; the body refuses too (defense in depth).
-    if e.get("deidentified") is not True:
-        return {"assessed": False, "error": "refused: case is not de-identified (deidentified must be true)",
-                "deidentified_input": e.get("deidentified")}
+    if not sanitized.verify_ref(e.get("sanitized_ref")):
+        return {"assessed": False, "error": "refused: de-identification not proven - a valid sanitized_ref signed by mask_pii is required (a deidentified boolean is never accepted)",
+                "deidentified_input": e.get("deidentified"), "sanitized_ref_verified": False}
 
     sai = _num(e.get("student_aid_index"))
     coa = _num(e.get("cost_of_attendance"))
@@ -80,7 +81,7 @@ def handler(event, context):
         fields = {"unitid": str(coa_source.get("unitid") or ""),
                   "school": str(coa_source.get("school") or ""),
                   "cost_of_attendance": coa}
-        prov_verified = provenance.verify(coa_source.get("source", ""), fields, coa_source)
+        prov_verified = provenance.verify(coa_source.get("source", ""), fields, coa_source, domain="scorecard")   # GA-2
 
     prov_src = coa_source.get("source") if isinstance(coa_source, dict) else None
 

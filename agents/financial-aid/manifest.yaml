@@ -174,8 +174,9 @@ tools:
         description: "Request aid-officer sign-off before committing an award; starts a separation-of-duties approval workflow. The agent can never commit directly."
         input:
           icsr_id: { type: string, description: "Case/record id." }
-          access_token: { type: string, description: "The requester's validated Cognito access token; the requester identity is derived from it (P0-5), never from a name field." }
-        required: [icsr_id, access_token]
+        required: [icsr_id]
+        # P0-3: NO credential field in any tool schema - the runtime scrubs credential-shaped args
+        # and injects the requester's validated token out-of-band into this call only (lib/runtime/token_boundary.py).
 
 policies:
   - { name: aid_officer_permit,            kind: permit, role_group: aid_officer }
