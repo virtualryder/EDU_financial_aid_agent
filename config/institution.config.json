@@ -1,0 +1,78 @@
+{
+  "_comment": "Single source of truth for institution-controlled configuration. Every award-year- or institution-sensitive value the assistant uses is declared here with an owner and an approval line. docs/CONFIGURATION-WORKSHEET.md is the human-readable companion; tests/test_config_schema.py fails CI if a required key is missing, unlabeled, or drifts from the code constant.",
+  "award_year": "2026-27",
+  "keys": {
+    "pell_max": {
+      "value": 7395,
+      "label": "Maximum scheduled Pell award (annual, USD)",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/assess_aid.py::MAX_PELL",
+      "authoritative_source": "FSA Dear Colleague Letter 2026-01-30",
+      "approved_by": null
+    },
+    "pell_min": {
+      "value": 740,
+      "label": "Minimum scheduled Pell award (annual, USD)",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/assess_aid.py::MIN_PELL",
+      "authoritative_source": "FSA Dear Colleague Letter 2026-01-30",
+      "approved_by": null
+    },
+    "sap_gpa_min": {
+      "value": 2.0,
+      "label": "Satisfactory Academic Progress cumulative-GPA floor",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/assess_aid.py::SAP_GPA_MIN",
+      "authoritative_source": "34 CFR 668.34 (institution SAP policy)",
+      "approved_by": null
+    },
+    "sap_pace_min": {
+      "value": 67.0,
+      "label": "Satisfactory Academic Progress completion-pace floor (percent)",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/assess_aid.py::SAP_PACE_MIN",
+      "authoritative_source": "34 CFR 668.34 (institution SAP policy)",
+      "approved_by": null
+    },
+    "verification_groups": {
+      "value": ["V1", "V4", "V5"],
+      "label": "Verification tracking groups in scope for the pilot",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/verify_documents.py (required-item sets)",
+      "authoritative_source": "34 CFR 668.56 + annual Federal Register verification notice",
+      "approved_by": null
+    },
+    "coa_basis": {
+      "value": "reference:college_scorecard",
+      "label": "Cost-of-attendance basis (reference data, never institutional COA)",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/lookup_coa.py + assess_aid coa_basis label",
+      "authoritative_source": "U.S. Dept of Education College Scorecard (api.data.gov)",
+      "approved_by": null
+    },
+    "comms_reading_grade_target": {
+      "value": 8.0,
+      "label": "Plain-language target reading grade for student communications",
+      "owner": "aid_office",
+      "where_set": "lib/controls/readability.py::TARGET_GRADE",
+      "authoritative_source": "Section 508 / plain-language guidance (institution accessibility policy)",
+      "approved_by": null
+    },
+    "pj_documentation_checklist": {
+      "value": ["circumstance_statement", "supporting_documentation", "officer_rationale", "officer_signature"],
+      "label": "Professional Judgment documentation checklist (human-only action)",
+      "owner": "aid_office",
+      "where_set": "agents/financial-aid/tools/professional_judgment.py (prepare-only)",
+      "authoritative_source": "HEA 479A / 34 CFR 668 (PJ documentation)",
+      "approved_by": null
+    },
+    "retention_profile": {
+      "value": "sandbox-demo",
+      "label": "Records-retention profile selected for the deployment",
+      "owner": "it_security",
+      "where_set": "cdk context -c retention_profile=... ; docs/RETENTION-PROFILES.md",
+      "authoritative_source": "Institution record-retention schedule + state law",
+      "approved_by": null
+    }
+  }
+}

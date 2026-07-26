@@ -22,6 +22,11 @@ import sanitized   # P0-1: server-issued sanitized-artifact verification  # shar
 # below the minimum round to 0 unless SAI qualifies for the minimum. SAP: cumulative GPA >= 2.0 AND
 # completion pace >= 67%.
 
+# AWARD_YEAR is the single source of truth for the aid year these constants belong to. The
+# award-year update runbook (docs/AWARD-YEAR-UPDATE-RUNBOOK.md) and tests/test_award_year.py pin
+# every year-sensitive figure below to this label so a stale Pell table fails CI, not a live case.
+AWARD_YEAR = "2026-27"
+
 MAX_PELL = 7395        # annual maximum scheduled Pell award (authoritative 2026-27)
 MIN_PELL = 740         # annual minimum award (~10% of max) (authoritative 2026-27)
 SAP_GPA_MIN = 2.0      # cumulative GPA floor for Satisfactory Academic Progress

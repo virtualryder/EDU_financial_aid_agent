@@ -157,6 +157,21 @@ Shell-path test-user passwords are env-driven `ChangeMe-*` placeholders — sand
 ships ZERO users).
 </details>
 
+## Pilot readiness (Gate B operating model)
+
+Beyond the code and the EP1 validation, the operating model a pilot needs is documented and, where it
+can be, enforced in CI (suite **150/150**). Start with the plan, then the specific docs:
+
+- [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — the whole picture: operating model, pilot metrics (no productivity % until measured), leadership Q&A, staged gates.
+- [`docs/CONFIGURATION-WORKSHEET.md`](docs/CONFIGURATION-WORKSHEET.md) — institution-controlled values + `config/institution.config.json` (CI drift gate: `test_config_schema.py`).
+- [`docs/SME-REVIEW-PACKET.md`](docs/SME-REVIEW-PACKET.md) — for a credentialed financial-aid officer to sign (Gate-C blocker).
+- [`docs/AWARD-YEAR-UPDATE-RUNBOOK.md`](docs/AWARD-YEAR-UPDATE-RUNBOOK.md) — annual roll-forward + `test_award_year.py`.
+- [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) — plain-language check (`readability.py` + `test_readability.py`) + 508/WCAG mapping.
+- [`docs/INCIDENT-RESPONSE.md`](docs/INCIDENT-RESPONSE.md) · [`docs/AUDIT-READINESS.md`](docs/AUDIT-READINESS.md) · [`docs/SUPPORT.md`](docs/SUPPORT.md) · [`docs/MCP-GATEWAY.md`](docs/MCP-GATEWAY.md).
+
+Honest status: build items are done; the remaining Gate-B/-C work is engagement-side (SME red-line,
+accessibility-office review) and the independent testing/governance signatures at Gate D.
+
 ## Layout
 
 ```
@@ -168,6 +183,8 @@ agents/financial-aid/
                 manifest.yaml (single source of truth) + tools/ (intake_fafsa, lookup_coa, assess_aid, verify_documents, professional_judgment, aid_core) + demo_extra.sh
 policies/       the six Cedar policies (rendered from the manifest), human-readable + a README
 docs/           architecture note + Word guides (regulatory-adherence, SA runbook, maintenance, depth-evidence, cost/latency one-pager, IdP-federation reference; generators/ regenerates the guides & decks) + decks
+                + Gate-B operating model: CONFIGURATION-WORKSHEET, SME-REVIEW-PACKET, AWARD-YEAR-UPDATE-RUNBOOK, ACCESSIBILITY, INCIDENT-RESPONSE, AUDIT-READINESS, SUPPORT, MCP-GATEWAY
+config/         institution.config.json — single source of truth for institution-controlled values (CI drift gate)
 ```
 
 ## Honesty boundary

@@ -66,6 +66,14 @@ def _draft(e):
         out = {"drafted_by": DRAFT_MODEL_ID, "chars": len(notice),
                "guardrail_applied": bool(GUARDRAIL_ID), "deidentified_input": True,
                "coa_basis": "estimate on College Scorecard REFERENCE data - institutional COA required for any award"}
+        # Gate-B accessibility: advisory plain-language check on the drafted notice (docs/ACCESSIBILITY.md).
+        # Non-blocking — surfaces reading grade + any missing student-action element for the reviewing
+        # officer; the human gate still owns whether the notice is sent.
+        try:
+            import readability
+            out["plain_language"] = readability.assess(notice)
+        except Exception:
+            pass   # accessibility advisory must never affect the draft result
         # R3-2 pass-by-reference: with a case store configured, the notice returns as an opaque
         # notice_ref (content stored server-side); inline text only in dev/direct mode.
         import os

@@ -4,7 +4,7 @@
 adjudication agent — it prepares work for aid officers; humans commit every consequential action).
 **Repo:** `github.com/virtualryder/EDU_financial_aid_agent` · **Release:** `v0.1.0-pilot-rc1` ·
 **Build state:** EP0 (control-plane port) + EP1 (author-produced clean-account live validation) complete;
-suite **137/137**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
+suite **150/150**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
 
 ---
 
@@ -51,6 +51,27 @@ The reviewer required these before any internal share; all are now closed:
 | `cdk/cdk.out` synth artifacts (with Housing lambda copies) tracked in git | Untracked + gitignored | ✅ |
 | Test counts reconciled | 137/137 stated everywhere | ✅ |
 | Evidence not labeled as author-produced | Added explicit author-produced/synthetic-only disclaimer to `evidence/EP1-VALIDATION.md` | ✅ |
+
+---
+
+## 1b. Gate B P1 bundle — build status (this cycle)
+
+The operating-model docs, the plain-language control, and the config/award-year CI gates were built
+this cycle. Suite now **150/150** (137 + 13 new). Remaining Gate-B items are engagement actions
+(SME red-line, accessibility-office review), not build items.
+
+| Item | Deliverable | Status |
+|---|---|---|
+| Configuration (§2) | `docs/CONFIGURATION-WORKSHEET.md` + `config/institution.config.json` + `tests/test_config_schema.py` (drift gate) | ✅ built |
+| SME validation (§3) | `docs/SME-REVIEW-PACKET.md` (ready for a credentialed aid officer to sign) | ✅ packet ready · ☐ signature |
+| Accessibility (§6) | `docs/ACCESSIBILITY.md` + `lib/controls/readability.py` plain-language check + `tests/test_readability.py` | ✅ built |
+| Support (§7) | `docs/SUPPORT.md` (pilot support model) | ✅ built |
+| Model/prompt maint. (§8) | Covered by change-mgmt + redteam regression (doc pointer) | ◐ pointer |
+| Award-year (§9) | `docs/AWARD-YEAR-UPDATE-RUNBOOK.md` + `AWARD_YEAR` constant + `tests/test_award_year.py` | ✅ built |
+| Incident response (§10) | `docs/INCIDENT-RESPONSE.md` (EDU-specific FERPA/GLBA/FTI) | ✅ built |
+| Audit readiness (§11) | `docs/AUDIT-READINESS.md` (control-to-evidence matrix) | ✅ built |
+| Pilot metrics (§12) | Framework table (below); baselines captured at the pilot site | ✅ defined |
+| MCP gateway + portability (§13) | `docs/MCP-GATEWAY.md` | ✅ built |
 
 ---
 
@@ -273,7 +294,7 @@ it is site-specific.
 
 **Gate A — before sharing internally at AWS (P0).** ✅ Complete this cycle.
 Doc contradictions fixed · cross-vertical Housing/HUD terminology removed from source + docs · test
-counts reconciled (137) · START-HERE reflects EP1 · assistant-not-awarding positioning universal ·
+counts reconciled · START-HERE reflects EP1 · assistant-not-awarding positioning universal ·
 evidence labeled author-produced/synthetic · guard-metric namespace corrected. Remaining P0 nicety:
 re-verify EDU GTM one-pagers render on-brand (visual check).
 

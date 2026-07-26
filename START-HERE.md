@@ -29,7 +29,7 @@ Scorecard figures are reference data, never institutional COA
 The control plane is a PORT of the Housing pattern (github.com/virtualryder/Housing_eligibility_agent
 `v0.9.4`), which carries five external review cycles and three live clean-account validations
 including a strict zero-PII telemetry canary. **EDU's own live validation (EP1) is CAPTURED (2026-07-26, evidence/EP1-VALIDATION.md)** —
-proof is the 137-test offline suite (incl. full CDK assertions) PLUS the captured EP1 live run. Independent third-party reproduction (the OIDC release-validation workflow) is the remaining validation step.
+proof is the 150-test offline suite (incl. full CDK assertions) PLUS the captured EP1 live run. Independent third-party reproduction (the OIDC release-validation workflow) is the remaining validation step.
 
 ## Reading order by role
 
@@ -58,7 +58,7 @@ production cost.
 
 ## Status in one line
 
-EP0 (control-plane + CDK port of the proven pattern): **complete, 132/132 tests.** Next: EP1 live
-clean-account validation (all Gate-B switches, strict canary, VerificationHold path) → tag
-`v0.1.0-pilot-rc1` with captured evidence → GTM refresh (EP2). Adopter work and governance
-signatures: [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md).
+EP0 + EP1 **complete, 150/150 tests**; `v0.1.0-pilot-rc1` released with captured EP1 evidence; the
+Gate-B operating-model pack is built ([`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md)).
+Next: credentialed financial-aid SME sign-off (Gate C), then independent security testing + governance
+signatures (Gate D). Adopter work and governance signatures: [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md).
