@@ -4,7 +4,7 @@
 reading order by role, and the pilot offer.
 
 > **SUPPORTED DEPLOYMENT PATH — read this first.** The ONE supported path is **AWS CDK at the
-> validated release tag [`v0.1.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.0-pilot-rc1)**
+> validated release tag [`v0.1.1-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.1-pilot-rc1)**
 > (`cdk/` — includes the AgentCore Gateway/Cedar attachment as IaC), per
 > [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md) and [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md);
 > the tag was cut AFTER the EP1 live validation captured its evidence (2026-07-26 — see
@@ -70,8 +70,9 @@ Federal student-aid processing is high-volume, deadline-driven, and heavily regu
 Higher Education Act, FERPA for education records, the GLBA Safeguards Rule, and IRS Pub 1075 where tax
 data is used). It's an obvious place for an AI agent — but a financial-aid office cannot adopt an
 ungoverned one: PII and education records must never leak, every determination needs a tamper-evident
-audit, tool access must be least-privilege, and a **qualified aid officer must make and commit the
-award**. This agent keeps the human in charge and makes the platform enforce it.
+audit, tool access must be least-privilege, and a **qualified aid officer must make and record the
+award decision** in the authoritative system. This assistant keeps the human in charge and makes the
+platform enforce it.
 
 ## The governed workflow
 
@@ -83,10 +84,11 @@ intake_fafsa -> lookup_coa -> mask_pii -> assess_aid -> draft_award_notice -> wr
 
 - **intake_fafsa** — extract the non-PII decision fields (Student Aid Index, institution, enrollment
   status, SAP GPA and pace, dependency) from the raw FAFSA/ISIR or application.
-- **lookup_coa** — fetch the student's **real Cost of Attendance** from the U.S. Department of Education
-  **College Scorecard API** (authoritative, live). The institution is non-PII, so this runs before
-  masking; the real COA drives the Pell math and its **provenance is written into the audit** — even
-  reaching real federal data is a Cedar-authorized, audited Gateway tool, not a side-channel.
+- **lookup_coa** — fetch the institution-level **reference Cost of Attendance** from the U.S. Department
+  of Education **College Scorecard API** (verified REFERENCE data, live — never the student's
+  institutional COA). The institution is non-PII, so this runs before masking; the reference COA drives
+  the Pell **estimate** and its **provenance is signed into the audit** — even reaching real federal
+  data is a Cedar-authorized, audited Gateway tool, not a side-channel.
 - **mask_pii** — fail-closed PII de-identification (Amazon Comprehend `DetectPiiEntities`: name, SSN,
   address, DOB…). If masking can't run, nothing downstream proceeds.
 - **assess_aid** — a deterministic rules engine (public Title IV formulas: Pell scheduled award =
@@ -137,7 +139,7 @@ All are proven live in the EP1 validation run ([`evidence/EP1-VALIDATION.md`](ev
 Full step-by-step: [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md). Short version:
 
 ```bash
-git checkout v0.1.0-pilot-rc1            # deploy a VALIDATED RELEASE TAG, never main
+git checkout v0.1.1-pilot-rc1            # deploy a VALIDATED RELEASE TAG, never main
 cd cdk && pip install -r requirements.txt
 cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
   -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>

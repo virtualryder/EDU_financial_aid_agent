@@ -4,12 +4,12 @@ const { H1, H2, H3, P, bold, code, bullet, num, codeBlock, callout, table, space
 const cover = coverAndToc(
   ["Maintenance & Operations Guide"],
   "Financial Aid Agent on Amazon Bedrock AgentCore",
-  "Day-two operations for the governed Financial Aid Verification & Student Communication Assistant. THE SUPPORTED DEPLOYMENT IS AWS CDK at the validated release tag v0.1.0-pilot-rc1 (EP1 live-validated). This guide's operational content applies to that deployment; the shell-engine commands in sections 2 and 6 are LEGACY internal reference only. Accelerator reference. Version 2.0 · 2026-07.",
+  "Day-two operations for the governed Financial Aid Verification & Student Communication Assistant. THE SUPPORTED DEPLOYMENT IS AWS CDK at the validated release tag v0.1.1-pilot-rc1 (EP1 live-validated). This guide's operational content applies to that deployment; the shell-engine commands in sections 2 and 6 are LEGACY internal reference only. Accelerator reference. Version 2.0 · 2026-07.",
   ["1. Operating model", "2. Routine operations", "3. The Runtime agent lifecycle", "4. Monitoring & observability", "5. Audit-evidence management", "6. Teardown & rebuild", "7. Troubleshooting & known gotchas", "8. Cost & housekeeping"]
 );
 
 const body = [
-  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (`git checkout v0.1.0-pilot-rc1` then `cdk deploy`/`destroy --all`). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
+  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (`git checkout v0.1.1-pilot-rc1` then `cdk deploy`/`destroy --all`). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
   H1("1. Operating model"),
   P("The deployment has three lifecycles, and keeping them straight is the key to safe operations:"),
   table(["Lifecycle", "What it contains", "Cadence"], [

@@ -11,8 +11,8 @@ this table, this table is correct and the other file is a bug.*
 | Field | Value |
 |---|---|
 | **Product** | Financial Aid Verification & Student Communication **Assistant** (not an awarding / eligibility-adjudication agent) |
-| **Validated tag** | `v0.1.0-pilot-rc1` — the EP1 live validation ran on this code |
-| **Current main vs tag** | `main` is AHEAD of the tag by **documentation reconciliation + the Gate-B operating-model bundle + 18 additional offline tests (132→150)** — **no infrastructure change**, so the EP1 evidence carries forward unchanged. Recommended next step: cut `v0.1.1-pilot-rc1` at current `main` to pin this reconciled state (update `RELEASE`, the 4 anchor docs, re-run `test_release_consistency.py`). |
+| **Supported tag** | `v0.1.1-pilot-rc1` — pins this reconciled state (docs + Gate-B operating-model bundle + 150 offline tests) |
+| **EP1 validation** | ran on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` = `v0.1.0` + **documentation reconciliation + operating-model bundle + 18 offline tests (132→150)**, **no infrastructure change** — so the EP1 live evidence carries forward unchanged |
 | **EP1 validation date** | 2026-07-26 |
 | **Region** | us-east-1 |
 | **AWS account** | clean isolated account (id redacted in all committed files) |
