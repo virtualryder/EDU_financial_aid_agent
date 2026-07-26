@@ -33,7 +33,7 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
   s.addText("Governed Agentic AI,\nProven in Federal Student-Aid Awarding", { x: 0.66, y: 1.95, w: 11.6, h: 2.1, fontFace: TF, fontSize: 38, bold: true, color: WHITE, lineSpacingMultiple: 1.02, margin: 0 });
   s.addText("A Title IV financial-aid accelerator running natively on Amazon Bedrock AgentCore — identity-bound, deny-by-default with Cedar, and proven end-to-end on AWS. The third vertical built from one reusable template.",
     { x: 0.7, y: 4.15, w: 9.7, h: 1.0, fontFace: BF, fontSize: 16, color: ICE, lineSpacingMultiple: 1.15, margin: 0 });
-  const chips = ["32 / 32 live governance checks", "Agent native on Runtime", "Third vertical from one template"];
+  const chips = ["EP1 live validation captured", "Zero FAFSA PII in telemetry", "Ported from the proven Housing pattern"];
   let cx = 0.7;
   chips.forEach((c) => {
     const w = 0.42 + c.length * 0.098;
@@ -217,8 +217,8 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
 (() => {
   const s = p.addSlide(); bg(s, CLOUD);
   eyebrow(s, "Evidence");
-  title(s, "Proof, not slideware: 32 / 32 governance checks, live on AWS");
-  const stats = [["32/32", "governance checks pass", MINT], ["6", "controls native on AgentCore", TEAL], ["3", "regulated controls built & proven", AMBER], ["0", "residual on teardown", NAVY]];
+  title(s, "Proof, not slideware: EP1 live validation captured, all switches on");
+  const stats = [["137/137", "automated tests green", MINT], ["10/10", "concurrent runs live-proven", TEAL], ["0", "PII hits in any telemetry (strict canary)", AMBER], ["0", "residual on teardown", NAVY]];
   const sw = 2.9, gap = 0.23, x0 = 0.62, y = 1.5;
   stats.forEach((st, i) => {
     const x = x0 + i * (sw + gap);
@@ -246,7 +246,7 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
     s.addText(t, { x: x + 0.44, y: yy - 0.05, w: cw, h: 0.44, valign: "middle", fontFace: BF, fontSize: 12, color: INK, margin: 0 });
   });
   footer(s, 8);
-  s.addNotes("A reproducible, one-command demo stands the stack up, proves 32 checks in ENFORCE, and tears down with zero residual. The Runtime invoke (aid officer full workflow, outsider denied) was also proven live.");
+  s.addNotes("The EP1 clean-account run (evidence/EP1-VALIDATION.md) deployed all Gate-B switches, ran the full pipeline live inside a private network with the Scorecard call through a HUD-only... no, a .api.data.gov-only egress firewall, passed a strict PII canary (zero hits incl. Step Functions history), proved exactly-once under a 10-way replay storm, exercised the VerificationHold work-queue path, and tore down with zero residual.");
 })();
 
 /* 9. RUNTIME + IDENTITY */
@@ -370,7 +370,7 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
     s.addText(v[2], { x: x + w / 2 - 0.6, y: y + 1.36, w: 1.2, h: 0.3, align: "center", valign: "middle", color: NAVY, fontFace: BF, fontSize: 10, bold: true, margin: 0 });
   });
   s.addText("THE ASK", { x: 0.62, y: 4.65, w: 4, h: 0.35, fontFace: BF, fontSize: 12.5, bold: true, color: MINT, charSpacing: 2, margin: 0 });
-  const asks = [["1", "Internal demo", "Stand up the stack live and walk leadership through the 32-check proof."], ["2", "Institution workshops", "Take the pattern to higher-ed accounts as a reference architecture."], ["3", "Scoped pilot", "A pilot on synthetic FAFSAs with a named institution, boundary made explicit."]];
+  const asks = [["1", "Internal demo", "Stand up the stack live and walk leadership through the captured EP1 evidence."], ["2", "Institution workshops", "Take the pattern to higher-ed accounts as a reference architecture."], ["3", "Scoped pilot", "A pilot on synthetic FAFSAs with a named institution, boundary made explicit."]];
   asks.forEach((a, i) => {
     const x = 0.62 + i * 4.06;
     circle(s, x, 5.15, 0.5, MINT, a[0], NAVY, 16);

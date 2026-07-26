@@ -33,6 +33,32 @@ agents, from a reusable, manifest-driven template — this is the **third vertic
 > ATO where applicable) remain the adopter's responsibility. Pell figures and SAP thresholds here are
 > **illustrative federal defaults** — configure per award year and institution.
 
+
+## Validated evidence (EP1 live run, captured 2026-07-26)
+
+One clean-account validation with every Gate-B switch on, torn down afterward — raw capture in
+[`evidence/EP1-VALIDATION.md`](evidence/EP1-VALIDATION.md):
+
+- **Full governed pipeline SUCCEEDED end-to-end inside the private network** — a live College
+  Scorecard lookup THROUGH the `.api.data.gov`-only egress firewall (University of Florida, COA
+  $22,523, provenance signed and verified as **reference** data), real Comprehend masking, the
+  VerifyDocuments gate, a guarded Bedrock draft, the human sign-off pause, and **exactly-once**
+  finalize.
+- **The VerificationHold work-queue path** — a case selected for verification with a missing tax
+  transcript terminated at `VerificationHold`, no estimate drafted (34 CFR 668).
+- **Zero FAFSA/PII in telemetry** — strict canary PASS across CloudWatch Logs, X-Ray, DLQs, and
+  Step Functions execution history (the FERPA/GLBA/IRS Pub 4557 story).
+- **Concurrency + replay** — 10/10 concurrent executions SUCCEEDED; a 10-way replay storm committed
+  exactly once (`FIRST:1, IDEMPOTENT:9`).
+- **Pilot identity + tenant** — MFA ON / threat-protection ENFORCED / 0 IaC users; the deployment
+  tenant HMAC-signed into the live sanitized artifact.
+- **Validation found + fixed a real defect** — `guard_extracted` over-required a school id that
+  actually comes from the SIS/execution input; fixed to require only the Student Aid Index.
+
+Not yet done (honestly): independent third-party reproduction (the OIDC release-validation workflow
+is the path), enterprise-IdP round-trip, independent security testing, and the customer-owned SIS/
+ISIR/COD integration that any real-data use requires. See [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md).
+
 ## Why this agent
 
 Federal student-aid processing is high-volume, deadline-driven, and heavily regulated (Title IV of the
