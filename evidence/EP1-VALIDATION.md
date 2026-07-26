@@ -93,4 +93,11 @@ IRS Pub 4557 telemetry story).
 
 ## Teardown
 
-*(captured on teardown — see status log below)*
+All 7 stacks deleted (reverse order). The `fa-val1-compute` (VPC-attached Lambdas) delete took ~30
+min on the final `ingest-case` Hyperplane-ENI release — a known AWS-managed window, not a code
+issue. RETAIN'd resources removed (audit ledger, WORM vault, identity pool; secrets removed with the
+data stack); the customer-managed CMK was RETAIN'd by policy (its alias deletes with the stack) so it
+was found by tag (`env=val1`) and **scheduled for deletion (7-day KMS minimum)**; bootstrap `faval1/`
+artifacts removed. **Final residual sweep: 0 stacks, 0 Lambdas, 0 tables, 0 state machines, 0 pools,
+0 VPCs/firewalls, 0 gateways, 0 `fa_val1` policy engines.** The staging Scorecard key used DEMO_KEY
+(no real secret staged).
