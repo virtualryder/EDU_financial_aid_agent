@@ -1,0 +1,398 @@
+{
+  "/fa-val1-data": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "app",
+          "value": "edu-financial-aid-agent"
+        },
+        {
+          "key": "cost-center",
+          "value": "governed-agents"
+        },
+        {
+          "key": "env",
+          "value": "val1"
+        }
+      ]
+    }
+  ],
+  "/fa-val1-data/AuditLedger": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "AuditLedger0E438CA2"
+      }
+    }
+  ],
+  "/fa-val1-data/SanitizedArtifacts": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "SanitizedArtifacts6DFFAB8E"
+      }
+    }
+  ],
+  "/fa-val1-data/CaseStore": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "CaseStore9F124C9B"
+      }
+    }
+  ],
+  "/fa-val1-data/PendingApprovals": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "PendingApprovals93A61272"
+      }
+    }
+  ],
+  "/fa-val1-data/AuditTableName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditTableName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/AuditTableArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditTableArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/SanitizedTableName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SanitizedTableName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/WormBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WormBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/RetentionProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RetentionProfile"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Cmk/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cmk0E70AD9C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/AuditLedger/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditLedger0E438CA2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/SanitizedArtifacts/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SanitizedArtifacts6DFFAB8E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/CaseStore/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CaseStore9F124C9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/PendingApprovals/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PendingApprovals93A61272"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/WormVault/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WormVault2878B4F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"Cmk0E70AD9C\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCmk0E70AD9CArn054F07DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"CaseStore9F124C9B\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCaseStore9F124C9BArn6BAB2E88"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Ref\":\"AuditLedger0E438CA2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAuditLedger0E438CA26FBABE11"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Ref\":\"WormVault2878B4F9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWormVault2878B4F9155D0790"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Ref\":\"SanitizedArtifacts6DFFAB8E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSanitizedArtifacts6DFFAB8EC060EF11"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Ref\":\"PendingApprovals93A61272\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPendingApprovals93A612722C5E0D73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Ref\":\"CaseStore9F124C9B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCaseStore9F124C9BD9E08E6D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"SanitizedArtifacts6DFFAB8E\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttSanitizedArtifacts6DFFAB8EArnBD67C487"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"AuditLedger0E438CA2\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAuditLedger0E438CA2Arn89211234"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"WormVault2878B4F9\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttWormVault2878B4F9ArnAEC9A651"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Exports/Output{\"Fn::GetAtt\":[\"PendingApprovals93A61272\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttPendingApprovals93A61272ArnDD32DC3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/Cmk/Alias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CmkAliasCB394C3D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-data/WormVault/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WormVaultPolicy5B36D891"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

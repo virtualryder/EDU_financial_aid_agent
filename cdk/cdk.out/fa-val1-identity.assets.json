@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0a4305a4c4f5867a26c9013369dad7cc4b66801bcce7b4e4dd84ab66ad28ad04": {
+      "displayName": "fa-val1-identity Template",
+      "source": {
+        "path": "fa-val1-identity.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-695c3154": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0a4305a4c4f5867a26c9013369dad7cc4b66801bcce7b4e4dd84ab66ad28ad04.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

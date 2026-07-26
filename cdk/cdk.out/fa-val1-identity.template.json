@@ -1,0 +1,167 @@
+{
+ "Resources": {
+  "PoolD3F588B8": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "EnabledMfas": [
+     "SOFTWARE_TOKEN_MFA"
+    ],
+    "MfaConfiguration": "ON",
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 14,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": true,
+      "RequireUppercase": true
+     }
+    },
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolAddOns": {
+     "AdvancedSecurityMode": "ENFORCED"
+    },
+    "UserPoolName": "fa-val1-identity",
+    "UserPoolTags": {
+     "app": "edu-financial-aid-agent",
+     "cost-center": "governed-agents",
+     "env": "val1"
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PoolGatewayClient5ADC9307": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ClientName": "fa-val1-gw",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    }
+   }
+  },
+  "ReviewerGroup": {
+   "Type": "AWS::Cognito::UserPoolGroup",
+   "Properties": {
+    "Description": "Qualified financial-aid officers (Cedar role group)",
+    "GroupName": "aid_officer",
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "UserPoolId": {
+   "Value": {
+    "Ref": "PoolD3F588B8"
+   }
+  },
+  "ClientId": {
+   "Value": {
+    "Ref": "PoolGatewayClient5ADC9307"
+   }
+  },
+  "IdentityMode": {
+   "Value": "pilot"
+  },
+  "FederationNote": {
+   "Value": "No users are created by IaC; federate the enterprise IdP (docs/IdP-Federation-Reference.md) or create operators out-of-band."
+  },
+  "ExportsOutputRefPoolD3F588B86FF122B2": {
+   "Value": {
+    "Ref": "PoolD3F588B8"
+   },
+   "Export": {
+    "Name": "fa-val1-identity:ExportsOutputRefPoolD3F588B86FF122B2"
+   }
+  },
+  "ExportsOutputRefPoolGatewayClient5ADC930756E5DC69": {
+   "Value": {
+    "Ref": "PoolGatewayClient5ADC9307"
+   },
+   "Export": {
+    "Name": "fa-val1-identity:ExportsOutputRefPoolGatewayClient5ADC930756E5DC69"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

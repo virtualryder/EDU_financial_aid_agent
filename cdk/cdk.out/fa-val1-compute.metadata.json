@@ -1,0 +1,1154 @@
+{
+  "/fa-val1-compute": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "resolveValue (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:6980)",
+        "resolveReferences (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4848)",
+        "prepareApp (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:1240)",
+        "synthesize (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:2625)",
+        "App.synth (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/stage.js:1:5061)",
+        "App.synth (/sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/core/lib/app.js:1:5050)",
+        "/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:55650",
+        "Kernel._Kernel_ensureSync (/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:71267)",
+        "Kernel.invoke (/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:55595)",
+        "KernelHost.processRequest (/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:228006)",
+        "KernelHost.run (/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:226990)",
+        "Immediate._onImmediate (/sessions/gracious-nice-noether/tmp/tmpdmv044qv/lib/program.js:1:227034)",
+        "process.processImmediate (node:internal/timers:484:21)"
+      ]
+    },
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "app",
+          "value": "edu-financial-aid-agent"
+        },
+        {
+          "key": "cost-center",
+          "value": "governed-agents"
+        },
+        {
+          "key": "env",
+          "value": "val1"
+        }
+      ]
+    }
+  ],
+  "/fa-val1-compute/IngestArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IntakeArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntakeArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/LookupArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LookupArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/MaskArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaskArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/AssessArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssessArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CoreArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CoreArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WriteAuditArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteAuditArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/RequestSignoffArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestSignoffArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/GuardsArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GuardsArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SigningSecretDeid/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SigningSecretDeidCA29DABF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SigningSecretScorecard/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SigningSecretScorecardE8FC8522"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/ScorecardKeySecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ScorecardKeySecret839B08DD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IngestCaseLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestCaseLogs2E6666EC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IngestCase/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestCaseDFD985CA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IntakeFafsaLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntakeFafsaLogs18E20EA9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IntakeFafsa/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntakeFafsa66E455EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/LookupCoaLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LookupCoaLogsE086C62A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/LookupCoa/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LookupCoaD93C9903"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/MaskPiiLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaskPiiLogs477773D0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/MaskPii/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaskPiiC3055061"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/AssessAidLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssessAidLogsDB39CEB4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/AssessAid/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssessAid7358961C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/VerifyDocumentsLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyDocumentsLogs3B362381"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/VerifyDocuments/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyDocuments8611BBE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/ProfessionalJudgmentLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProfessionalJudgmentLogs20944FDA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/ProfessionalJudgment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProfessionalJudgment05FC6203"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CoreToolsLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CoreToolsLogs00BF7706"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CoreTools/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CoreToolsF8BE44BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WriteAuditLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteAuditLogs231ABE65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WriteAudit/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteAuditB581F064"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/RequestSignoffLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestSignoffLogsC3D21705"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/RequestSignoff/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestSignoff5E0944B7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SignoffRegisterLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignoffRegisterLogsD74B525E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SignoffRegister/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignoffRegister99F0D845"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/FinalizeLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FinalizeLogsBF61A3F4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Finalize/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FinalizeB6412576"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WorkflowGuardsLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkflowGuardsLogs0163CE5A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WorkflowGuards/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkflowGuardsFD744B0C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"IntakeFafsa66E455EB\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttIntakeFafsa66E455EBArnEE25E2F6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"WorkflowGuardsFD744B0C\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttWorkflowGuardsFD744B0CArn6C7BC783"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"LookupCoaD93C9903\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttLookupCoaD93C9903ArnCD0EEBD5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"MaskPiiC3055061\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMaskPiiC3055061Arn041C14C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"AssessAid7358961C\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAssessAid7358961CArn804B3B1F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"VerifyDocuments8611BBE0\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttVerifyDocuments8611BBE0Arn9DFBF2D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"CoreToolsF8BE44BF\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCoreToolsF8BE44BFArnE8B9074B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"WriteAuditB581F064\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttWriteAuditB581F064Arn14622E6C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"SignoffRegister99F0D845\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttSignoffRegister99F0D845Arn082B09DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"FinalizeB6412576\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttFinalizeB6412576Arn816E0AA2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"MaskPiiC3055061\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMaskPiiC3055061C3A70154"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"WorkflowGuardsFD744B0C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWorkflowGuardsFD744B0CDD1DC368"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"FinalizeB6412576\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFinalizeB64125766DA8DA3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"WriteAuditB581F064\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWriteAuditB581F064F56245AB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"LookupCoaD93C9903\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLookupCoaD93C9903A561299E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"SignoffRegister99F0D845\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSignoffRegister99F0D8453C3CC445"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Ref\":\"CoreToolsF8BE44BF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCoreToolsF8BE44BF38D38BCE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"ProfessionalJudgment05FC6203\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttProfessionalJudgment05FC6203Arn22715509"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Exports/Output{\"Fn::GetAtt\":[\"RequestSignoff5E0944B7\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRequestSignoff5E0944B7ArnA291A53C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IngestCase/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestCaseServiceRoleF9E0A635"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IntakeFafsa/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntakeFafsaServiceRole71CCBE56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/LookupCoa/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LookupCoaServiceRoleDCD76639"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/MaskPii/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaskPiiServiceRole4CF40673"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/AssessAid/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssessAidServiceRoleA5C1303F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/VerifyDocuments/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyDocumentsServiceRoleDB4AA080"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/ProfessionalJudgment/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProfessionalJudgmentServiceRoleB2511EC5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CoreTools/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CoreToolsServiceRole23ABE434"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WriteAudit/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteAuditServiceRole953DCB7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/RequestSignoff/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestSignoffServiceRole4E22F07E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SignoffRegister/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignoffRegisterServiceRole9443579A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Finalize/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FinalizeServiceRole1272A112"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WorkflowGuards/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkflowGuardsServiceRoleF057773D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IngestCase/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestCaseServiceRoleDefaultPolicyBAD06F89"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/IntakeFafsa/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntakeFafsaServiceRoleDefaultPolicy45D221FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/LookupCoa/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LookupCoaServiceRoleDefaultPolicy321A806D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/MaskPii/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaskPiiServiceRoleDefaultPolicyF8DED8FF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/AssessAid/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssessAidServiceRoleDefaultPolicyD9F6E641"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/VerifyDocuments/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyDocumentsServiceRoleDefaultPolicy3BD5C3A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/ProfessionalJudgment/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProfessionalJudgmentServiceRoleDefaultPolicy87AB2F32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/CoreTools/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CoreToolsServiceRoleDefaultPolicyD9DF33E6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WriteAudit/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteAuditServiceRoleDefaultPolicy9004F742"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/RequestSignoff/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestSignoffServiceRoleDefaultPolicy7682949E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/SignoffRegister/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignoffRegisterServiceRoleDefaultPolicyEC101902"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/Finalize/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FinalizeServiceRoleDefaultPolicyE998505F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/fa-val1-compute/WorkflowGuards/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkflowGuardsServiceRoleDefaultPolicy5B16E0EF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

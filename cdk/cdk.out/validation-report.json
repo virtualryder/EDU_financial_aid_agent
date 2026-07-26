@@ -1,0 +1,125 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.5.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W3010",
+          "description": "AvailabilityZone: Avoid hardcoding availability zones 'us-east-1a'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "fa-val1-network/Vpc/publicSubnet1/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcpublicSubnet1Subnet2BB74ED7",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            },
+            {
+              "constructPath": "fa-val1-network/Vpc/publicSubnet2/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcpublicSubnet2SubnetE34B022A",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:268 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            },
+            {
+              "constructPath": "fa-val1-network/Vpc/firewallSubnet1/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcfirewallSubnet1Subnet6F40A205",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            },
+            {
+              "constructPath": "fa-val1-network/Vpc/firewallSubnet2/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcfirewallSubnet2SubnetCE2A0816",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:270 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            },
+            {
+              "constructPath": "fa-val1-network/Vpc/appSubnet1/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcappSubnet1SubnetAE489B2F",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            },
+            {
+              "constructPath": "fa-val1-network/Vpc/appSubnet2/Subnet",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+              "libraryVersion": "2.262.0",
+              "cloudFormationResource": {
+                "templatePath": "fa-val1-network.template.json",
+                "logicalId": "VpcappSubnet2Subnet2449FB56",
+                "propertyPaths": [
+                  "Properties.AvailabilityZone"
+                ]
+              },
+              "stackTraces": [
+                ".../sessions/gracious-nice-noether/tmp/jsii-kernel-ZRAlVZ/node_modules/aws-cdk-lib/aws-ec2/lib/vpc.js:1:272 in aws-cdk-lib...",
+                "Array.forEach (:)",
+                "...aws-cdk-lib..."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

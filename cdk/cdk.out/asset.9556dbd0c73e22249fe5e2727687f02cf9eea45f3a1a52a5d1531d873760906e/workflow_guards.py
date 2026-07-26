@@ -38,13 +38,11 @@ def _num(v):
 
 
 def guard_extracted(e):
-    """FAFSA intake must yield the Student Aid Index (the load-bearing decision field). The school
-    identifier (unitid) comes from the SIS/execution input, not from FAFSA free-text, so it is NOT
-    required here — the reference-COA lookup uses the input-supplied school/unitid."""
+    """FAFSA intake must yield the decision fields: a Student Aid Index and a school identifier."""
     f = e.get("fields") or {}
-    ok = _num(f.get("student_aid_index")) is not None
-    return ok, ("student_aid_index present" if ok else
-                "intake did not yield a student_aid_index")
+    ok = _num(f.get("student_aid_index")) is not None and bool(f.get("school") or f.get("unitid"))
+    return ok, ("decision fields present" if ok else
+                "intake did not yield student_aid_index + school/unitid")
 
 
 def guard_reference_coa(e):
