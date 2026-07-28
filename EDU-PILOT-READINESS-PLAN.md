@@ -4,7 +4,7 @@
 adjudication agent — it prepares work for aid officers; humans commit every consequential action).
 **Repo:** `github.com/virtualryder/EDU_financial_aid_agent` · **Release:** `v0.1.0-pilot-rc1` ·
 **Build state:** EP0 (control-plane port) + EP1 (author-produced clean-account live validation) complete;
-suite **150/150**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
+suite **153**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
 
 ---
 
@@ -57,7 +57,7 @@ The reviewer required these before any internal share; all are now closed:
 ## 1b. Gate B P1 bundle — build status (this cycle)
 
 The operating-model docs, the plain-language control, and the config/award-year CI gates were built
-this cycle. Suite now **150/150** (137 + 13 new). Remaining Gate-B items are engagement actions
+this cycle. Suite now **153** (137 + 13 + 3 CI-completeness gates). Remaining Gate-B items are engagement actions
 (SME red-line, accessibility-office review), not build items.
 
 | Item | Deliverable | Status |

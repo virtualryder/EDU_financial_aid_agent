@@ -58,7 +58,7 @@ production cost.
 
 ## Status in one line
 
-EP0 + EP1 **complete, 150/150 tests**; `v0.1.1-pilot-rc1` released with captured EP1 evidence; the
+EP0 + EP1 **complete, 153 tests**; `v0.1.1-pilot-rc1` released with captured EP1 evidence; the
 Gate-B operating-model pack is built ([`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md)).
 Next: credentialed financial-aid SME sign-off (Gate C), then independent security testing + governance
 signatures (Gate D). Adopter work and governance signatures: [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md).

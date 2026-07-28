@@ -11,7 +11,7 @@ this table, this table is correct and the other file is a bug.*
 | Field | Value |
 |---|---|
 | **Product** | Financial Aid Verification & Student Communication **Assistant** (not an awarding / eligibility-adjudication agent) |
-| **Supported tag** | `v0.1.1-pilot-rc1` — pins this reconciled state (docs + Gate-B operating-model bundle + 150 offline tests) |
+| **Supported tag** | `v0.1.1-pilot-rc1` — pins this reconciled state (docs + Gate-B operating-model bundle + 153 offline tests) |
 | **EP1 validation** | ran on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` = `v0.1.0` + **documentation reconciliation + operating-model bundle + 18 offline tests (132→150)**, **no infrastructure change** — so the EP1 live evidence carries forward unchanged |
 | **EP1 validation date** | 2026-07-26 |
 | **Region** | us-east-1 |
@@ -39,7 +39,7 @@ this table, this table is correct and the other file is a bug.*
 
 ## Count glossary (why several numbers exist — all legitimate, distinct)
 
-- **150 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 after the
+- **153 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 → 153 after the
   Gate-B operating-model bundle added config/award-year/readability gates). This is the current
   authoritative offline number.
 - **32-check legacy demo** — the shell-engine governance demo. Internal reference only; retired from

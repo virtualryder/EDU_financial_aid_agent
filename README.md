@@ -168,7 +168,7 @@ ships ZERO users).
 ## Pilot readiness (Gate B operating model)
 
 Beyond the code and the EP1 validation, the operating model a pilot needs is documented and, where it
-can be, enforced in CI (suite **150/150**). Start with the plan, then the specific docs:
+can be, enforced in CI (suite **153**). Start with the plan, then the specific docs:
 
 - [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — the whole picture: operating model, pilot metrics (no productivity % until measured), leadership Q&A, staged gates.
 - [`docs/CONFIGURATION-WORKSHEET.md`](docs/CONFIGURATION-WORKSHEET.md) — institution-controlled values + `config/institution.config.json` (CI drift gate: `test_config_schema.py`).

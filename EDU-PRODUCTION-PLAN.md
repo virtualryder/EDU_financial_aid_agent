@@ -36,7 +36,7 @@ replaces model orchestration (P0-2); **AWS CDK** is the supported deployment pat
 legacy/internal; **zero-PII pass-by-reference** orchestration (R3-2); **full Gate-B posture** —
 private networking, `.api.data.gov`-only egress firewall, customer-managed KMS, MFA-enforced identity,
 tenant pinning — **validated live in EP1** (7 stacks, strict canary PASS, 10/10 load, exactly-once
-storm). Suite **150/150**. Single authoritative count matrix: `RELEASE-MANIFEST.md`.
+storm). Suite **153**. Single authoritative count matrix: `RELEASE-MANIFEST.md`.
 
 ## 1. Regulatory frame (what a university CISO will test against)
 
