@@ -12,9 +12,9 @@
 - **Region:** any Region with Bedrock AgentCore + the chosen model (validated in us-east-1).
 - **Quotas:** default quotas suffice for a pilot (≤ 13 Lambdas, 1 state machine, 4 DynamoDB tables
   — audit ledger, sanitized artifacts, case store, pending approvals — 1 bucket).
-- **Tooling:** Node 18+, `npm i -g aws-cdk`, Python 3.12, `pip install -r cdk/requirements.txt`.
+- **Tooling:** Node 18+, `npx --yes aws-cdk@2` (or `npm i -g aws-cdk`; without `--yes` npx stops at an interactive install prompt and hangs silently), Python 3.12, `pip install -r cdk/requirements.txt`.
 - **Deployment role:** CloudFormation service-role pattern; least-privilege statement list in
-  `cdk/README.md` (or use CDK bootstrap's deploy role). `cdk bootstrap aws://<acct>/<region>` once.
+  `cdk/README.md` (or use CDK bootstrap's deploy role). `npx --yes aws-cdk@2 bootstrap aws://<acct>/<region>` once.
 
 ## 2. Configure (environment matrix)
 | Context | dev | pilot | production-reference |
@@ -41,7 +41,7 @@ Identity: the pool ships with ZERO users. Federate your IdP per `docs/IdP-Federa
 
 ## 3. Deploy
 ```bash
-git checkout v0.1.2-pilot-rc1        # always deploy a validated release tag, never main
+git checkout v0.1.3-pilot-rc1        # always deploy a validated release tag, never main
 cd cdk && pip install -r requirements.txt
 npx --yes aws-cdk@2 deploy --all --require-approval never -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
   -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>

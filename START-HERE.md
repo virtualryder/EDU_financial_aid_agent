@@ -1,7 +1,7 @@
 # START HERE — Financial Aid Verification & Student Communication Assistant
 
 *One page. What this is, what's proven, how to evaluate it, and what a pilot looks like. Target
-validated release: **[`v0.1.2-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.2-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
+validated release: **[`v0.1.3-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.3-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
 `main`). Supported deployment path: **AWS CDK** (`cdk/`); the shell engine is legacy/internal.*
 
 > **Evaluating for a pilot?** Read [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — it
@@ -58,7 +58,7 @@ production cost.
 
 ## Status in one line
 
-EP0 + EP1 **complete, 153 tests**; `v0.1.2-pilot-rc1` released with captured EP1 evidence; the
+EP0 + EP1 **complete, 153 tests**; `v0.1.3-pilot-rc1` released with captured EP1 evidence; the
 Gate-B operating-model pack is built ([`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md)).
 Next: credentialed financial-aid SME sign-off (Gate C), then independent security testing + governance
 signatures (Gate D). Adopter work and governance signatures: [`docs/GATE-B-CHECKLIST.md`](docs/GATE-B-CHECKLIST.md).
