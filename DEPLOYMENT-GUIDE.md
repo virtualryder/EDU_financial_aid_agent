@@ -55,9 +55,22 @@ directly, sequence it yourself). The Network Firewall adds ~8–10 min to networ
 VPC-attached Lambda stacks take longer to DELETE (ENI release) — plan windows accordingly.
 
 ## 4. Validate (must PASS before any use)
+
+> **Validating and then tearing down? Deploy with `-c retention_profile=sandbox-demo`, not `pilot`.**
+> The `pilot` profile applies **90-day GOVERNANCE** Object Lock to the WORM vault — right for a real
+> pilot, but on a throwaway environment it leaves locked objects you cannot clear (the audit writer is
+> deliberately DENIED `s3:BypassGovernanceRetention`). `sandbox-demo` is GOVERNANCE / 1 day.
+
 ```bash
 python scripts/validate_deployment.py --env pilot --region <region>
+python scripts/pii_canary.py --prefix fa-<env> --execute --strict   # expect verdict: PASS, leaks: {}
 ```
+
+> **Both scripts run for minutes and print NOTHING until they exit — that is not a hang.** The
+> validator polls the Step Functions execution (~2–3 min); the canary waits 120s for telemetry to
+> settle before sweeping (~3 min). Redirected to a file, Python buffers, so the log stays 0 bytes
+> until the process finishes. Do not kill them early.
+
 Emits the machine-readable verdict, e.g.:
 ```json
 {"deployment_status":"PASS","release":"<tag>","stacks":"COMPLETE","secrets":"PRESENT",
@@ -114,11 +127,52 @@ Subscribe ops to the `fa-<env>-ops-alarms` SNS topic; dashboard `fa-<env>-operat
 `docs/RETENTION-PROFILES.md` (retention/break-glass).
 
 ## 7. Upgrade / rollback / uninstall
-- **Upgrade:** deploy a NEW tagged release via `cdk deploy` (change-sets are reviewable); never patch in place.
+- **Upgrade:** deploy a NEW tagged release via `npx --yes aws-cdk@2 deploy` (change-sets are
+  reviewable); never patch in place.
 - **Rollback:** redeploy the previous tag (stateless compute; data stacks are additive).
-- **Uninstall:** `cdk destroy --all` then delete the RETAIN'd audit table + WORM vault **only per the
-  customer's records-disposition procedure**, then run the residual-resource check:
-  `python scripts/validate_deployment.py --env pilot --expect-absent`.
+- **Uninstall — `cdk destroy` alone does NOT reach zero residual.** Verified on `fa-val2`, 2026-07-28:
+
+  **1. Stop executions parked at the human sign-off gate first** — a RUNNING execution blocks
+  state-machine deletion and the destroy stalls:
+
+  ```bash
+  E=pilot; SM=$(aws stepfunctions list-state-machines \
+    --query "stateMachines[?contains(name,'fa-$E')].stateMachineArn" --output text)
+  aws stepfunctions list-executions --state-machine-arn "$SM" --status-filter RUNNING \
+    --query 'executions[].executionArn' --output text | tr '\t' '\n' \
+    | xargs -r -n1 -I{} aws stepfunctions stop-execution --execution-arn {} --cause teardown
+  ```
+
+  **2. Destroy**, then delete the RETAIN'd audit table + WORM vault **only per the customer's
+  records-disposition procedure**:
+
+  ```bash
+  npx --yes aws-cdk@2 destroy --all --force -c env=$E -c retention_profile=sandbox-demo
+  ```
+
+  **3. Clear what `destroy` deliberately leaves** (validation environments only — on a real pilot the
+  ledger and vault ARE the evidence you keep). Leftover log groups also **block a future redeploy that
+  reuses the same `-c env=` value**:
+
+  ```bash
+  aws dynamodb    delete-table     --table-name fa-$E-audit-ledger
+  aws cognito-idp delete-user-pool --user-pool-id "$(aws cognito-idp list-user-pools --max-results 50 \
+                     --query "UserPools[?contains(Name,'fa-$E')].Id" --output text)"
+  aws logs describe-log-groups --log-group-name-prefix "/aws/lambda/fa-$E" \
+    --query 'logGroups[].logGroupName' --output text | tr '\t' '\n' \
+    | xargs -r -n1 -I{} aws logs delete-log-group --log-group-name {}
+  aws s3api       delete-bucket    --bucket "$(aws s3api list-buckets \
+                     --query "Buckets[?contains(Name,'fa-$E-data-wormvault')].Name" --output text)"
+  ```
+
+  **4. Sweep every resource type, not just stacks** — an empty `describe-stacks` is **not** proof of
+  zero residual:
+
+  ```bash
+  python scripts/validate_deployment.py --env $E --expect-absent   # residual_stacks: []
+  for q in "cloudformation list-stacks" "lambda list-functions" "dynamodb list-tables" \
+           "s3api list-buckets" "logs describe-log-groups"; do aws $q | grep -c "fa-$E"; done   # all 0
+  ```
 
 ## 8. Troubleshooting
 | Symptom | Cause / fix |

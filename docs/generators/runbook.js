@@ -15,8 +15,8 @@ const body = [
   codeBlock([
     "git checkout v0.1.2-pilot-rc1     # a validated release tag, never main",
     "cd cdk && pip install -r requirements.txt",
-    "cdk bootstrap aws://<acct>/us-east-1   # once per account",
-    "cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \\",
+    "npx --yes aws-cdk@2 bootstrap aws://<acct>/us-east-1   # once per account (--yes: bare npx hangs on an install prompt)",
+    "npx --yes aws-cdk@2 deploy --all --require-approval never -c env=pilot -c retention_profile=pilot -c kms=customer-managed \\",
     "  -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>",
   ]),
   P(["Seven stacks deploy, including the AgentCore Gateway + Cedar policies AS infrastructure-as-code (no post-deploy shell steps). The College Scorecard API key is OPTIONAL (", code("fa-pilot/scorecard-api-key"), " in Secrets Manager; without it the lookup uses DEMO_KEY - acceptable because Scorecard is reference data). Then validate:"]),
@@ -27,7 +27,7 @@ const body = [
   bullet([bold("Pilot operating model "), "- the Gate-B operating-model pack lives in docs/: CONFIGURATION-WORKSHEET (+ config/institution.config.json drift gate), SME-REVIEW-PACKET (aid-officer sign-off, Gate-C blocker), AWARD-YEAR-UPDATE-RUNBOOK, ACCESSIBILITY (plain-language check), INCIDENT-RESPONSE, AUDIT-READINESS, SUPPORT, and MCP-GATEWAY. Start from EDU-PILOT-READINESS-PLAN.md in the repo root."]),
   bullet([bold("Operations "), "- subscribe to the ", code("fa-pilot-ops-alarms"), " SNS topic; dashboard ", code("fa-pilot-operations"), "; guard failures (forged/tampered evidence) page as security signals. Key rotation: docs/KEY-MANAGEMENT.md."]),
   bullet([bold("Independent verification "), "- the GitHub-OIDC release-validation workflow (.github/workflows/release-validation.yml) deploys the tag into a clean account, validates incl. the strict PII canary, tears down, and publishes a report under a run ID."]),
-  bullet([bold("Teardown "), "- ", code("cdk destroy --all"), "; the audit ledger + WORM vault are RETAIN'd by design; the customer-managed CMK is RETAIN'd (its alias deletes with the stack - find the retained key by tag env=<env> and schedule deletion); VPC-attached Lambda stacks take ~15-30 min to delete (Hyperplane ENI release)."]),
+  bullet([bold("Teardown "), "- ", code("npx --yes aws-cdk@2 destroy --all --force"), "; the audit ledger + WORM vault are RETAIN'd by design; the customer-managed CMK is RETAIN'd (its alias deletes with the stack - find the retained key by tag env=<env> and schedule deletion); VPC-attached Lambda stacks take ~15-30 min to delete (Hyperplane ENI release)."]),
   spacer(),
 
   H1("1. Overview (legacy shell reference)"),
