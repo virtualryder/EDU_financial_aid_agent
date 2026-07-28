@@ -1,3 +1,45 @@
+> ## Re-validation — `fa-val2`, 2026-07-28 (supersedes the EP1 run below)
+>
+> `DEPLOYMENT-GUIDE.md` was walked end to end as a Solution Architect would, on a clean account.
+> **It found two blocking defects. Both are fixed and the re-run passes.**
+>
+> ### Defect 1 — the repo could not be deployed at all (P0)
+> `cdk/cdk.json` carried `@aws-cdk/core:enableStackNameDuplicates`, a CDK **v1** feature flag REMOVED
+> in v2. On the pinned CDK the CLI aborts:
+> `RuntimeError: Unsupported feature flag ... has been removed in CDKv2`. **`cdk synth` and
+> `cdk deploy` both failed**, so the documented path was impossible to follow.
+> *Why the suite missed it:* `Template.from_stack()` builds constructs in-process and **never reads
+> `cdk.json`** — only the CLI does. All 152 tests passed while the shipped artifact was undeployable.
+> Fixed; `tests/test_cdk_context_flags.py` now gates it (and is in all four sibling repos).
+>
+> ### Defect 2 — the documented execution input crashed the controller (P0)
+> `LookupCOA` read `$.school` / `$.unitid` straight off execution state, but the documented contract
+> is `{case_id, requester, case_ref}` (§2). Every execution started with the guide's own command died:
+> `The JSONPath '$.school' ... could not be found in the input` — a **hard failure, not a fail-closed
+> outcome**: no ManualReview, no audit intent, the governed pipeline simply crashed.
+> **Two more states had the identical bug**, masked because LookupCOA crashed first: `AssessAid`
+> (`$.selected_for_verification`) and `VerifyDocuments` (`$.required_documents`,
+> `$.received_documents`). A `SeedInstitution` Pass state now defaults all of them —
+> `selected_for_verification` defaults **TRUE** so a missing value routes through 34 CFR 668
+> verification rather than skipping it (defaulting false would fail OPEN).
+> Gated by `tests/test_workflow_input_contract.py`.
+>
+> ### Re-run result — all gates PASS
+>
+> | Check | Result |
+> |---|---|
+> | 7/7 CDK stacks | `CREATE_COMPLETE`, **1073s (~18 min)** |
+> | `validate_deployment.py --env val2` | **PASS** (`masking_control`, `guard_genuine`, `forged_ref_denied`, `ingest_pass_by_reference`, `workflow_fail_closed`) |
+> | Controller terminal | `Extract → GuardExtracted → ExtractedOk → SeedInstitution → LookupCOA → GuardReferenceCOA → ReferenceCoaOk → **ManualReview**` — no institution identifier ⇒ unsigned lookup ⇒ guard fails ⇒ **fail CLOSED**, now reachable instead of crashing |
+> | Strict PII canary | **PASS**, `leaks: {}` |
+> | Identity | MFA `ON`, **0 users**, admin-create-only |
+> | Egress | 1 Network Firewall (College Scorecard allowlist) · 11 VPC endpoints |
+>
+> Offline suite **157** (156 + 1 CI-only gate). Account IDs redacted to `111122223333`.
+> Torn down with a full residual sweep.
+
+---
+
 # EP1 validation run — ALL SWITCHES ON ✅ (2026-07-26, us-east-1, account redacted `111122223333`)
 
 *First clean-account live validation of the EDU financial-aid agent, exercising the full Gate-B

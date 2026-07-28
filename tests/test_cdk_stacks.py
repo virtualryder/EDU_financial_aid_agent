@@ -112,6 +112,12 @@ def test_controller_pipeline_order_and_fail_closed_choices():
         else:
             state = st.get("Next")
     expected = ["Extract", "GuardExtracted", "ExtractedOk",
+                    # SeedInstitution defaults the OPTIONAL caller inputs (institution identifiers,
+                    # verification selection, document lists). Without it those states read JSONPaths
+                    # that are not in the {case_id, requester, case_ref} contract and the execution
+                    # dies with States.Runtime instead of routing to ManualReview. See
+                    # tests/test_workflow_input_contract.py.
+                    "SeedInstitution",
                     "LookupCOA", "GuardReferenceCOA", "ReferenceCoaOk",
                     "MaskPii", "GuardDeidentified", "DeidentifiedOk",
                     "AssessAid", "GuardRulesExecuted", "RulesOk",

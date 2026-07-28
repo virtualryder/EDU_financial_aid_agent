@@ -49,9 +49,41 @@ class WorkflowStack(cdk.Stack):
                          {"case_ref.$": "$.case_ref"}, "$.extract")
         g_extracted = guard("GuardExtracted", "extracted", {"fields.$": "$.extract.out.fields"})
 
+        # The execution input contract is {case_id, requester, case_ref} (see the R3-2 note above), so
+        # `$.school` / `$.unitid` are NOT in state. Referencing them directly made LookupCOA raise
+        # States.Runtime ("The JSONPath '$.school' ... could not be found in the input") and the whole
+        # execution FAILED — the exact "brittle JSONPath turns fail-closed into a runtime error" trap
+        # called out on the guard below, committed on the input side. Found by running the documented
+        # command on a live deployment (fa-val2, 2026-07-28).
+        #
+        # Seeding defaults keeps the optional identifiers resolvable. An unidentified (or source-down)
+        # lookup returns NO signed provenance token, so GuardReferenceCOA routes to ManualReview —
+        # fail CLOSED by design, and now actually reachable instead of crashing first.
+        # THREE states had this defect, not one. LookupCOA crashed first, which masked the other two:
+        # AssessAid reads $.selected_for_verification and VerifyDocuments reads $.required_documents /
+        # $.received_documents — none of which are in the {case_id, requester, case_ref} contract
+        # either. Fixing only LookupCOA would have moved the same crash downstream.
+        #
+        # `selected_for_verification` defaults to TRUE deliberately: absent an explicit caller value,
+        # route the case through 34 CFR 668 verification (the stricter path) rather than silently
+        # skipping it. Defaulting to false would fail OPEN.
+        seed_institution = sfn.Pass(
+            self, "SeedInstitution",
+            comment="Default the OPTIONAL caller-supplied inputs so no downstream state can raise "
+                    "States.Runtime on a missing JSONPath. No institution identifier -> unsigned "
+                    "lookup -> GuardReferenceCOA -> ManualReview. selected_for_verification defaults "
+                    "TRUE (stricter path) so a missing value cannot skip verification.",
+            parameters={
+                "institution": {"school": "", "unitid": ""},
+                "selected_for_verification": True,
+                "required_documents": [],
+                "received_documents": [],
+            },
+            result_path="$.seeded")
+
         lookup = invoke("LookupCOA", compute.lookup,
-                        {"school.$": "$.school",
-                         "unitid.$": "$.unitid"}, "$.lookup")
+                        {"school.$": "$.seeded.institution.school",
+                         "unitid.$": "$.seeded.institution.unitid"}, "$.lookup")
         # Pass the WHOLE lookup output: a source-down lookup has no coa keys, and judging that is
         # the guard's job — a brittle JSONPath here would turn fail-closed into a runtime error.
         g_coa = guard("GuardReferenceCOA", "reference_coa", {"lookup.$": "$.lookup.out"})
@@ -66,7 +98,7 @@ class WorkflowStack(cdk.Stack):
                          "enrollment_status.$": "$.extract.out.fields.enrollment_status",
                          "sap_gpa.$": "$.extract.out.fields.sap_gpa",
                          "sap_pace.$": "$.extract.out.fields.sap_pace",
-                         "selected_for_verification.$": "$.selected_for_verification",
+                         "selected_for_verification.$": "$.seeded.selected_for_verification",
                          "coa_source.$": "$.lookup.out.coa_source",
                          "deidentified": True, "sanitized_ref.$": "$.mask.out.sanitized_ref"},
                         "$.assessment")
@@ -76,8 +108,8 @@ class WorkflowStack(cdk.Stack):
         # drafted communication or HOLDS as an aid-office work-queue item.
         verify_docs = invoke("VerifyDocuments", compute.verify_docs,
                              {"case_id.$": "$.case_id",
-                              "required_documents.$": "$.required_documents",
-                              "received_documents.$": "$.received_documents"}, "$.documents")
+                              "required_documents.$": "$.seeded.required_documents",
+                              "received_documents.$": "$.seeded.received_documents"}, "$.documents")
         g_verify = guard("GuardVerification", "verification",
                          {"assessment.$": "$.assessment.out", "documents.$": "$.documents.out"})
         verification_hold = sfn.Succeed(
@@ -114,7 +146,8 @@ class WorkflowStack(cdk.Stack):
         # explicit chain with fail-closed choices; the verification choice routes HOLDS to the
         # VerificationHold work queue (terminal), never onward to a drafted communication.
         c1 = sfn.Choice(self, "ExtractedOk").when(
-            sfn.Condition.boolean_equals("$.guards.extracted.ok", True), lookup).otherwise(manual_review)
+            sfn.Condition.boolean_equals("$.guards.extracted.ok", True),
+            seed_institution).otherwise(manual_review)
         c2 = sfn.Choice(self, "ReferenceCoaOk").when(
             sfn.Condition.boolean_equals("$.guards.reference_coa.ok", True), mask).otherwise(manual_review)
         c3 = sfn.Choice(self, "DeidentifiedOk").when(
@@ -125,6 +158,7 @@ class WorkflowStack(cdk.Stack):
             sfn.Condition.boolean_equals("$.guards.verification.ok", True), draft).otherwise(verification_hold)
 
         definition = (extract.next(g_extracted).next(c1))
+        seed_institution.next(lookup)
         lookup.next(g_coa).next(c2)
         mask.next(g_deid).next(c3)
         assess.next(g_rules).next(c4)

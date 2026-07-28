@@ -43,7 +43,7 @@ Identity: the pool ships with ZERO users. Federate your IdP per `docs/IdP-Federa
 ```bash
 git checkout v0.1.1-pilot-rc1        # always deploy a validated release tag, never main
 cd cdk && pip install -r requirements.txt
-cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
+npx --yes aws-cdk@2 deploy --all --require-approval never -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
   -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>
 ```
 `--all` includes EVERYTHING — the AgentCore Gateway/Cedar attachment (`fa-<env>-gateway`) deploys
