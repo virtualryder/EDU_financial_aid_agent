@@ -4,7 +4,7 @@
 reading order by role, and the pilot offer.
 
 > **SUPPORTED DEPLOYMENT PATH — read this first.** The ONE supported path is **AWS CDK at the
-> validated release tag [`v0.1.1-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.1-pilot-rc1)**
+> validated release tag [`v0.1.2-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.2-pilot-rc1)**
 > (`cdk/` — includes the AgentCore Gateway/Cedar attachment as IaC), per
 > [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md) and [`VALIDATED_RELEASE.md`](VALIDATED_RELEASE.md);
 > the tag was cut AFTER the EP1 live validation captured its evidence (2026-07-26 — see
@@ -139,7 +139,7 @@ All are proven live in the EP1 validation run ([`evidence/EP1-VALIDATION.md`](ev
 Full step-by-step: [`DEPLOYMENT-GUIDE.md`](DEPLOYMENT-GUIDE.md). Short version:
 
 ```bash
-git checkout v0.1.1-pilot-rc1            # deploy a VALIDATED RELEASE TAG, never main
+git checkout v0.1.2-pilot-rc1            # deploy a VALIDATED RELEASE TAG, never main
 cd cdk && pip install -r requirements.txt
 cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \
   -c network_mode=private -c identity_mode=pilot -c tenant=<institution-id>

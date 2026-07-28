@@ -4,16 +4,16 @@ const { H1, H2, H3, P, bold, code, bullet, num, codeBlock, callout, table, space
 const cover = coverAndToc(
   ["Financial Aid Agent", "on Amazon Bedrock AgentCore"],
   "Solution Architect Deployment Runbook",
-  "Deployment of the governed Financial Aid Verification & Student Communication Assistant. SECTION 0 IS THE SUPPORTED CUSTOMER PATH (AWS CDK at the validated release tag v0.1.1-pilot-rc1 - EP1 live-validated, incl. the full Gate-B hardening posture). Sections 1-8 document the legacy shell engine, retained as internal reference only. Region: us-east-1. Accelerator reference; not production-certified. Version 2.0 · 2026-07.",
+  "Deployment of the governed Financial Aid Verification & Student Communication Assistant. SECTION 0 IS THE SUPPORTED CUSTOMER PATH (AWS CDK at the validated release tag v0.1.2-pilot-rc1 - EP1 live-validated, incl. the full Gate-B hardening posture). Sections 1-8 document the legacy shell engine, retained as internal reference only. Region: us-east-1. Accelerator reference; not production-certified. Version 2.0 · 2026-07.",
   ["0. THE SUPPORTED PATH - CDK at a validated release", "1. Overview (legacy shell reference)", "2. Prerequisites", "3. What gets deployed", "4. Deployment procedure", "5. Configuration reference", "6. Validation checklist", "7. Teardown", "8. Windows / Git-Bash operational notes"]
 );
 
 const body = [
   H1("0. THE SUPPORTED PATH — CDK at a validated release"),
-  callout("Read this first", [["Customer deployments use AWS CDK at the validated release tag v0.1.1-pilot-rc1 - never main, never the shell engine. The CDK path was validated live (EP1, evidence/EP1-VALIDATION.md) with the full Gate-B hardening posture: private networking with an egress firewall allowlisting ONLY the College Scorecard API (.api.data.gov), customer-managed KMS, MFA-required identity, pinned tenancy - and a strict PII canary (zero FAFSA/PII in any telemetry, including Step Functions execution history). This section is a summary; DEPLOYMENT-GUIDE.md in the repository root is the authoritative step-by-step guide."]], G.colors.TEAL),
+  callout("Read this first", [["Customer deployments use AWS CDK at the validated release tag v0.1.2-pilot-rc1 - never main, never the shell engine. The CDK path was validated live (EP1, evidence/EP1-VALIDATION.md) with the full Gate-B hardening posture: private networking with an egress firewall allowlisting ONLY the College Scorecard API (.api.data.gov), customer-managed KMS, MFA-required identity, pinned tenancy - and a strict PII canary (zero FAFSA/PII in any telemetry, including Step Functions execution history). This section is a summary; DEPLOYMENT-GUIDE.md in the repository root is the authoritative step-by-step guide."]], G.colors.TEAL),
   H2("0.1 Deploy"),
   codeBlock([
-    "git checkout v0.1.1-pilot-rc1     # a validated release tag, never main",
+    "git checkout v0.1.2-pilot-rc1     # a validated release tag, never main",
     "cd cdk && pip install -r requirements.txt",
     "cdk bootstrap aws://<acct>/us-east-1   # once per account",
     "cdk deploy --all -c env=pilot -c retention_profile=pilot -c kms=customer-managed \\",
