@@ -36,7 +36,7 @@ replaces model orchestration (P0-2); **AWS CDK** is the supported deployment pat
 legacy/internal; **zero-PII pass-by-reference** orchestration (R3-2); **full Gate-B posture** —
 private networking, `.api.data.gov`-only egress firewall, customer-managed KMS, MFA-enforced identity,
 tenant pinning — **validated live in EP1** (7 stacks, strict canary PASS, 10/10 load, exactly-once
-storm). Suite **153**. Single authoritative count matrix: `RELEASE-MANIFEST.md`.
+storm). Suite **175 tests**. Single authoritative count matrix: `RELEASE-MANIFEST.md`.
 
 ## 1. Regulatory frame (what a university CISO will test against)
 
@@ -91,7 +91,8 @@ read-only SIS/ISIR integration exists, real-data use is shadow-mode only.
 ## 3. Status log
 
 - **2026-07-24 — plan committed.** Review verified against the repo (accurate). Baseline: 57 tests.
-- **2026-07-24 — CYCLE 1 DONE (EP0-1,2,3,5-partial,6): control plane ported, suite 57 → 108/108.**
+- **2026-07-24 — CYCLE 1 DONE (EP0-1,2,3,5-partial,6): control plane ported, suite 57 → 108/108.** <!-- count-gate:historical -->
+
   Sanitized-artifact refs live in assess/PJ/drafter (boolean dead); GA-2 domain keys `deid` +
   `scorecard` (IAM split comes with CDK); pass-by-reference plumbing in intake/mask/drafter
   (case_store + ingest_case + notice_ref); exactly-once finalize + duplicate-register ported;

@@ -11,12 +11,12 @@ this table, this table is correct and the other file is a bug.*
 | Field | Value |
 |---|---|
 | **Product** | Financial Aid Verification & Student Communication **Assistant** (not an awarding / eligibility-adjudication agent) |
-| **Supported tag** | `v0.1.3-pilot-rc1` — pins this reconciled state (docs + Gate-B operating-model bundle + 153 offline tests) |
+| **Supported tag** | `v0.1.3-pilot-rc1` — pins the reconciled docs + Gate-B operating-model bundle. It was cut when the suite stood at 153 offline tests; that number describes the tag, not the current tree (see the row below). Re-cut the tag to re-align. <!-- count-gate:historical --> |
 | **EP1 validation** | ran on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` = `v0.1.0` + **documentation reconciliation + operating-model bundle + 18 offline tests (132→150)**, **no infrastructure change** — so the EP1 live evidence carries forward unchanged |
 | **EP1 validation date** | 2026-07-26 |
 | **Region** | us-east-1 |
 | **AWS account** | clean isolated account (id redacted in all committed files) |
-| **Offline test suite** | **150 / 150** passing (unit + eval + Cedar policy + **24 CDK stack-synthesis** assertions) |
+| **Offline test suite** | **175 / 175** passing on current main (unit + eval + Cedar policy + **24 CDK stack-synthesis** assertions + the doc-count gate). 174 run locally; 1 CI-completeness gate runs only in CI. |
 | **Legacy demo checks** | 32-check governance demo — **shell engine, internal reference only, NOT a customer path** |
 | **EP1 live scenarios** | 6 (see below) |
 | **Concurrency cases** | 10 concurrent executions → 10/10 SUCCEEDED, one `FINAL#` marker each |
@@ -39,9 +39,13 @@ this table, this table is correct and the other file is a bug.*
 
 ## Count glossary (why several numbers exist — all legitimate, distinct)
 
-- **153 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 → 153 after the
-  Gate-B operating-model bundle added config/award-year/readability gates). This is the current
-  authoritative offline number.
+- **175 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 → 153 after the
+  Gate-B operating-model bundle added config/award-year/readability gates → 157 after the `fa-val2`
+  re-validation gates → 175 today, including the doc-count gate). This is the current
+  authoritative offline number, and it is machine-enforced by `tests/test_doc_counts.py`: that gate
+  collects the suite for real and fails if any counted document disagrees. A count that describes a
+  **past run** is exempt only when the line says "at the time of this run" or carries a
+  `<!-- count-gate:historical -->` marker.
 - **32-check legacy demo** — the shell-engine governance demo. Internal reference only; retired from
   the customer path. Do not cite it as pilot evidence.
 - **10 concurrency + 10 replay** — the EP1 load/replay storm; distinct from the offline suite.

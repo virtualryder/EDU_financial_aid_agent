@@ -9,7 +9,7 @@
 > `RuntimeError: Unsupported feature flag ... has been removed in CDKv2`. **`cdk synth` and
 > `cdk deploy` both failed**, so the documented path was impossible to follow.
 > *Why the suite missed it:* `Template.from_stack()` builds constructs in-process and **never reads
-> `cdk.json`** — only the CLI does. All 152 tests passed while the shipped artifact was undeployable.
+> `cdk.json`** — only the CLI does. All 152 tests passed while the shipped artifact was undeployable. <!-- count-gate:historical -->
 > Fixed; `tests/test_cdk_context_flags.py` now gates it (and is in all four sibling repos).
 >
 > ### Defect 2 — the documented execution input crashed the controller (P0)
@@ -35,7 +35,7 @@
 > | Identity | MFA `ON`, **0 users**, admin-create-only |
 > | Egress | 1 Network Firewall (College Scorecard allowlist) · 11 VPC endpoints |
 >
-> Offline suite **157** (156 + 1 CI-only gate). Account IDs redacted to `111122223333`.
+> Offline suite **157 tests at the time of this run** (156 + 1 CI-only gate). Account IDs redacted to `111122223333`.
 > Torn down with a full residual sweep.
 
 ---

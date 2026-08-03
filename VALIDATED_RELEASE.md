@@ -14,7 +14,7 @@ clean-account validation run (EP1) and MUST NOT be asserted before capture.*
 |---|---|
 | Tag | `v0.1.3-pilot-rc1` — the supported pilot tag (reconciled docs + Gate-B operating-model bundle). Single source of truth: repo-root `RELEASE`, enforced by `tests/test_release_consistency.py`. EP1 was validated on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` adds documentation + tests only (**no infrastructure change**), so the EP1 evidence carries forward. |
 | Commit SHA | the commit carrying tag `v0.1.3-pilot-rc1` (`git rev-list -n1 v0.1.3-pilot-rc1`) |
-| Test count | **153** on current main (offline + CDK assertions). Authoritative count matrix: [`RELEASE-MANIFEST.md`](RELEASE-MANIFEST.md) (132 at EP0 → 137 → 150 → 153; do not cite older counts) |
+| Test count | **175 tests** on current main (offline + CDK assertions + the doc-count gate). Authoritative count matrix: [`RELEASE-MANIFEST.md`](RELEASE-MANIFEST.md) (132 at EP0 → 137 → 150 → 153 → 157 → 175; do not cite older counts). The `v0.1.3-pilot-rc1` tag was cut earlier in that sequence — re-cut it to re-align. |
 | Validation date | 2026-07-26 (EP1 clean-account run) |
 | Region | us-east-1 (target) |
 | Deployment configuration | CDK `--all`; EP1 target: `retention_profile=sandbox-demo kms=customer-managed network_mode=private identity_mode=pilot tenant=<institution-id>` |

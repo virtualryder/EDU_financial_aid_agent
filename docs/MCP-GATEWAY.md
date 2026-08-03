@@ -49,7 +49,7 @@ same one proven in the portfolio's MCP auth demo; EDU applies it to the financia
 The **governance is not AgentCore-specific.** The load-bearing controls — deterministic masking + signed
 `sanitized_ref`, HMAC-signed provenance, the deterministic Step Functions controller with fail-closed
 guards, the human sign-off gate, the WORM audit ledger — run as plain Lambdas and shared Python modules
-and are exercised fully offline by the test suite (153 tests, no AgentCore needed).
+and are exercised fully offline by the test suite (175 tests, no AgentCore needed).
 
 AgentCore/Gateway/Cedar provides the **managed MCP gateway + policy enforcement plane**. If an institution
 cannot use AgentCore, the same tools can sit behind an alternative MCP gateway (or an API Gateway +
