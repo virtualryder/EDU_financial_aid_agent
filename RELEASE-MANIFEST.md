@@ -11,7 +11,7 @@ this table, this table is correct and the other file is a bug.*
 | Field | Value |
 |---|---|
 | **Product** | Financial Aid Verification & Student Communication **Assistant** (not an awarding / eligibility-adjudication agent) |
-| **Supported tag** | `v0.1.3-pilot-rc1` — pins the reconciled docs + Gate-B operating-model bundle. It was cut when the suite stood at 153 offline tests; that number describes the tag, not the current tree (see the row below). Re-cut the tag to re-align. <!-- count-gate:historical --> |
+| **Supported tag** | `v0.1.3-pilot-rc1` — pins the reconciled docs + Gate-B operating-model bundle. superseded by `v0.2.0-pilot-rc1`, which was cut from this tree after the governed-core dependency migration and matches the current count. The older tag stood at 153 offline tests. <!-- count-gate:historical --> |
 | **EP1 validation** | ran on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` = `v0.1.0` + **documentation reconciliation + operating-model bundle + 18 offline tests (132→150)**, **no infrastructure change** — so the EP1 live evidence carries forward unchanged |
 | **EP1 validation date** | 2026-07-26 |
 | **Region** | us-east-1 |
