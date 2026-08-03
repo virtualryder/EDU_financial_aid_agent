@@ -56,7 +56,7 @@ const body = [
     ["Encryption & data protection", "PII is masked before any model call; the audit copy is Object-Lock protected; runs inside the institution's account.", [{ text: "Institution: ", bold: true }, "KMS keys, TLS, and network segmentation."]],
     ["Audit & monitoring", "Immutable WORM audit of every decision and state change, with identity-tagged, OTel-correlated logs.", "Live; institution sets retention and log aggregation."],
     ["Minimize / safeguard FTI", "mask_pii removes SSN and other identifiers before the model and the audit; least-privilege limits who and what can process it.", [{ text: "Institution: ", bold: true }, "the Pub 1075 safeguarding program and safeguard security report, where FTI is used."]],
-    ["Written security program & assessment", "Reproducible, manifest-driven infrastructure-as-code and a 150-test automated suite gating every change in CI plus a captured clean-account live validation run (evidence/EP1-VALIDATION.md).", [{ text: "Institution: ", bold: true }, "the WISP, risk assessment, and qualified individual per the Safeguards Rule."]],
+    ["Written security program & assessment", "Reproducible, manifest-driven infrastructure-as-code and a 175-test automated suite gating every change in CI plus a captured clean-account live validation run (evidence/EP1-VALIDATION.md).", [{ text: "Institution: ", bold: true }, "the WISP, risk assessment, and qualified individual per the Safeguards Rule."]],
   ], [2500, 4240, 3700]),
 
   H1("7. Separation of duties & the human sign-off gate"),

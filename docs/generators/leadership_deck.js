@@ -218,7 +218,7 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
   const s = p.addSlide(); bg(s, CLOUD);
   eyebrow(s, "Evidence");
   title(s, "Proof, not slideware: EP1 live validation captured, all switches on");
-  const stats = [["150/150", "automated tests green", MINT], ["10/10", "concurrent runs live-proven", TEAL], ["0", "PII hits in any telemetry (strict canary)", AMBER], ["0", "residual on teardown", NAVY]];
+  const stats = [["175/175", "automated tests green", MINT], ["10/10", "concurrent runs live-proven", TEAL], ["0", "PII hits in any telemetry (strict canary)", AMBER], ["0", "residual on teardown", NAVY]];
   const sw = 2.9, gap = 0.23, x0 = 0.62, y = 1.5;
   stats.forEach((st, i) => {
     const x = x0 + i * (sw + gap);
