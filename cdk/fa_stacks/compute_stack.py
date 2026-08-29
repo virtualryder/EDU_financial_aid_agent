@@ -15,7 +15,9 @@ RUNTIME = lambda_.Runtime.PYTHON_3_12
 
 class ComputeStack(cdk.Stack):
     def __init__(self, scope: Construct, cid: str, *, prefix: str, asset_dir: str, data,
-                 provenance_secret: str = "", network=None, tenant: str = "", **kw):
+                 provenance_secret: str = "", network=None, tenant: str = "",
+                 guardrail_id: str = "", guardrail_version: str = "1",
+                 identity=None, approvals_client_id: str = "", **kw):
         super().__init__(scope, cid, **kw)
         code = lambda_.Code.from_asset(asset_dir)
         # Gate-B (customer-managed KMS): when the DataStack was deployed with kms=customer-managed,
@@ -31,6 +33,12 @@ class ComputeStack(cdk.Stack):
         common_env = {
             "AUDIT_TABLE": data.audit_table.table_name,
             "WORM_BUCKET": data.worm_bucket.bucket_name,
+            # The pinned governed-core evidence writer reads AUDIT_BUCKET
+            # (governed_core/controls/evidence.py: _env("AUDIT_BUCKET") or
+            # "evidence-worm-<acct>-<region>"). Without this alias the WORM mirror
+            # silently no-ops with worm_error=NoSuchBucket (same defect fixed on
+            # benefits, cdee12c). WORM_BUCKET kept for anything reading the old name.
+            "AUDIT_BUCKET": data.worm_bucket.bucket_name,
             "SANITIZED_TABLE": data.sanitized_table.table_name,
             "PENDING_TABLE": data.pending_table.table_name,
             "CASE_TABLE": data.case_table.table_name,   # R3-2 pass-by-reference store
@@ -69,15 +77,14 @@ class ComputeStack(cdk.Stack):
         )
 
         def fn(name, handler_module, env=None, timeout=30):
-            # Gate-B: with a CMK, each function gets an EXPLICIT CMK-encrypted log group (Lambda's
-            # implicit log groups are AES-256 only) and CMK-encrypted environment variables.
-            log_group = None
-            if cmk is not None:
-                log_group = logs.LogGroup(
-                    self, name.replace("-", " ").title().replace(" ", "") + "Logs",
-                    log_group_name=f"/aws/lambda/{prefix}-{name}",
-                    encryption_key=cmk, retention=logs.RetentionDays.ONE_YEAR,
-                    removal_policy=cdk.RemovalPolicy.DESTROY)
+            # Observability parity with benefits (obs review 2026-08-29): the log group is now
+            # UNCONDITIONAL — 1-year retention must not be a side effect of the kms switch. CMK
+            # encryption (Lambda's implicit log groups are AES-256 only) still applies only with a CMK.
+            log_group = logs.LogGroup(
+                self, name.replace("-", " ").title().replace(" ", "") + "Logs",
+                log_group_name=f"/aws/lambda/{prefix}-{name}",
+                encryption_key=cmk, retention=logs.RetentionDays.ONE_YEAR,
+                removal_policy=cdk.RemovalPolicy.DESTROY)
             # Gate-B (B1): with a NetworkStack, every governed tool runs in the private app subnets
             # behind the egress firewall — no direct internet path exists from any tool.
             net = {}
@@ -91,7 +98,9 @@ class ComputeStack(cdk.Stack):
                 handler=f"{handler_module}.handler",
                 timeout=cdk.Duration.seconds(timeout), memory_size=256,
                 environment={**common_env, **(env or {})},
-                environment_encryption=cmk, log_group=log_group, **net,
+                environment_encryption=cmk, log_group=log_group,
+                tracing=lambda_.Tracing.ACTIVE,   # X-Ray on every governed tool (obs review 2026-08-29)
+                **net,
             )
             if cmk is not None:
                 cmk.grant_decrypt(f)   # runtime decrypt of CMK-encrypted env vars (role policy)
@@ -104,12 +113,26 @@ class ComputeStack(cdk.Stack):
         self.assess = fn("assess-aid", "assess_aid")
         self.verify_docs = fn("verify-documents", "verify_documents")
         self.pj = fn("professional-judgment", "professional_judgment")
-        self.core = fn("core-tools", "aid_core", timeout=60)
+        # Guardrail-pinned drafting (G1 parity): aid_core honors GUARDRAIL_ID/VERSION like
+        # benefits_core; supplying the platform guardrail makes every generation guardrail-assessed.
+        core_env = {}
+        if guardrail_id:
+            core_env = {"GUARDRAIL_ID": guardrail_id, "GUARDRAIL_VERSION": guardrail_version}
+        self.core = fn("core-tools", "aid_core", env=core_env, timeout=60)
         self.write_audit = fn("write-audit", "write_audit")
         self.request_signoff = fn("request-signoff", "request_signoff")
         self.signoff_register = fn("signoff-register", "signoff_register")
         self.finalize = fn("finalize", "finalize_signoff")
         self.guards = fn("workflow-guards", "workflow_guards")
+        # approve-signoff (G2 parity): the identity-verifying approve path (Cognito access token,
+        # SoD, single-use). governed-core 1.5.0 finalize refuses approvals that did not come through it.
+        self.approve_signoff = None
+        if identity is not None:
+            self.approve_signoff = fn("approve-signoff", "approve_signoff", env={
+                "POOL_ID": identity.pool.user_pool_id,
+                "CLIENT_ID": approvals_client_id or identity.client.user_pool_client_id,
+                "REVIEWER_GROUP": "aid_officer",
+            })
 
         # ── explicit least-privilege wiring ──────────────────────────────────
         # Secrets (Review-2 + GA-2): each domain key readable ONLY by that domain's signer + verifiers.
@@ -144,6 +167,19 @@ class ComputeStack(cdk.Stack):
         # drafter: Bedrock only (scoped by inference-profile at deploy via env MODEL_ARNS if narrowed)
         self.core.add_to_role_policy(iam.PolicyStatement(
             actions=["bedrock:InvokeModel"], resources=["*"]))
+        if guardrail_id:
+            self.core.add_to_role_policy(iam.PolicyStatement(
+                actions=["bedrock:ApplyGuardrail"],
+                resources=[f"arn:aws:bedrock:{self.region}:{self.account}:guardrail/{guardrail_id}"]))
+        if self.approve_signoff is not None:
+            data.pending_table.grant(self.approve_signoff, "dynamodb:GetItem", "dynamodb:UpdateItem")
+            self.approve_signoff.add_to_role_policy(iam.PolicyStatement(
+                actions=["states:SendTaskSuccess", "states:SendTaskFailure"],
+                resources=[f"arn:aws:states:{self.region}:{self.account}:"
+                           f"stateMachine:{prefix}-determination-workflow"]))
+            data.audit_table.grant(self.approve_signoff, "dynamodb:PutItem",
+                                   "dynamodb:GetItem", "dynamodb:TransactWriteItems")
+            data.worm_bucket.grant_put(self.approve_signoff)
         # audit writer: append-only + WORM put, with explicit tamper Deny
         data.audit_table.grant(self.write_audit, "dynamodb:PutItem",
                                "dynamodb:GetItem", "dynamodb:TransactWriteItems")
