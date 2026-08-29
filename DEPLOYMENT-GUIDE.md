@@ -25,6 +25,18 @@
 | `-c network_mode=` | public | **private** (Gate-B B1: isolated subnets + Network Firewall egress allowlist = `.api.data.gov` only) | private |
 | `-c identity_mode=` | sandbox | **pilot** (Gate-B B3: MFA REQUIRED software-token-only, threat protection ENFORCED) | pilot |
 | `-c tenant=` | *(unset)* | **`<institution-id>`** (Gate-B B5: deployment-pinned tenant, HMAC-signed into every sanitized artifact) | `<institution-id>` |
+| `-c guardrail_id=` `-c guardrail_version=` | *(unset — unguarded, sandbox only)* | **`<platform guardrail id>` `1`** — arms the Bedrock guardrail on the drafter; an intervention fails closed (no `notice_ref`) → `ManualReview` | same |
+| `-c approvals_client_id=` | *(gateway client)* | Cognito app-client id the `approve-signoff` Lambda verifies aid-officer access tokens against (pool + `aid_officer` group wired from the identity stack) | same |
+
+**Observability & governance evidence (parity with the benefits baseline, governed-core ≥ 1.5.0).**
+IaC on every deploy: X-Ray on all tools + gateway; Step Functions execution logging (`ALL`,
+payload-free) into a 1-year CMK-when-present group at `/aws/states/<prefix>-determination-workflow`;
+unconditional 1-year Lambda log retention; a data-only CloudTrail on the WORM vault
+(`<prefix>-worm-data-events`) alongside the platform evidence trail; and the `AUDIT_BUCKET` alias the
+pinned evidence writer needs. Approvals go through `approve-signoff` (Cognito access-token, SoD,
+single-use); `finalize` verifies the approval path and refuses a token released around it (fail-closed
+to `ManualReview`, recorded `DENIED`). Account-level Bedrock model-invocation logging captures
+de-identified prompts/responses. One run → four independent captures of each action.
 
 Optional enterprise-OIDC federation as IaC: `-c oidc_issuer_url=… -c oidc_client_id=…
 -c oidc_client_secret_arn=<SecretsManager ARN>` (the client secret enters the template only as a
