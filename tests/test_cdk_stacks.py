@@ -122,7 +122,9 @@ def test_controller_pipeline_order_and_fail_closed_choices():
                     "MaskPii", "GuardDeidentified", "DeidentifiedOk",
                     "AssessAid", "GuardRulesExecuted", "RulesOk",
                     "VerifyDocuments", "GuardVerification", "VerificationClear",
-                    "DraftNotice", "AuditIntent", "HumanSignoff", "Finalize", "Committed"]
+                    # G1/G2 fail-closed gates: a guardrail-BLOCKED draft (DraftOk) and a refused approval
+                    # path (FinalizeOk) route to ManualReview instead of onward — see the choices below.
+                    "DraftNotice", "DraftOk", "AuditIntent", "HumanSignoff", "Finalize", "FinalizeOk", "Committed"]
     assert visited == expected, f"happy path deviates from the regulated sequence: {visited}"
     # every guard Choice fails closed to ManualReview
     for choice in ("ExtractedOk", "ReferenceCoaOk", "DeidentifiedOk", "RulesOk"):

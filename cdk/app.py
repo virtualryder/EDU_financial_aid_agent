@@ -67,6 +67,21 @@ def stage_lambda_bundle():
     return out
 
 
+def budget_from_manifest(app):
+    """B5 (task 128): the manifest's budget: block is THE place a customer sets the token cap; the CDK
+    reads it here and every governed Lambda + the Runtime enforce it. -c budget_usd=<dollars per month>
+    adds the USD cap (0 = tokens only); -c budget_behavior=soft downgrades a deployment to flag-only."""
+    import json
+    import yaml
+    m = yaml.safe_load(open(os.path.join(REPO, "agents", "financial-aid", "manifest.yaml"), encoding="utf-8"))
+    b = dict((m or {}).get("budget") or {})
+    b["monthly_usd"] = float(app.node.try_get_context("budget_usd") or 0)
+    b["cap_behavior"] = app.node.try_get_context("budget_behavior") or b.get("cap_behavior") or "hard"
+    with open(os.path.join(REPO, "lib", "model_prices.json"), encoding="utf-8") as fh:
+        b["prices_json"] = json.dumps(json.load(fh), separators=(",", ":"))
+    return b
+
+
 app = cdk.App()
 env_name = app.node.try_get_context("env") or "dev"
 profile = app.node.try_get_context("retention_profile") or "sandbox-demo"
@@ -75,12 +90,22 @@ asset_dir = stage_lambda_bundle()
 
 data = DataStack(app, f"{prefix}-data", prefix=prefix, retention_profile=profile,
                  kms_mode=app.node.try_get_context("kms") or "aws-managed")
+# Hybrid multi-tenant (phase 107/109): -c tenants=a,b provisions a PHYSICALLY SEPARATE data stack per
+# tenant (tenant-scoped tables + its own WORM vault). The shared control plane routes to them per
+# request (gateway interceptor -> signed tenant -> tenancy.route_store). The base data stack keeps the
+# silo path + env-name shape; tenant stores are the ones tenants actually use.
+tenants = [t.strip() for t in str(app.node.try_get_context("tenants") or "").split(",") if t.strip()]
+multitenant = bool(tenants) or str(app.node.try_get_context("multitenant") or "").lower() in ("1", "true", "yes")
+tenant_data = {t: DataStack(app, f"{prefix}-{t}-data", prefix=prefix, retention_profile=profile,
+                            kms_mode=app.node.try_get_context("kms") or "aws-managed", tenant=t)
+               for t in tenants}
 network = None
 if (app.node.try_get_context("network_mode") or "public") == "private":
     network = NetworkStack(app, f"{prefix}-network", prefix=prefix)
 identity = IdentityStack(
     app, f"{prefix}-identity", prefix=prefix,
     identity_mode=app.node.try_get_context("identity_mode") or "sandbox",
+    tenants=tuple(tenants),   # phase 107/108: one tenant_<id> group per tenant (hybrid multi-tenant)
     federation={
         "issuer_url": app.node.try_get_context("oidc_issuer_url") or "",
         "client_id": app.node.try_get_context("oidc_client_id") or "",
@@ -96,13 +121,30 @@ compute = ComputeStack(app, f"{prefix}-compute", prefix=prefix, asset_dir=asset_
                        guardrail_id=app.node.try_get_context("guardrail_id") or "",
                        guardrail_version=str(app.node.try_get_context("guardrail_version") or "1"),
                        identity=identity,
-                       approvals_client_id=app.node.try_get_context("approvals_client_id") or "")
-workflow = WorkflowStack(app, f"{prefix}-workflow", prefix=prefix, compute=compute, data=data)
+                       approvals_client_id=app.node.try_get_context("approvals_client_id") or "",
+                       # phase 107 hybrid: tenant derived per request (gateway interceptor)
+                       multitenant=multitenant,
+                       # task 127: optional platform-wide switch honoured IN ADDITION to the pack's own
+                       global_kill_switch=app.node.try_get_context("global_kill_switch") or "",
+                       # task 128: caps from the manifest budget: block (+ -c budget_usd / budget_behavior)
+                       budget=budget_from_manifest(app))
+workflow = WorkflowStack(app, f"{prefix}-workflow", prefix=prefix, compute=compute, data=data,
+                         multitenant=multitenant)
+gateway = GatewayStack(app, f"{prefix}-gateway", prefix=prefix, compute=compute, identity=identity,
+                       multitenant=multitenant)
 observability = ObservabilityStack(app, f"{prefix}-observability", prefix=prefix,
-                                   compute=compute, workflow=workflow, data=data)
-gateway = GatewayStack(app, f"{prefix}-gateway", prefix=prefix, compute=compute, identity=identity)
+                                   compute=compute, workflow=workflow, data=data, gateway=gateway,
+                                   # phase 110: -c model_logging=1 turns on Bedrock model-invocation
+                                   # logging (account-level singleton) + gateway vended request logs.
+                                   model_logging=bool(app.node.try_get_context("model_logging")),
+                                   # task 128: per-tenant 60/85/100% budget alarms + the AWS Budgets USD
+                                   # backstop (-c budget_usd) with an IAM deny action + kill-switch engage
+                                   tenants=tuple(tenants) or ("default",),
+                                   budget_usd=float(app.node.try_get_context("budget_usd") or 0),
+                                   runtime_role_name=app.node.try_get_context("runtime_role") or "")
 
-for s in (data, compute, workflow, identity, observability, gateway) + ((network,) if network else ()):
+for s in (data, compute, workflow, identity, observability, gateway) + ((network,) if network else ()) \
+        + tuple(tenant_data.values()):
     cdk.Tags.of(s).add("app", "edu-financial-aid-agent")
     cdk.Tags.of(s).add("env", env_name)
     cdk.Tags.of(s).add("cost-center", "governed-agents")

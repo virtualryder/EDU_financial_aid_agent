@@ -21,19 +21,32 @@ from constructs import Construct
 
 
 class WorkflowStack(cdk.Stack):
-    def __init__(self, scope: Construct, cid: str, *, prefix: str, compute, data, **kw):
+    def __init__(self, scope: Construct, cid: str, *, prefix: str, compute, data,
+                 multitenant: bool = False, **kw):
         super().__init__(scope, cid, **kw)
+
+        # Hybrid multi-tenant (governed-core 1.6.0): the Step Functions hop has NO gateway interceptor,
+        # so the acting tenant travels in the execution input as the HMAC-SIGNED pair (minted by the
+        # tenanted caller that started the execution via ingest-case) and is threaded into EVERY Lambda
+        # payload; each Lambda re-verifies the signature before routing to that tenant's ledger / vault /
+        # approvals register. An execution started WITHOUT the pair fails at the first state
+        # (States.Runtime on the missing path) — fail-closed, never a silent write to the base stores.
+        # Phase 110 (1.7.0): the execution ARN is threaded ALWAYS so every aegis.call line + WORM record
+        # joins back to this execution and its X-Ray trace.
+        tenant_fields = ({"__aegis_tenant.$": "$.__aegis_tenant",
+                          "__aegis_tenant_sig.$": "$.__aegis_tenant_sig"} if multitenant else {})
+        tenant_fields = {**tenant_fields, "__aegis_execution.$": "$$.Execution.Id"}
 
         def invoke(name, fn, payload, result_path):
             return tasks.LambdaInvoke(self, name, lambda_function=fn,
-                                      payload=sfn.TaskInput.from_object(payload),
+                                      payload=sfn.TaskInput.from_object({**payload, **tenant_fields}),
                                       result_selector={"out.$": "$.Payload"},
                                       result_path=result_path)
 
         def guard(name, guard_name, payload):
             return tasks.LambdaInvoke(self, name, lambda_function=compute.guards,
                                       payload=sfn.TaskInput.from_object(
-                                          {"guard": guard_name, **payload}),
+                                          {"guard": guard_name, **payload, **tenant_fields}),
                                       result_selector={"ok.$": "$.Payload.ok",
                                                        "reason.$": "$.Payload.reason"},
                                       result_path=f"$.guards.{guard_name}")
@@ -137,7 +150,7 @@ class WorkflowStack(cdk.Stack):
                 {"icsr_id.$": "$.case_id", "requester.$": "$.requester",
                  # GA-5: bind the approval to the EXACT assessment content the approver saw
                  "content_hash.$": "States.Hash(States.JsonToString($.assessment.out), 'SHA-256')",
-                 "taskToken": sfn.JsonPath.task_token}),
+                 "taskToken": sfn.JsonPath.task_token, **tenant_fields}),
             timeout=cdk.Duration.hours(24), result_path="$.approval")
         finalize = invoke("Finalize", compute.finalize,
                           {"icsr_id.$": "$.case_id", "requester.$": "$.requester",

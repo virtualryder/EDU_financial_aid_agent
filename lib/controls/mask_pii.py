@@ -3,7 +3,8 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 import sanitized  # server-issued sanitized-artifact references (P0-1; bundled beside this handler)
-import tenancy    # Gate-B B5: tenant is deployment-pinned, never taken from the request body
+import tenancy    # Gate-B B5 / phase 107: interceptor-injected, HMAC-signed tenant (bound at handler entry)
+import telemetry  # noqa: E402  (phase 110: correlation keys -> one aegis.call log line per invocation)
 
 # mask_pii — fail-closed general PII de-identification via Amazon Comprehend DetectPiiEntities
 # (name, SSN, address, DOB, phone, email, bank/routing, etc.). Reusable control for non-health
@@ -24,7 +25,11 @@ def _coerce(e):
             return {"case": e}
     return e
 
+@telemetry.instrument('mask_pii')
 def handler(event, context):
+    # Phase 107 (hybrid multi-tenant): bind the interceptor-injected, HMAC-signed tenant BEFORE any store
+    # routing (mint_ref persists the masked payload under the acting tenant). Fail-closed in MT mode.
+    tenancy.bind_tenant_from_args(event)
     e = _coerce(event)
     # R3-2 pass-by-reference: prefer an opaque case_ref (server-side fetch; raw content never
     # travels through Step Functions state). When input arrived by ref, the masked text is NOT

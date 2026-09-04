@@ -23,7 +23,15 @@ def _coerce(e):
     return e
 
 
+import tenancy  # noqa: E402  (phase 107: interceptor-injected, HMAC-signed tenant)
+import telemetry  # noqa: E402  (phase 110: correlation keys -> one aegis.call log line per invocation)
+
+
+@telemetry.instrument('professional_judgment')
 def handler(event, context):
+    # Phase 107 (hybrid multi-tenant): bind the gateway-interceptor-injected, HMAC-SIGNED tenant
+    # for per-tenant store routing. Unsigned/forged values are refused; multi-tenant fails closed.
+    tenancy.bind_tenant_from_args(event)
     e = _coerce(event)
     if not sanitized.verify_ref(e.get("sanitized_ref")):
         return {"prepared": False, "error": "refused: de-identification not proven - a valid sanitized_ref signed by mask_pii is required",

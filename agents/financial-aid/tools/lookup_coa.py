@@ -66,7 +66,15 @@ def _query(params):
         return json.loads(r.read().decode("utf-8"))
 
 
+import tenancy  # noqa: E402  (phase 107: interceptor-injected, HMAC-signed tenant)
+import telemetry  # noqa: E402  (phase 110: correlation keys -> one aegis.call log line per invocation)
+
+
+@telemetry.instrument('lookup_coa')
 def handler(event, context):
+    # Phase 107 (hybrid multi-tenant): bind the gateway-interceptor-injected, HMAC-SIGNED tenant
+    # for per-tenant store routing. Unsigned/forged values are refused; multi-tenant fails closed.
+    tenancy.bind_tenant_from_args(event)
     e = _coerce(event)
     school = (e.get("school") or "").strip()
     unitid = e.get("unitid")

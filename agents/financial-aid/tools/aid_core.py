@@ -4,6 +4,7 @@ import sanitized   # P0-1 verification + server-side content channel
 import os
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
+import re
 
 # Financial-aid core tools behind the `fa-core` Gateway target:
 #   - draft_award_notice -> REAL Bedrock (Converse) award/determination notice from a de-identified case
@@ -35,6 +36,34 @@ def _coerce(event):
     return e
 
 
+_META_OK = re.compile(r"[^a-zA-Z0-9\s:_@$#=/+,\-.]")
+
+
+def _request_metadata(tenant):
+    r"""Converse.requestMetadata: <= 16 items, keys/values <= 256 chars from [a-zA-Z0-9\s:_@$#=/+,-.] (API
+    reference). Correlation keys only - the same set telemetry puts on the aegis.call line."""
+    meta = {"component": "draft_award_notice"}
+    if tenant:
+        meta["tenant"] = tenant
+    try:
+        import telemetry
+        cur = telemetry.current()
+        for k in ("trace_id", "session_id", "execution_arn", "request_id"):
+            if cur.get(k):
+                meta[k] = cur[k]
+    except Exception:
+        pass
+    return {k: _META_OK.sub("_", str(v))[:256] for k, v in meta.items() if v}
+
+
+def _metered_tenant():
+    """The tenant the meter charges: the request-bound one (multi-tenant) or the pinned silo id."""
+    try:
+        return tenancy.resolve_tenant()
+    except Exception:
+        return os.environ.get("TENANT_ID") or "default"
+
+
 def _draft(e):
     ref = sanitized.parse_ref(e.get("sanitized_ref"))
     if not sanitized.verify_ref(ref):
@@ -55,16 +84,37 @@ def _draft(e):
         messages=[{"role": "user", "content": [{"text": "De-identified case + determination:\n" + case}]}],
         inferenceConfig={"maxTokens": 700, "temperature": 0.2},
     )
+    # task 128 (governed-core 1.9.0): the budget meter on the SERVER-SIDE model call. reserve() before the
+    # spend (the workflow hop has no gateway interceptor, so this is where a capped tenant is stopped on
+    # the DraftNotice state -> ManualReview, fail-closed); commit() the real Converse usage after. The
+    # drafter's model-invocation log row is tagged with requestMetadata {tenant, component, trace/
+    # execution/session ids} (never content, never a case id - R3-2) so it joins the tenant's meter.
+    tenant = _metered_tenant()
+    meta = _request_metadata(tenant)
+    if meta:
+        kwargs["requestMetadata"] = meta
+    try:
+        reservation = budget.reserve(tenant)
+    except budget.BudgetExceeded as exc:
+        audit = budget.record_denial(exc.decision, {"case_id": e.get("case_id"), "tool": "draft_award_notice"}, None, component="draft_award_notice")
+        budget.log_line(exc.decision, component="draft_award_notice", audit=audit)
+        return {"error": "refused: budget exceeded - the tenant's period cap is reached (hard cap); no draft was generated",
+                "drafted_by": None, "guardrail_action": budget.GUARDRAIL_ACTION, "budget": budget.refusal(exc.decision)}
     if GUARDRAIL_ID:
         kwargs["guardrailConfig"] = {"guardrailIdentifier": GUARDRAIL_ID, "guardrailVersion": GUARDRAIL_VERSION}
     try:
         br = boto3.client("bedrock-runtime")
         resp = br.converse(**kwargs)
+        metered = budget.commit(tenant, resp.get("usage"), DRAFT_MODEL_ID, reserved=reservation.get("reserved", 0))
         notice = resp["output"]["message"]["content"][0]["text"].strip()
-        if resp.get("stopReason") == "guardrail_intervened" and not notice:
-            return {"error": "output guardrail blocked the draft (fail-closed)", "drafted_by": None, "guardrail": "BLOCKED"}
+        if resp.get("stopReason") == "guardrail_intervened":
+            # ANY intervention is fail-closed - including when the guardrail substitutes its configured
+            # blocked message (non-empty text). No notice_ref is minted for a blocked draft.
+            return {"error": "output guardrail blocked the draft (fail-closed)", "drafted_by": None,
+                    "guardrail": "BLOCKED", "guardrail_version": GUARDRAIL_VERSION}
         out = {"drafted_by": DRAFT_MODEL_ID, "chars": len(notice),
                "guardrail_applied": bool(GUARDRAIL_ID), "deidentified_input": True,
+               "budget": {k: metered.get(k) for k in ("metered", "tokens", "usd_micro", "used_tokens", "pct_tokens", "price_version")},
                "coa_basis": "estimate on College Scorecard REFERENCE data - institutional COA required for any award"}
         # Gate-B accessibility: advisory plain-language check on the drafted notice (docs/ACCESSIBILITY.md).
         # Non-blocking — surfaces reading grade + any missing student-action element for the reviewing
@@ -87,7 +137,16 @@ def _draft(e):
         return {"error": "draft failed: " + type(exc).__name__ + ": " + str(exc), "drafted_by": None}
 
 
+import budget  # noqa: E402  (task 128: per-tenant token + USD meter, governed-core 1.9.0)
+import tenancy  # noqa: E402  (phase 107: interceptor-injected, HMAC-signed tenant)
+import telemetry  # noqa: E402  (phase 110: correlation keys -> one aegis.call log line per invocation)
+
+
+@telemetry.instrument('aid_core')
 def handler(event, context):
+    # Phase 107 (hybrid multi-tenant): bind the gateway-interceptor-injected, HMAC-SIGNED tenant for
+    # per-tenant store routing. Unsigned/forged values are refused; multi-tenant mode fails closed.
+    tenancy.bind_tenant_from_args(event)
     e = _coerce(event)
     if "pj_id" in e:
         # commit_professional_judgment is a consequential, HUMAN-ONLY discretionary action. The agent can

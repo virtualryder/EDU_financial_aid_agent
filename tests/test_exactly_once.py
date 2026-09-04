@@ -78,11 +78,19 @@ def _ctx():
 # ── finalize: exactly-once ───────────────────────────────────────────────────
 
 def test_finalize_is_exactly_once_across_retries_and_different_approvers(fake_ddb, monkeypatch):
+    # governed-core 1.5.0 added G2 approval-path verification to finalize (it now REFUSES an
+    # unverified approval); 1.6.0 added tenant binding + evidence-routed ledger. Approval verification
+    # and tenant routing have their own coverage; THIS test isolates the exactly-once FINAL# marker, so
+    # it uses the handler's documented sandbox escape (SIGNOFF_ALLOW_UNVERIFIED) and stubs the 1.6.0
+    # evidence hooks to exercise the commit-once logic directly.
+    monkeypatch.setenv("SIGNOFF_ALLOW_UNVERIFIED", "true")
     fz = _load("finalize_signoff")
     recorded = []
     monkeypatch.setattr(fz.evidence, "record_event",
                         lambda ev, ctx, source=None: recorded.append(ev) or
-                        {"stored": True, "audit_id": "A1", "chain_hash": "h", "seq": 0, "worm": True})
+                        {"stored": True, "audit_id": "A1", "chain_hash": "h", "seq": 0, "worm": True}, raising=False)
+    monkeypatch.setattr(fz.evidence, "bind_tenant", lambda event: None, raising=False)
+    monkeypatch.setattr(fz.evidence, "route_table", lambda name, logical: name, raising=False)
     r1 = fz.handler({"case_id": "HOU-X", "requester": "req", "approver": "appr-1"}, _ctx())
     assert r1["committed"] is True and not r1.get("idempotent")
     # retried Lambda (same approver) -> idempotent, NO second COMMITTED record
