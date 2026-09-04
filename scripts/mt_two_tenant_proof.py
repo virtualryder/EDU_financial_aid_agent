@@ -31,7 +31,8 @@ import requests
 from pycognito import Cognito
 
 SYNTHETIC_CASE = ("Applicant Jane Q. Sample, SSN 900-12-3456, DOB 1990-01-01, 12 Elm St Springfield. "
-                  "Household 3, monthly income 1800, liquid resources 400, no TANF.")
+                  "Student Aid Index 3500. Cost of attendance $24,000. Enrollment status full-time. "
+                  "SAP GPA 3.2, SAP pace 85%. Independent student.")
 
 
 def outputs(cf, stack):
@@ -249,6 +250,8 @@ def main():
         ex = sfn.start_execution(stateMachineArn=ctrl, name="mtproof-" + case_id.lower(),
                                  input=json.dumps({"case_id": case_id, "requester": "cw-a",
                                                    "case_ref": ing["case_ref"],
+                                                   "institution": {"school": "", "unitid": "139959"},
+                                                   "selected_for_verification": False,
                                                    **ing.get("tenant_binding", {})}))["executionArn"]
         for _ in range(60):
             time.sleep(5)

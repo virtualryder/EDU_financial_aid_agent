@@ -1,0 +1,473 @@
+{
+ "env": "mt",
+ "prefix": "fa-mt",
+ "region": "us-east-1",
+ "budgets_table": "fa-mt-budgets",
+ "tenants": [
+  "sp-a",
+  "sp-b"
+ ],
+ "usd_ceiling": {
+  "UsdCeilingBudgetName": "fa-mt-bedrock-usd-ceiling",
+  "UsdCeilingActionId": "bbb7200b-181e-479e-a21f-20a125b3f1fc",
+  "BudgetDenyPolicyArn": "arn:aws:iam::111122223333:policy/fa-mt-budget-deny-bedrock",
+  "BudgetBreachFunction": "fa-mt-budget-breach"
+ },
+ "checks": {
+  "baseline_meters_readable": true,
+  "baseline_calls_allowed": true,
+  "gateway_refuses_capped_tenant": true,
+  "gateway_allows_other_tenant": true,
+  "runtime_refuses_capped_tenant": true,
+  "workflow_draft_refused_fail_closed": true,
+  "denials_recorded_in_tenant_ledger": true,
+  "workflow_denial_recorded_by_drafter": true,
+  "run1_completed": true,
+  "meter_counts_after_run": true,
+  "meter_equals_model_invocation_log": true,
+  "usd_matches_pinned_price_table": true,
+  "run2_stopped_mid_session_by_budget": true,
+  "meter_never_exceeds_cap_beyond_one_call": true,
+  "alarms_60_and_85_fired": true,
+  "usd_budget_action_wired": true,
+  "usd_action_execution_recorded": true,
+  "breach_engages_kill_switch": true,
+  "containment_after_breach": true,
+  "breach_engage_in_worm_ledger": true,
+  "released_by_different_identity": true,
+  "recovery_calls_allowed": true,
+  "runtime_budget_log_lines": true,
+  "left_disengaged_and_uncapped": true
+ },
+ "steps": [
+  {
+   "step": "baseline",
+   "meters": {
+    "sp-a": {
+     "key": "sp-a#2026-09",
+     "used": 103000,
+     "tokens_in": 97692,
+     "tokens_out": 5308,
+     "usd_micro": 372696,
+     "calls": 22,
+     "reserved": 0,
+     "cap_tokens": null,
+     "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+     "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    },
+    "sp-b": {
+     "key": "sp-b#2026-09",
+     "used": 71862,
+     "tokens_in": 69386,
+     "tokens_out": 2476,
+     "usd_micro": 245298,
+     "calls": 15,
+     "reserved": 0,
+     "cap_tokens": null,
+     "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+     "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    }
+   }
+  },
+  {
+   "step": "tenant_b_capped",
+   "gateway": {
+    "status": 403,
+    "error": "budget exceeded (sp-b): the tenant's period cap is reached; refused",
+    "ok": false
+   },
+   "runtime": {
+    "session_id": "aegis-e3215f5a6cc54fb8aee7aa170f51595f",
+    "status": 200,
+    "response": {
+     "error": "budget exceeded: this tenant's period cap is reached; the call is refused (hard cap)",
+     "refused": true,
+     "reason": "budget_exceeded",
+     "guardrail_action": "BUDGET",
+     "governed": true,
+     "tenant": "sp-b",
+     "detail": "tenant is at/over its period cap (used 71862/0 tokens, 245298/5000000 usd_micro)",
+     "cap_tokens": 0,
+     "cap_usd_micro": 5000000
+    },
+    "trace_id_header": null,
+    "request_id": "86faca6a-3ba2-4e82-b658-1d24863af025"
+   },
+   "execution": {
+    "status": "SUCCEEDED",
+    "states": [
+     "Extract",
+     "GuardExtracted",
+     "ExtractedOk",
+     "SelectedProvided",
+     "SelectedFromInput",
+     "HasInstitution",
+     "SeedInstitutionFromInput",
+     "LookupCOA",
+     "GuardReferenceCOA",
+     "ReferenceCoaOk",
+     "MaskPii",
+     "GuardDeidentified",
+     "DeidentifiedOk",
+     "AssessAid",
+     "GuardRulesExecuted",
+     "RulesOk",
+     "VerifyDocuments",
+     "GuardVerification",
+     "VerificationClear",
+     "DraftNotice",
+     "DraftOk",
+     "ManualReview"
+    ],
+    "draft": {
+     "error": "refused: budget exceeded - the tenant's period cap is reached (hard cap); no draft was generated",
+     "drafted_by": null,
+     "guardrail_action": "BUDGET",
+     "budget": {
+      "refused": true,
+      "reason": "budget_exceeded",
+      "guardrail_action": "BUDGET",
+      "tenant": "sp-b",
+      "detail": "cap reached: reserving 4000 tokens would exceed the tenant's period cap (tokens 0, usd_micro 5000000)",
+      "cap_tokens": 0,
+      "cap_usd_micro": 5000000,
+      "behavior": "hard",
+      "message": "budget exceeded: this tenant's period cap is reached; the call is refused (hard cap)"
+     }
+    }
+   },
+   "denials": [
+    {
+     "action": "budget.deny",
+     "prev_hash": "GENESIS",
+     "actor": "interceptor",
+     "audit_id": "84cb2d4b7330c29c62893cba0067267dde21749253f8434746096025dee910f2",
+     "chain_hash": "7b907cb0f28286c407e18b2b0bd36a8d72a7491a1d24a550f8e4916745ab01f3",
+     "tenant_id": "sp-b",
+     "phase": "DENIED",
+     "seq": "0",
+     "case_id": "BUDGET",
+     "payload_keys": [
+      "behavior",
+      "cap_tokens",
+      "cap_usd_micro",
+      "detail",
+      "guardrail_action",
+      "tool",
+      "used_tokens",
+      "used_usd_micro"
+     ],
+     "execution_arn": null,
+     "engaged_by": null
+    },
+    {
+     "action": "budget.deny",
+     "prev_hash": "7b907cb0f28286c407e18b2b0bd36a8d72a7491a1d24a550f8e4916745ab01f3",
+     "actor": "interceptor",
+     "audit_id": "a66b0c091d9e5f3fe65d1aefc877960f194792a7422786838dd030920d33e666",
+     "chain_hash": "1ce6aa43fa0d9b0cfa60f27bd9946b3216b30bc0714f8f377600cbb06b236dc8",
+     "phase": "DENIED",
+     "tenant_id": "sp-b",
+     "seq": "1",
+     "case_id": "BUDGET",
+     "payload_keys": [
+      "behavior",
+      "cap_tokens",
+      "cap_usd_micro",
+      "detail",
+      "guardrail_action",
+      "tool",
+      "used_tokens",
+      "used_usd_micro"
+     ],
+     "execution_arn": null,
+     "engaged_by": null
+    },
+    {
+     "action": "budget.deny",
+     "prev_hash": "1ce6aa43fa0d9b0cfa60f27bd9946b3216b30bc0714f8f377600cbb06b236dc8",
+     "actor": "draft_award_notice",
+     "audit_id": "d49538ea61a4fc8df7ecf303bd091953506a5233f33d007ba06e0b1c1ad553c3",
+     "chain_hash": "1af65ae5b5ecce20edc054691802ad13d21f8d7157d78c848e5b8617790a6111",
+     "phase": "DENIED",
+     "tenant_id": "sp-b",
+     "seq": "2",
+     "case_id": "BUDGET",
+     "payload_keys": [
+      "behavior",
+      "cap_tokens",
+      "cap_usd_micro",
+      "detail",
+      "guardrail_action",
+      "tool",
+      "used_tokens",
+      "used_usd_micro"
+     ],
+     "execution_arn": "arn:aws:states:us-east-1:111122223333:execution:fa-mt-determination-workflow:bgproof-bg-wf-382380",
+     "engaged_by": null
+    },
+    {
+     "action": "budget.deny",
+     "prev_hash": "1af65ae5b5ecce20edc054691802ad13d21f8d7157d78c848e5b8617790a6111",
+     "actor": "interceptor",
+     "audit_id": "45af706598a00078842f54a30d3bb170e91b35529e31002e9c4767e658b097fa",
+     "chain_hash": "3c3d5142adfd57a5a7a8037c6b31e1a32447255523d858340c236a556ba4bd7c",
+     "tenant_id": "sp-b",
+     "phase": "DENIED",
+     "seq": "3",
+     "case_id": "BUDGET",
+     "payload_keys": [
+      "behavior",
+      "cap_tokens",
+      "cap_usd_micro",
+      "detail",
+      "guardrail_action",
+      "tool",
+      "used_tokens",
+      "used_usd_micro"
+     ],
+     "execution_arn": null,
+     "engaged_by": null
+    },
+    {
+     "action": "budget.deny",
+     "prev_hash": "3c3d5142adfd57a5a7a8037c6b31e1a32447255523d858340c236a556ba4bd7c",
+     "actor": "draft_award_notice",
+     "audit_id": "e0a41c5bf3daa0425a391f473a8085e782e010caa964e22cbe74bdcab92e5653",
+     "chain_hash": "07a662dc9fd6859092407632faffc9b4ba219745afda423211439ca290d16683",
+     "tenant_id": "sp-b",
+     "phase": "DENIED",
+     "seq": "4",
+     "case_id": "BUDGET",
+     "payload_keys": [
+      "behavior",
+      "cap_tokens",
+      "cap_usd_micro",
+      "detail",
+      "guardrail_action",
+      "tool",
+      "used_tokens",
+      "used_usd_micro"
+     ],
+     "execution_arn": "arn:aws:states:us-east-1:111122223333:execution:fa-mt-determination-workflow:bgproof-bg-wf-24b555",
+     "engaged_by": null
+    }
+   ]
+  },
+  {
+   "step": "run1",
+   "session_id": "aegis-61df0503356046908aafb1c97fa899df",
+   "status": 200,
+   "meter": {
+    "key": "sp-a#2026-09",
+    "used": 140232,
+    "tokens_in": 132653,
+    "tokens_out": 7579,
+    "usd_micro": 511644,
+    "calls": 29,
+    "reserved": 0,
+    "cap_tokens": null,
+    "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+    "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+   },
+   "delta": {
+    "used": 37232,
+    "tokens_in": 34961,
+    "tokens_out": 2271,
+    "usd_micro": 138948,
+    "calls": 7
+   },
+   "model_log": {
+    "rows": 7,
+    "tokens_in": 34961,
+    "tokens_out": 2271,
+    "by_component": {
+     "runtime": 7
+    }
+   },
+   "expected_usd_micro": 138948,
+   "result_chars": 2069
+  },
+  {
+   "step": "run2_capped",
+   "cap_tokens": 145232,
+   "meter": {
+    "key": "sp-a#2026-09",
+    "used": 144093,
+    "tokens_in": 136394,
+    "tokens_out": 7699,
+    "usd_micro": 524667,
+    "calls": 30,
+    "reserved": 0,
+    "cap_tokens": 145232,
+    "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+    "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+   },
+   "pct_of_cap": 99.2,
+   "alarms": {
+    "fa-mt-budget-sp-a-TokensUsedPct-100": "OK",
+    "fa-mt-budget-sp-a-TokensUsedPct-60": "ALARM",
+    "fa-mt-budget-sp-a-TokensUsedPct-85": "ALARM"
+   },
+   "runtime": {
+    "session_id": "aegis-c53fcb0edb9c430b87db7329fccccd03",
+    "status": 200,
+    "trace_id_header": null,
+    "request_id": "3a90a5fa-4a38-48b9-9978-236e1e0cf52c"
+   },
+   "response": {
+    "refused": true,
+    "guardrail_action": "BUDGET",
+    "stopped": "mid-session",
+    "detail": "cap reached: reserving 4000 tokens would exceed the tenant's period cap (tokens 145232, usd_micro 5000000)"
+   }
+  },
+  {
+   "step": "usd_backstop",
+   "budget_action": {
+    "ActionType": "APPLY_IAM_POLICY",
+    "ApprovalModel": "AUTOMATIC",
+    "Status": "STANDBY",
+    "NotificationType": "ACTUAL"
+   },
+   "execute_attempt": {
+    "executed": false,
+    "error": "ResourceLockedException: An error occurred (ResourceLockedException) when calling the ExecuteBudgetAction operation: This method is not allowed during [ActionStatus: Standby]",
+    "note": "ExecuteBudgetAction refused outside a real threshold breach - the action's wiring is proven by describe-budget-action; billing-triggered firing is not exercisable in a test"
+   },
+   "engaged_record": {
+    "actor": "arn:aws:sts::111122223333:assumed-role/fa-mt-observability-BudgetBreachServiceRole183A354F-P3UHTfI9jtOb/fa-mt-budget-breach",
+    "actor_user_id": "AROA4SN3H3367F66R4D7Q:fa-mt-budget-breach",
+    "at": 1788548792,
+    "engaged": true,
+    "reason": "AWS Budgets fa-mt-bedrock-usd-ceiling: USD ceiling threshold reached - automatic containment (AWS Budgets: fa-mt-bedrock-usd-ceiling has exceeded your alert threshold)"
+   },
+   "gateway_during_containment": {
+    "status": 403,
+    "error": "containment engaged (kill switch /fa-mt-aid/kill-switch): every agent action is refused",
+    "ok": false
+   },
+   "release": 200,
+   "kill_switch_rows": [
+    {
+     "action": "kill_switch.engage",
+     "prev_hash": "ff089f27ca0131b547bee75f97759549c7f5494b603e58ce8820863706c22260",
+     "actor": "arn:aws:sts::111122223333:assumed-role/fa-mt-observability-BudgetBreachServiceRole183A354F-P3UHTfI9jtOb/fa-mt-budget-breach",
+     "audit_id": "89c5d77d0071745d6f890c1fcd7a78f0ee88a12e4ec342db7c3b77de595a2d63",
+     "chain_hash": "3be20bfc629ec6b6c6ad7efbe345a7abcc557be4736ec14bf8cb945cafcf7cdc",
+     "phase": "COMMITTED",
+     "tenant_id": "__platform__",
+     "seq": "12",
+     "case_id": "KILL-SWITCH",
+     "payload_keys": [
+      "at",
+      "caller_user_id",
+      "guardrail_action",
+      "parameter",
+      "reason"
+     ],
+     "execution_arn": null,
+     "engaged_by": null
+    },
+    {
+     "action": "kill_switch.disengage",
+     "prev_hash": "3be20bfc629ec6b6c6ad7efbe345a7abcc557be4736ec14bf8cb945cafcf7cdc",
+     "actor": "arn:aws:iam::111122223333:user/dryder",
+     "audit_id": "872408433925af9d328cc28f3e23ba80eab3cbb91fca9e9529c25ebee3ca0176",
+     "chain_hash": "420ce980d06b92bd01d3aed3aa93aa4da8682e03109b47ca97f49b1feb81192a",
+     "tenant_id": "__platform__",
+     "phase": "COMMITTED",
+     "seq": "13",
+     "case_id": "KILL-SWITCH",
+     "payload_keys": [
+      "at",
+      "caller_user_id",
+      "engaged_at",
+      "engaged_by",
+      "engaged_reason",
+      "parameter",
+      "reason"
+     ],
+     "execution_arn": null,
+     "engaged_by": "arn:aws:sts::111122223333:assumed-role/fa-mt-observability-BudgetBreachServiceRole183A354F-P3UHTfI9jtOb/fa-mt-budget-breach"
+    },
+    {
+     "action": "kill_switch.engage",
+     "prev_hash": "420ce980d06b92bd01d3aed3aa93aa4da8682e03109b47ca97f49b1feb81192a",
+     "actor": "arn:aws:sts::111122223333:assumed-role/fa-mt-observability-BudgetBreachServiceRole183A354F-P3UHTfI9jtOb/fa-mt-budget-breach",
+     "audit_id": "e0b1f6ff1ffaa7dd39ed3448fc43a7207e695b6ac2611a92da161c9fdbb20ae3",
+     "chain_hash": "2ef22f94e7fa2017f08af312622712cab6c33eefafa35de67a43316eac9e7813",
+     "tenant_id": "__platform__",
+     "phase": "COMMITTED",
+     "seq": "14",
+     "case_id": "KILL-SWITCH",
+     "payload_keys": [
+      "at",
+      "caller_user_id",
+      "guardrail_action",
+      "parameter",
+      "reason"
+     ],
+     "execution_arn": null,
+     "engaged_by": null
+    }
+   ]
+  },
+  {
+   "step": "logs",
+   "runtime_budget_lines": [
+    "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-46DmE5Blpm-DEFAULT\",\"aws.log.stream.names\":\"otel-rt-logs\",\"deployment.environment.name\":\"bedrock-agentcore:default\",\"cloud.resource_i",
+    "2026-09-04 19:02:36,436 INFO [agent] [agent.py:249] [trace_id=6a9b15c765bd98064c83045274d1b1c1 span_id=d1303d76a0f80597 resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - {\"aegis\": \"budget\", \"component\": \"runtime\", \"metered\": true, \"outcome\": \"commit\", \"pct_tokens\": 2.14, \"pct_usd\": 7.72, \"price_version\": \"benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK\",",
+    "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-46DmE5Blpm-DEFAULT\",\"aws.log.stream.names\":\"otel-rt-logs\",\"deployment.environment.name\":\"bedrock-agentcore:default\",\"cloud.resource_i"
+   ],
+   "interceptor_budget_lines": [
+    "{\"aegis\": \"budget\", \"audit\": {\"audit_id\": \"45af706598a00078842f54a30d3bb170e91b35529e31002e9c4767e658b097fa\", \"stored\": true, \"table\": \"fa-mt-sp-b-audit-ledger\", \"worm\": true}, \"cap_tokens\": 0, \"component\": \"interceptor\", \"detail\": \"tenant is at/over its period cap (used 71862/0 tokens, 245298/5000000 usd_micro)\", \"outcome\": \"denied:budget\", \"request_id\": \"765c19a2-c249-4a10-886c-444125ffabbe\", \"t"
+   ],
+   "draft_budget_lines": [
+    "{\"aegis\": \"budget\", \"audit\": {\"audit_id\": \"e0a41c5bf3daa0425a391f473a8085e782e010caa964e22cbe74bdcab92e5653\", \"stored\": true, \"table\": \"fa-mt-sp-b-audit-ledger\", \"worm\": true}, \"cap_tokens\": 0, \"component\": \"draft_award_notice\", \"detail\": \"cap reached: reserving 4000 tokens would exceed the tenant's period cap (tokens 0, usd_micro 5000000)\", \"execution_arn\": \"arn:aws:states:us-east-1:111122223333:"
+   ]
+  }
+ ],
+ "price_table": {
+  "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+  "note": "USD per 1M tokens, on-demand. Anthropic models are NOT in the AWS Price List API (checked 2026-09-03: get-products ServiceCode=AmazonBedrock, us-east-1 returns no Anthropic rows) and aws.amazon.com/bedrock/pricing is not machine-readable, so these numbers are pinned from platform.claude.com/docs/en/about-claude/pricing on 2026-09-03. CONFIRM against the Bedrock pricing page for the customer's region before production and bump price_version; the version is recorded on every meter commit so the evidence shows which prices produced which USD figure. The financial truth is the Cost and Usage Report.",
+  "models": {
+   "anthropic.claude-sonnet-4-5": {
+    "input_per_m": 3.0,
+    "output_per_m": 15.0
+   },
+   "anthropic.claude-haiku-4-5": {
+    "input_per_m": 1.0,
+    "output_per_m": 5.0
+   }
+  }
+ },
+ "final_meters": {
+  "sp-a": {
+   "key": "sp-a#2026-09",
+   "used": 144093,
+   "tokens_in": 136394,
+   "tokens_out": 7699,
+   "usd_micro": 524667,
+   "calls": 30,
+   "reserved": 0,
+   "cap_tokens": null,
+   "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+   "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  },
+  "sp-b": {
+   "key": "sp-b#2026-09",
+   "used": 71862,
+   "tokens_in": 69386,
+   "tokens_out": 2476,
+   "usd_micro": 245298,
+   "calls": 15,
+   "reserved": 0,
+   "cap_tokens": null,
+   "price_version": "benefits-2026-09-03-anthropic-platform-UNCONFIRMED-ON-BEDROCK",
+   "model_id": "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+  }
+ },
+ "duration_s": 399.8,
+ "PASS": true
+}

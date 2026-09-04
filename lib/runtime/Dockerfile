@@ -11,6 +11,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=app:app agent.py .
+# EDU P0-3: the trusted-runtime credential boundary is imported by agent.py; it must ship in the image.
+COPY --chown=app:app token_boundary.py .
 ENV PYTHONUNBUFFERED=1
 
 USER 10001

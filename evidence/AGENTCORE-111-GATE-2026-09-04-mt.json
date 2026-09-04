@@ -1,0 +1,424 @@
+{
+ "env": "mt",
+ "prefix": "fa-mt",
+ "tenants": [
+  "sp-a",
+  "sp-b"
+ ],
+ "gateway_url": "https://fa-mt-aid-gw-jesedgqve1.gateway.bedrock-agentcore.us-east-1.amazonaws.com/mcp",
+ "enforcement": "ENFORCE",
+ "policy_engine": "fa_mt_aid_authz-56g0mbpu8o",
+ "steps": [
+  {
+   "step": "users",
+   "created": {
+    "cw-a": [
+     "aid_officer",
+     "tenant_sp-a"
+    ],
+    "cw-b": [
+     "aid_officer",
+     "tenant_sp-b"
+    ],
+    "cw-none": [
+     "aid_officer"
+    ]
+   }
+  },
+  {
+   "step": "store_counts_before",
+   "counts": {
+    "sp-a": 26,
+    "sp-b": 21,
+    "base": 0
+   }
+  },
+  {
+   "identity": "cw-a",
+   "groups": [
+    "aid_officer",
+    "tenant_sp-a"
+   ],
+   "expect_allowed": true,
+   "initialize": {
+    "status": 200,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "protocolVersion": "2025-03-26",
+      "capabilities": {
+       "tools": {
+        "listChanged": false
+       },
+       "prompts": {
+        "listChanged": false
+       },
+       "resources": {
+        "listChanged": false
+       }
+      },
+      "serverInfo": {
+       "version": "1.0.0",
+       "name": "fa-mt-aid-gw"
+      }
+     }
+    }
+   },
+   "tools_list": {
+    "status": 200,
+    "tools": [
+     "assess-aid___assess_aid",
+     "fa-core___draft_award_notice",
+     "intake-fafsa___intake_fafsa",
+     "lookup-coa___lookup_coa",
+     "mask-pii___mask_pii",
+     "record-pj___record_professional_judgment",
+     "request-signoff___request_signoff",
+     "verify-docs___verify_documents",
+     "write-audit___write_audit"
+    ],
+    "error": null
+   },
+   "mask_pii_call": {
+    "status": 200,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 4,
+     "result": {
+      "isError": false,
+      "content": [
+       {
+        "type": "text",
+        "text": "{\"deidentified\":true,\"entities_masked\":5,\"masked_by\":\"comprehend:DetectPiiEntities\",\"sanitized_ref\":{\"artifact_id\":\"5a75115847bf44fb9447ac1fb44073ba\",\"sanitized_sha256\":\"0c27fb361c2d633072a6bd38411a3b162e0856dd64f6540fa24d0cb6c8ee3c29\",\"engine\":\"comprehend:DetectPiiEntities\",\"entities_masked\":5,\"tenant\":\"sp-a\",\"ts\":1788549431,\"source\":\"mask_pii \u2014 fail-closed PII de-identification (server-issued sanitized artifact)\",\"authoritative\":true,\"sig\":\"847ec8057eb3019277db82e6c9a770409937831b4e0af684e929d0674e9b1d0a\",\"alg\":\"HMAC-SHA256\",\"key_version\":\"deid:sm:94d4eb9f-fd21-409e-31d0-b5efc3a4a79d\",\"stored\":true},\"note\":\"pass sanitized_ref (JSON) to assess/recertify/overpayment/draft \u2014 it is the server-signed proof of masking; the deidentified boolean alone is not accepted\",\"masked_case\":\"Applicant [REDACTED:NAME], SSN [REDACTED:SSN], DOB [REDACTED:DATE_TIME], [REDACTED:ADDRESS]. Student Aid Index 3500. Cost of attendance $24,000. Enrollment status full-time. SAP GPA 3.2, SAP pace 85%. Independent student. [REDACTED:IP_ADDRESS]\"}"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "step": "store_counts_after_cw-a",
+   "counts": {
+    "sp-a": 27,
+    "sp-b": 21,
+    "base": 0
+   }
+  },
+  {
+   "identity": "cw-b",
+   "groups": [
+    "aid_officer",
+    "tenant_sp-b"
+   ],
+   "expect_allowed": true,
+   "initialize": {
+    "status": 200,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "protocolVersion": "2025-03-26",
+      "capabilities": {
+       "tools": {
+        "listChanged": false
+       },
+       "prompts": {
+        "listChanged": false
+       },
+       "resources": {
+        "listChanged": false
+       }
+      },
+      "serverInfo": {
+       "version": "1.0.0",
+       "name": "fa-mt-aid-gw"
+      }
+     }
+    }
+   },
+   "tools_list": {
+    "status": 200,
+    "tools": [
+     "assess-aid___assess_aid",
+     "fa-core___draft_award_notice",
+     "intake-fafsa___intake_fafsa",
+     "lookup-coa___lookup_coa",
+     "mask-pii___mask_pii",
+     "record-pj___record_professional_judgment",
+     "request-signoff___request_signoff",
+     "verify-docs___verify_documents",
+     "write-audit___write_audit"
+    ],
+    "error": null
+   },
+   "mask_pii_call": {
+    "status": 200,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 4,
+     "result": {
+      "isError": false,
+      "content": [
+       {
+        "type": "text",
+        "text": "{\"deidentified\":true,\"entities_masked\":5,\"masked_by\":\"comprehend:DetectPiiEntities\",\"sanitized_ref\":{\"artifact_id\":\"cc5510f472ad435da4eded4bc8bafc67\",\"sanitized_sha256\":\"1b95d6ce6d0a40c425ada7dd92361fac77584d1378e0ba32693502adf55dbce5\",\"engine\":\"comprehend:DetectPiiEntities\",\"entities_masked\":5,\"tenant\":\"sp-b\",\"ts\":1788549435,\"source\":\"mask_pii \u2014 fail-closed PII de-identification (server-issued sanitized artifact)\",\"authoritative\":true,\"sig\":\"07ec085fb84d8c54cfde06b1083230f5094f236cac31aa7d58803bb0bda41d00\",\"alg\":\"HMAC-SHA256\",\"key_version\":\"deid:sm:94d4eb9f-fd21-409e-31d0-b5efc3a4a79d\",\"stored\":true},\"note\":\"pass sanitized_ref (JSON) to assess/recertify/overpayment/draft \u2014 it is the server-signed proof of masking; the deidentified boolean alone is not accepted\",\"masked_case\":\"Applicant [REDACTED:NAME], SSN [REDACTED:SSN], DOB [REDACTED:DATE_TIME], [REDACTED:ADDRESS]. Student Aid Index 3500. Cost of attendance $24,000. Enrollment status full-time. SAP GPA 3.2, SAP pace 85%. Independent student. [REDACTED:AWS_ACCESS_KEY]\"}"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "step": "store_counts_after_cw-b",
+   "counts": {
+    "sp-a": 27,
+    "sp-b": 22,
+    "base": 0
+   }
+  },
+  {
+   "identity": "cw-none",
+   "groups": [
+    "aid_officer"
+   ],
+   "expect_allowed": false,
+   "initialize": {
+    "status": 200,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "protocolVersion": "2025-03-26",
+      "capabilities": {
+       "tools": {
+        "listChanged": false
+       },
+       "prompts": {
+        "listChanged": false
+       },
+       "resources": {
+        "listChanged": false
+       }
+      },
+      "serverInfo": {
+       "version": "1.0.0",
+       "name": "fa-mt-aid-gw"
+      }
+     }
+    }
+   },
+   "tools_list": {
+    "status": 200,
+    "tools": [],
+    "error": null
+   },
+   "mask_pii_call": {
+    "status": 403,
+    "body": {
+     "jsonrpc": "2.0",
+     "id": 4,
+     "error": {
+      "code": -32000,
+      "message": "multi-tenant: identity carries no tenant (custom:tenant); refused"
+     }
+    }
+   }
+  },
+  {
+   "step": "audit_gateway",
+   "before": {
+    "ledger": {
+     "sp-a": 24,
+     "sp-b": 25,
+     "base": 17
+    },
+    "worm": {
+     "sp-a": 15,
+     "sp-b": 16,
+     "base": 16
+    }
+   },
+   "cw-a": {
+    "identity": "cw-a",
+    "call": {
+     "status": 200,
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+       "isError": false,
+       "content": [
+        {
+         "type": "text",
+         "text": "{\"stored\":true,\"worm\":true,\"chain_hash\":\"88099b129d7d72de7f53f2927ed3d6373600676225997bfe4263ebc9c683709b\",\"prev_hash\":\"GENESIS\",\"seq\":0,\"phase\":\"INTENT\",\"audit_id\":\"9f7c61a7f3eb1a87cad00fa6f7efae602024158d4c7ef3c9e1c3cafbac141207\",\"entry_hash\":\"67c138441d7671fe571853ce33704e238b6285ecb0ef4190a21cec951fbe518f\",\"case_id\":\"MT-890838B5\",\"policy_version\":\"unset\",\"rule_version\":\"unset\",\"table\":\"fa-mt-sp-a-audit-ledger\",\"bucket\":\"fa-mt-sp-a-worm-111122223333\",\"key\":\"MT-890838B5/9f7c61a7f3eb1a87cad00fa6f7efae602024158d4c7ef3c9e1c3cafbac141207.json\"}"
+        }
+       ]
+      }
+     }
+    },
+    "tool_result": {
+     "stored": true,
+     "worm": true,
+     "chain_hash": "88099b129d7d72de7f53f2927ed3d6373600676225997bfe4263ebc9c683709b",
+     "prev_hash": "GENESIS",
+     "seq": 0,
+     "phase": "INTENT",
+     "audit_id": "9f7c61a7f3eb1a87cad00fa6f7efae602024158d4c7ef3c9e1c3cafbac141207",
+     "entry_hash": "67c138441d7671fe571853ce33704e238b6285ecb0ef4190a21cec951fbe518f",
+     "case_id": "MT-890838B5",
+     "policy_version": "unset",
+     "rule_version": "unset",
+     "table": "fa-mt-sp-a-audit-ledger",
+     "bucket": "fa-mt-sp-a-worm-111122223333",
+     "key": "MT-890838B5/9f7c61a7f3eb1a87cad00fa6f7efae602024158d4c7ef3c9e1c3cafbac141207.json"
+    }
+   },
+   "after_cw-a": {
+    "ledger": {
+     "sp-a": 26,
+     "sp-b": 25,
+     "base": 17
+    },
+    "worm": {
+     "sp-a": 16,
+     "sp-b": 16,
+     "base": 16
+    }
+   },
+   "cw-b": {
+    "identity": "cw-b",
+    "call": {
+     "status": 200,
+     "body": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+       "isError": false,
+       "content": [
+        {
+         "type": "text",
+         "text": "{\"stored\":true,\"worm\":true,\"chain_hash\":\"a36bb9a7fb785b08c4c016eabb6954c4116076ab268585e920a9e33b6845e9eb\",\"prev_hash\":\"GENESIS\",\"seq\":0,\"phase\":\"INTENT\",\"audit_id\":\"9237b003d8cca9de7c594ef79c1eebd59cc980ca3b680f6a099bb25165dd202a\",\"entry_hash\":\"dfc036d2a59d207b6f128db2c81405c98c7a98b255e738d454ca8e5cc2c792fa\",\"case_id\":\"MT-4BA71754\",\"policy_version\":\"unset\",\"rule_version\":\"unset\",\"table\":\"fa-mt-sp-b-audit-ledger\",\"bucket\":\"fa-mt-sp-b-worm-111122223333\",\"key\":\"MT-4BA71754/9237b003d8cca9de7c594ef79c1eebd59cc980ca3b680f6a099bb25165dd202a.json\"}"
+        }
+       ]
+      }
+     }
+    },
+    "tool_result": {
+     "stored": true,
+     "worm": true,
+     "chain_hash": "a36bb9a7fb785b08c4c016eabb6954c4116076ab268585e920a9e33b6845e9eb",
+     "prev_hash": "GENESIS",
+     "seq": 0,
+     "phase": "INTENT",
+     "audit_id": "9237b003d8cca9de7c594ef79c1eebd59cc980ca3b680f6a099bb25165dd202a",
+     "entry_hash": "dfc036d2a59d207b6f128db2c81405c98c7a98b255e738d454ca8e5cc2c792fa",
+     "case_id": "MT-4BA71754",
+     "policy_version": "unset",
+     "rule_version": "unset",
+     "table": "fa-mt-sp-b-audit-ledger",
+     "bucket": "fa-mt-sp-b-worm-111122223333",
+     "key": "MT-4BA71754/9237b003d8cca9de7c594ef79c1eebd59cc980ca3b680f6a099bb25165dd202a.json"
+    }
+   },
+   "after_cw-b": {
+    "ledger": {
+     "sp-a": 26,
+     "sp-b": 27,
+     "base": 17
+    },
+    "worm": {
+     "sp-a": 16,
+     "sp-b": 17,
+     "base": 16
+    }
+   }
+  },
+  {
+   "step": "audit_workflow",
+   "ingest": {
+    "ingested": true,
+    "case_ref": "case-e98b0a8f70714fb3a505288d42610983",
+    "case_id": "MT-WF-177FD7",
+    "chars": 210,
+    "note": "start the workflow with {case_id, requester, case_ref, **tenant_binding}"
+   },
+   "ingest_minted_binding": true,
+   "ingest_without_token": {
+    "ingested": false,
+    "error": "multi-tenant: ingestion identity not verified: no access token presented"
+   },
+   "pending_before": {
+    "sp-a": false,
+    "sp-b": false,
+    "base": false
+   },
+   "execution": "arn:aws:states:us-east-1:111122223333:execution:fa-mt-determination-workflow:mtproof-mt-wf-177fd7",
+   "status": "RUNNING",
+   "states": [
+    "Extract",
+    "GuardExtracted",
+    "LookupCOA",
+    "GuardReferenceCOA",
+    "MaskPii",
+    "GuardDeidentified",
+    "AssessAid",
+    "GuardRulesExecuted",
+    "VerifyDocuments",
+    "GuardVerification",
+    "DraftNotice",
+    "AuditIntent",
+    "HumanSignoff"
+   ],
+   "execution_without_binding": {
+    "status": "FAILED",
+    "error": "States.Runtime",
+    "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_id\": \"MT-WF-177FD7-NB\", \"requester\": \"cw-a\", \"case_ref\": \"case-e98b0a8f70714fb3a505288d42610983\"}'"
+   },
+   "pending_after": {
+    "sp-a": true,
+    "sp-b": false,
+    "base": false
+   },
+   "audit_before": {
+    "ledger": {
+     "sp-a": 26,
+     "sp-b": 27,
+     "base": 17
+    },
+    "worm": {
+     "sp-a": 16,
+     "sp-b": 17,
+     "base": 16
+    }
+   },
+   "audit_after": {
+    "ledger": {
+     "sp-a": 28,
+     "sp-b": 27,
+     "base": 17
+    },
+    "worm": {
+     "sp-a": 17,
+     "sp-b": 17,
+     "base": 16
+    }
+   }
+  }
+ ],
+ "verdict": {
+  "cw-a_allowed": true,
+  "cw-b_allowed": true,
+  "cw-none_denied": true,
+  "routing_cw-a_only_to_pha-a": true,
+  "routing_cw-b_only_to_pha-b": true,
+  "audit_cw-a_ledger_and_worm_only_pha-a": true,
+  "audit_cw-b_ledger_and_worm_only_pha-b": true,
+  "ingest_refuses_without_verified_token": true,
+  "workflow_reached_signoff_with_binding": true,
+  "workflow_intent_evidence_only_pha-a": true,
+  "workflow_pending_approval_only_pha-a": true,
+  "workflow_without_binding_fails_closed": true,
+  "PASS": true
+ }
+}

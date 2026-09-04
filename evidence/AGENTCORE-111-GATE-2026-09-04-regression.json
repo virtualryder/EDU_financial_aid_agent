@@ -1,0 +1,613 @@
+{
+ "prefix": "fa-mt",
+ "since_minutes": 35,
+ "log_groups": {
+  "/aws/lambda/fa-mt-approve-signoff": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-assess-aid": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-budget-breach": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-core-tools": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-finalize": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-gateway-AttachmentProviderEF56056D-MrhfFr2bVeT1": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-ingest-case": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-intake-fafsa": {
+   "events": 4,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": [
+    {
+     "ts": 1788550097357,
+     "stream": "2026/09/04/fa-mt-intake-fafsa[$LATEST]699af0c0277a4f61bb2430",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550097882,
+     "stream": "2026/09/04/fa-mt-intake-fafsa[$LATEST]699af0c0277a4f61bb2430",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550305383,
+     "stream": "2026/09/04/fa-mt-intake-fafsa[$LATEST]699af0c0277a4f61bb2430",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550306332,
+     "stream": "2026/09/04/fa-mt-intake-fafsa[$LATEST]699af0c0277a4f61bb2430",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    }
+   ]
+  },
+  "/aws/lambda/fa-mt-kill-switch-disengage": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-kill-switch-engage": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-lookup-coa": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-mask-pii": {
+   "events": 10,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": [
+    {
+     "ts": 1788550084505,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550089179,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550299031,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550299050,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550299077,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    },
+    {
+     "ts": 1788550299107,
+     "stream": "2026/09/04/fa-mt-mask-pii[$LATEST]b3c78690980549ad96cb980d50",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "[ERROR] KillSwitchEngaged: kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected Traceback (most recent call last): \u00a0\u00a0File \"/var/task/telemetry.py\", line 234, in wrapped \u00a0\u00a0\u00a0\u00a0raise kill_switch.KillSwitchEngaged(engaged)"
+    }
+   ]
+  },
+  "/aws/lambda/fa-mt-observability-AWS679f53fac002430cb0da5b7982b-BUP4Szv5brYM": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-observability-CustomS3AutoDeleteObjectsCusto-VtEi8jXSMwgH": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-professional-judgment": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-request-signoff": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-signoff-register": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-tenant-interceptor": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-verify-documents": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-workflow-guards": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/lambda/fa-mt-write-audit": {
+   "events": 0,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": []
+  },
+  "/aws/states/fa-mt-determination-workflow": {
+   "events": 4,
+   "unexpected": 0,
+   "warnings": 0,
+   "rows": [
+    {
+     "ts": 1788550097890,
+     "stream": "states/fa-mt-determination-workflow/2026-09-04-19/00000000",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"details\":{\"cause\":\"{\\\"errorMessage\\\":\\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\\\",\\\"errorType\\\":\\\"KillSwitchEngaged\\\",\\\"requestId\\\":\\\"6be22351-ccb2-44bb-ab7e-10200ec7b27d\\\",\\\"stackTrace\\\":[\\\"  File \\\\\\\"/var/task/tele"
+    },
+    {
+     "ts": 1788550097926,
+     "stream": "states/fa-mt-determination-workflow/2026-09-04-19/00000000",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"details\":{\"cause\":\"{\\\"errorMessage\\\":\\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\\\",\\\"errorType\\\":\\\"KillSwitchEngaged\\\",\\\"requestId\\\":\\\"6be22351-ccb2-44bb-ab7e-10200ec7b27d\\\",\\\"stackTrace\\\":[\\\"  File \\\\\\\"/var/task/tele"
+    },
+    {
+     "ts": 1788550306339,
+     "stream": "states/fa-mt-determination-workflow/2026-09-04-19/00000000",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"details\":{\"cause\":\"{\\\"errorMessage\\\":\\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\\\",\\\"errorType\\\":\\\"KillSwitchEngaged\\\",\\\"requestId\\\":\\\"84d3b707-df97-4b22-8622-d101ee8ff6da\\\",\\\"stackTrace\\\":[\\\"  File \\\\\\\"/var/task/tele"
+    },
+    {
+     "ts": 1788550306372,
+     "stream": "states/fa-mt-determination-workflow/2026-09-04-19/00000000",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"details\":{\"cause\":\"{\\\"errorMessage\\\":\\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\\\",\\\"errorType\\\":\\\"KillSwitchEngaged\\\",\\\"requestId\\\":\\\"84d3b707-df97-4b22-8622-d101ee8ff6da\\\",\\\"stackTrace\\\":[\\\"  File \\\\\\\"/var/task/tele"
+    }
+   ]
+  },
+  "/aws/vendedlogs/bedrock-agentcore/gateway/fa-mt": {
+   "events": 20,
+   "unexpected": 0,
+   "warnings": 10,
+   "rows": [
+    {
+     "ts": 1788550084508,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550084508,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"4\"},\"acco"
+    },
+    {
+     "ts": 1788550089182,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550089182,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"4\"},\"acco"
+    },
+    {
+     "ts": 1788550299035,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299035,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"16\"},\"acc"
+    },
+    {
+     "ts": 1788550299053,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299053,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"7\"},\"acco"
+    },
+    {
+     "ts": 1788550299080,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299080,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"13\"},\"acc"
+    },
+    {
+     "ts": 1788550299110,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "warning",
+     "why": "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299110,\"body\":{\"isError\":true,\"log\":\"An error occurred while executing tool: mask-pii___mask_pii from target LXEFUEGPDL\",\"id\":\"9\"},\"acco"
+    },
+    {
+     "ts": 1788550084509,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550084509,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    },
+    {
+     "ts": 1788550089184,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550089184,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    },
+    {
+     "ts": 1788550299036,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299036,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    },
+    {
+     "ts": 1788550299055,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299055,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    },
+    {
+     "ts": 1788550299081,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299081,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    },
+    {
+     "ts": 1788550299111,
+     "stream": "BedrockAgentCoreGateway_ApplicationLogs",
+     "kind": "expected",
+     "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+     "excerpt": "{\"resource_arn\":\"arn:aws:bedrock-agentcore:us-east-1:111122223333:gateway/fa-mt-aid-gw-jesedgqve1\",\"event_timestamp\":1788550299111,\"body\":{\"isError\":true,\"log\":\"{\\\"errorMessage\\\": \\\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspe"
+    }
+   ]
+  },
+  "/aws/bedrock-agentcore/runtimes/financial_aid_runtime_agent-46DmE5Blpm-DEFAULT": {
+   "events": 50,
+   "unexpected": 0,
+   "warnings": 16,
+   "rows": [
+    {
+     "ts": 1788550299848,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,847 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=4a98eb82bb239a04 resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299849,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,849 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=ca5b4ab7827ee9c1 resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299850,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,850 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=afea31853241db9e resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299851,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,851 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=71a2d07e7061daa8 resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299852,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,852 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=82a519e226af35fb resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299853,
+     "stream": "2026/09/04/[runtime-logs]36d20a94-12f0-404e-adb6-6d269db1159",
+     "kind": "warning",
+     "why": "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType",
+     "excerpt": "2026-09-04 19:31:39,853 ERROR [strands.tools.mcp.mcp_client] [mcp_client.py:862] [trace_id=6a9b1c8b44b0d95526720a896d58a06c span_id=f5e9ac7af323deaa resource.service.name=financial_aid_runtime_agent.DEFAULT trace_sampled=True] - tool execution failed"
+    },
+    {
+     "ts": 1788550299847,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    },
+    {
+     "ts": 1788550299849,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    },
+    {
+     "ts": 1788550299850,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    },
+    {
+     "ts": 1788550299851,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    },
+    {
+     "ts": 1788550299852,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    },
+    {
+     "ts": 1788550299853,
+     "stream": "otel-rt-logs",
+     "kind": "expected",
+     "why": "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)",
+     "excerpt": "{\"resource\":{\"attributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.42.1\",\"service.name\":\"financial_aid_runtime_agent.DEFAULT\",\"aws.log.group.names\":\"/aws/bedrock-agentcore/runtimes/financial_aid_runtime"
+    }
+   ]
+  }
+ },
+ "executions": [
+  {
+   "name": "ksproof-ks-47b4f1",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+   "cause": "{\"errorMessage\":\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\",\"errorType\":\"KillSwitchEngaged\",\"requestId\":\"84d3b707-df97-4b22-8622-d101ee8ff6da\",\"stackTrace\":[\" "
+  },
+  {
+   "name": "ksproof-ks-b3b2f0",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+   "cause": "{\"errorMessage\":\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\",\"errorType\":\"KillSwitchEngaged\",\"requestId\":\"6be22351-ccb2-44bb-ab7e-10200ec7b27d\",\"stackTrace\":[\" "
+  },
+  {
+   "name": "pii-canary-b11ee1af56de",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "mtproof-nobind-mt-wf-177fd7",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "fail-closed: execution started WITHOUT the signed pair fails at Extract",
+   "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_i"
+  },
+  {
+   "name": "mtproof-mt-wf-177fd7",
+   "status": "ABORTED",
+   "kind": "expected",
+   "why": "harness stopped the execution at the sign-off pause",
+   "cause": "mt proof complete (sign-off pause reached) "
+  },
+  {
+   "name": "bgproof-bg-wf-24b555",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "bgproof-bg-wf-382380",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "bgproof-bg-wf-506a05",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "ksproof-ks-846dc3",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+   "cause": "{\"errorMessage\":\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\",\"errorType\":\"KillSwitchEngaged\",\"requestId\":\"0dfe6359-88ac-41ba-bad8-e507783bf114\",\"stackTrace\":[\" "
+  },
+  {
+   "name": "ksproof-ks-6db5a5",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "task 127: kill-switch containment provoked by scripts/kill_switch_proof.py (engaged => refused everywhere; released by a second identity)",
+   "cause": "{\"errorMessage\":\"kill switch ENGAGED (/fa-mt-aid/kill-switch): SEV-1 drill: runaway agent suspected\",\"errorType\":\"KillSwitchEngaged\",\"requestId\":\"6dcb8d04-3c94-4853-ae2a-b317c6fc2727\",\"stackTrace\":[\" "
+  },
+  {
+   "name": "pii-canary-cc20e517aa3a",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "mtproof-nobind-mt-wf-85763e",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "fail-closed: execution started WITHOUT the signed pair fails at Extract",
+   "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_i"
+  },
+  {
+   "name": "mtproof-mt-wf-85763e",
+   "status": "ABORTED",
+   "kind": "expected",
+   "why": "harness stopped the execution at the sign-off pause",
+   "cause": "mt proof complete (sign-off pause reached) "
+  },
+  {
+   "name": "pii-canary-9cb1eb5e96d7",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "mtproof-nobind-mt-wf-50413c",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "fail-closed: execution started WITHOUT the signed pair fails at Extract",
+   "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_i"
+  },
+  {
+   "name": "mtproof-mt-wf-50413c",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "pii-canary-24804a6dfd86",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "mtproof-nobind-mt-wf-90f0f1",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "fail-closed: execution started WITHOUT the signed pair fails at Extract",
+   "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_i"
+  },
+  {
+   "name": "mtproof-mt-wf-90f0f1",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  },
+  {
+   "name": "mtproof-nobind-mt-wf-fb587a",
+   "status": "FAILED",
+   "kind": "expected",
+   "why": "fail-closed: execution started WITHOUT the signed pair fails at Extract",
+   "cause": "An error occurred while executing the state 'Extract' (entered at the event id #2). The JSONPath '$.__aegis_tenant' specified for the field '__aegis_tenant.$' could not be found in the input '{\"case_i"
+  },
+  {
+   "name": "mtproof-mt-wf-fb587a",
+   "status": "SUCCEEDED",
+   "kind": "ok",
+   "why": "",
+   "cause": " "
+  }
+ ],
+ "alarms": [
+  {
+   "name": "fa-mt-observability-WorkflowFailedEDBEFEBB-ExaSrmdMxLHB",
+   "state": "ALARM",
+   "kind": "expected",
+   "why": "WorkflowFailed fires on the DELIBERATE no-binding execution (fail-closed proof)",
+   "reason": "Threshold Crossed: 1 datapoint [1.0 (04/09/26 19:24:00)] was greater than the threshold (0.0)."
+  },
+  {
+   "name": "fa-mt-observability-WorkflowFailedEDBEFEBB-ExaSrmdMxLHB",
+   "state": "ALARM",
+   "kind": "expected",
+   "why": "WorkflowFailed fires on the DELIBERATE no-binding execution (fail-closed proof)",
+   "reason": "Threshold Crossed: 1 datapoint [1.0 (04/09/26 19:24:00)] was greater than the threshold (0.0)."
+  }
+ ],
+ "dlqs": {},
+ "lambda_errors_metric": {
+  "fa-mt-gateway-AttachmentProviderEF56056D-MrhfFr2bVeT1": 0,
+  "fa-mt-budget-breach": 0,
+  "fa-mt-kill-switch-engage": 0,
+  "fa-mt-kill-switch-disengage": 0,
+  "fa-mt-verify-documents": 0,
+  "fa-mt-core-tools": 0,
+  "fa-mt-approve-signoff": 0,
+  "fa-mt-mask-pii": 10,
+  "fa-mt-write-audit": 0,
+  "fa-mt-professional-judgment": 0,
+  "fa-mt-lookup-coa": 0,
+  "fa-mt-request-signoff": 0,
+  "fa-mt-tenant-interceptor": 0,
+  "fa-mt-observability-CustomS3AutoDeleteObjectsCusto-VtEi8jXSMwgH": 0,
+  "fa-mt-finalize": 0,
+  "fa-mt-observability-AWS679f53fac002430cb0da5b7982b-BUP4Szv5brYM": 0,
+  "fa-mt-signoff-register": 0,
+  "fa-mt-ingest-case": 0,
+  "fa-mt-workflow-guards": 0,
+  "fa-mt-intake-fafsa": 4,
+  "fa-mt-assess-aid": 0
+ },
+ "lambda_errors_note": "Errors>0 on intake-fafsa/assess-aid/write-audit are the deliberate fail-closed TenantError refusals, and on mask-pii the in-flight kill-switch containment denials (task 127); see log_groups classification",
+ "unexpected_total": 0,
+ "verdict": "PASS"
+}

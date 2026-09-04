@@ -81,19 +81,45 @@ class WorkflowStack(cdk.Stack):
         # `selected_for_verification` defaults to TRUE deliberately: absent an explicit caller value,
         # route the case through 34 CFR 668 verification (the stricter path) rather than silently
         # skipping it. Defaulting to false would fail OPEN.
-        seed_institution = sfn.Pass(
+        # When the caller (SIS integration / ingest starter) supplies an institution in the execution
+        # input, USE it so the reference-COA lookup can sign a figure and the case can proceed to the
+        # human sign-off gate; when it does NOT, default to an empty identifier -> unsigned lookup ->
+        # GuardReferenceCOA -> ManualReview (fail-closed, by design). A Choice picks the branch so a
+        # missing $.institution never raises States.Runtime. selected_for_verification defaults TRUE
+        # (stricter path) so a missing value cannot skip verification.
+        seed_default = sfn.Pass(
             self, "SeedInstitution",
-            comment="Default the OPTIONAL caller-supplied inputs so no downstream state can raise "
-                    "States.Runtime on a missing JSONPath. No institution identifier -> unsigned "
-                    "lookup -> GuardReferenceCOA -> ManualReview. selected_for_verification defaults "
-                    "TRUE (stricter path) so a missing value cannot skip verification.",
+            comment="No caller institution -> empty identifier -> unsigned lookup -> ManualReview.",
             parameters={
                 "institution": {"school": "", "unitid": ""},
-                "selected_for_verification": True,
+                "selected_for_verification.$": "$._sel",
                 "required_documents": [],
                 "received_documents": [],
             },
             result_path="$.seeded")
+        seed_from_input = sfn.Pass(
+            self, "SeedInstitutionFromInput",
+            comment="Caller supplied an institution: use it for the reference-COA lookup.",
+            parameters={
+                "institution": {"school.$": "$.institution.school", "unitid.$": "$.institution.unitid"},
+                "selected_for_verification.$": "$._sel",
+                "required_documents": [],
+                "received_documents": [],
+            },
+            result_path="$.seeded")
+        has_institution = sfn.Choice(self, "HasInstitution").when(
+            sfn.Condition.is_present("$.institution.unitid"), seed_from_input).otherwise(seed_default)
+        # selected_for_verification comes from the ISIR (CPS) in real intake; the caller supplies it.
+        # Normalize it: an explicit caller value is honored; when absent it defaults TRUE (the stricter
+        # 34 CFR 668 path) so a missing flag can never silently skip verification.
+        sel_keep = sfn.Pass(self, "SelectedFromInput",
+                            input_path="$.selected_for_verification", result_path="$._sel")
+        sel_default = sfn.Pass(self, "SelectedDefault",
+                              result=sfn.Result.from_boolean(True), result_path="$._sel")
+        selected_provided = sfn.Choice(self, "SelectedProvided").when(
+            sfn.Condition.is_present("$.selected_for_verification"), sel_keep).otherwise(sel_default)
+        sel_keep.next(has_institution)
+        sel_default.next(has_institution)
 
         lookup = invoke("LookupCOA", compute.lookup,
                         {"school.$": "$.seeded.institution.school",
@@ -161,7 +187,7 @@ class WorkflowStack(cdk.Stack):
         # VerificationHold work queue (terminal), never onward to a drafted communication.
         c1 = sfn.Choice(self, "ExtractedOk").when(
             sfn.Condition.boolean_equals("$.guards.extracted.ok", True),
-            seed_institution).otherwise(manual_review)
+            selected_provided).otherwise(manual_review)
         c2 = sfn.Choice(self, "ReferenceCoaOk").when(
             sfn.Condition.boolean_equals("$.guards.reference_coa.ok", True), mask).otherwise(manual_review)
         c3 = sfn.Choice(self, "DeidentifiedOk").when(
@@ -181,7 +207,8 @@ class WorkflowStack(cdk.Stack):
             committed).otherwise(manual_review)
 
         definition = (extract.next(g_extracted).next(c1))
-        seed_institution.next(lookup)
+        seed_from_input.next(lookup)
+        seed_default.next(lookup)
         lookup.next(g_coa).next(c2)
         mask.next(g_deid).next(c3)
         assess.next(g_rules).next(c4)

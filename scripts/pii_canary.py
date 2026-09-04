@@ -43,8 +43,9 @@ def build_canary_case(marker):
         "case_id": f"CANARY-{marker[-19:-14]}",
         "application_text": (
             f"Applicant {marker} (SSN 900-00-{marker[7:11]}) residing at "
-            f"1 {marker} Street, Los Angeles CA 90001 applies for HCV. "
-            f"Household of 4, annual income $40,000, entityid 0603799999."),
+            f"1 {marker} Street, Los Angeles CA 90001. Student Aid Index 3500. "
+            f"Cost of attendance $24,000. Enrollment status full-time. SAP GPA 3.2, "
+            f"SAP pace 85%. Independent student. entityid 0603799999."),
         "canary": True,
     }
 
@@ -81,19 +82,23 @@ def strict_verdict(hits):
 
 
 # ── live sweeps (boto3 only inside these; offline tests never import them) ────
-def sweep_cloudwatch_logs(prefix, marker, since_ms, session=None):
+def sweep_cloudwatch_logs(prefix, marker, since_ms, session=None, extra_groups=(), only_extra=False):
     import boto3
     logs = (session or boto3).client("logs")
     total = 0
-    paginator = logs.get_paginator("describe_log_groups")
-    for page in paginator.paginate(logGroupNamePrefix=f"/aws/lambda/{prefix}-"):
-        for g in page["logGroups"]:
-            try:
-                r = logs.filter_log_events(logGroupName=g["logGroupName"],
-                                           startTime=since_ms, filterPattern=f'"{marker}"')
-                total += len(r.get("events", []))
-            except Exception:
-                pass
+    names = [] if only_extra else None
+    if names is None:
+        names = []
+        paginator = logs.get_paginator("describe_log_groups")
+        for page in paginator.paginate(logGroupNamePrefix=f"/aws/lambda/{prefix}-"):
+            names += [g["logGroupName"] for g in page["logGroups"]]
+    names += [g for g in extra_groups if g]
+    for g in names:
+        try:
+            r = logs.filter_log_events(logGroupName=g, startTime=since_ms, filterPattern=f'"{marker}"')
+            total += len(r.get("events", []))
+        except Exception:
+            pass
     return total
 
 
@@ -152,6 +157,9 @@ def main():
     ap.add_argument("--sweep-only", action="store_true")
     ap.add_argument("--strict", action="store_true", help="Gate-B exit: every destination must be clean")
     ap.add_argument("--wait", type=int, default=120, help="seconds to wait after --execute before sweeping")
+    ap.add_argument("--access-token", default="", help="multi-tenant: a tenant aid-officer's Cognito access token (ingest derives the tenant; the execution carries the signed pair)")
+    ap.add_argument("--extra-log-group", action="append", default=[], help="additional log groups to sweep AND gate on (e.g. the gateway's vended request log); repeatable.")
+    ap.add_argument("--info-log-group", action="append", default=[], help="log groups to sweep and REPORT but not gate on: the Bedrock model-invocation log. The MODEL path is measured by scripts/trace_case.py (masked_before_model, realistic PII) - a synthetic marker is not reliably a Comprehend NAME, so a hit here is informational, never a pass-by-reference leak.")
     args = ap.parse_args()
 
     import datetime
@@ -166,26 +174,32 @@ def main():
         lam = boto3.client("lambda")
         ing = json.loads(lam.invoke(
             FunctionName=f"{args.prefix}-ingest-case",
-            Payload=json.dumps({"application": case["application_text"],
-                                "case_id": case["case_id"]}).encode())["Payload"].read())
+            Payload=json.dumps({"application": case["application_text"], "case_id": case["case_id"],
+                                **({"access_token": args.access_token} if args.access_token else {})}).encode())["Payload"].read())
         sfn = boto3.client("stepfunctions")
         arn = next(m["stateMachineArn"] for m in sfn.list_state_machines()["stateMachines"]
                    if m["name"].startswith(args.prefix))
         sfn.start_execution(stateMachineArn=arn, name=f"pii-canary-{marker[7:19].lower()}",
                             input=json.dumps({"case_id": case["case_id"], "requester": "canary",
-                                              "case_ref": ing["case_ref"]}))
+                                              "case_ref": ing["case_ref"],
+                                              "institution": {"school": "", "unitid": "139959"},
+                                              **(ing.get("tenant_binding") or {})}))
         print(f"canary execution started (marker {marker}); waiting {args.wait}s for telemetry...",
               file=sys.stderr)
         time.sleep(args.wait)
 
     until = datetime.datetime.now(datetime.timezone.utc)
     hits = {
-        "cloudwatch_logs": sweep_cloudwatch_logs(args.prefix, marker, int(since.timestamp() * 1000)),
+        "cloudwatch_logs": sweep_cloudwatch_logs(args.prefix, marker, int(since.timestamp() * 1000), extra_groups=args.extra_log_group),
         "stepfunctions_history": sweep_stepfunctions(args.prefix, marker),
         "xray": sweep_xray(marker, since, until),
         "dlq": sweep_dlqs(args.prefix, marker),
     }
     v = strict_verdict(hits) if args.strict else verdict(hits)
+    info = {g: sweep_cloudwatch_logs(args.prefix, marker, int(since.timestamp() * 1000), extra_groups=[g], only_extra=True)
+            for g in args.info_log_group}
+    if info:
+        v["informational_model_path"] = {"hits": info, "note": "not gated: synthetic marker vs Comprehend NAME recall; the model-path control is masked_before_model (trace_case, realistic PII)"}
     v.update({"marker": marker, "prefix": args.prefix, "swept_at": until.isoformat()})
     print(json.dumps(v, indent=2))
     sys.exit(0 if v["verdict"] == "PASS" else 2)

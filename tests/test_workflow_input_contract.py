@@ -25,13 +25,21 @@ aws_cdk = pytest.importorskip("aws_cdk")
 from aws_cdk import assertions  # noqa: E402
 
 # The fields an execution is actually started with — DEPLOYMENT-GUIDE.md §2.
-EXECUTION_INPUT_FIELDS = {"case_id", "requester", "case_ref"}
+EXECUTION_INPUT_FIELDS = {"case_id", "requester", "case_ref",
+                          # OPTIONAL: the SIS/ingest starter may supply an institution so the
+                          # reference-COA lookup can sign and the case can reach sign-off. Guarded by
+                          # the HasInstitution Choice (is_present), so its absence never crashes.
+                          "institution",
+                          # OPTIONAL: selected_for_verification comes from the ISIR (CPS); when absent
+                          # the workflow defaults it TRUE (stricter 34 CFR 668 path).
+                          "selected_for_verification"}
 
 # Roots produced by an earlier state via result_path — safe to read downstream.
 PRODUCED_UPSTREAM = {
     "extract", "guards", "lookup", "mask", "assessment", "documents",
     "draft", "audit", "approval", "commit",
     "seeded",          # the SeedInstitution Pass state's defaults
+    "_sel",            # SelectedFromInput/SelectedDefault normalize selected_for_verification
 }
 
 # ASL/Step Functions internals, not execution state: "$.Payload" inside a ResultSelector refers to the

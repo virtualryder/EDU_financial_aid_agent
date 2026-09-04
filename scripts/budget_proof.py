@@ -45,6 +45,18 @@ from kill_switch_proof import chain_rows, log_lines  # noqa: E402
 import rt_invoke  # noqa: E402
 import trace_case  # noqa: E402
 
+# The runtime agent, given only a case id, correctly asks for the raw FAFSA rather than inventing one, so
+# it makes a single model call and can never breach mid-session. The proof therefore pre-ingests the case
+# and drives the FULL governed workflow (many model calls) exactly as the transparency proof does.
+RUNTIME_PROMPT = (
+    "Process the intake for case {case_id} (requester {req}). The raw application is ALREADY INGESTED as "
+    "case_ref {ref}; NEVER ask for or restate raw applicant details. Steps: 1) intake_fafsa with case_ref "
+    "{ref}; 2) lookup_coa for the extracted institution; 3) mask_pii with case_ref {ref}; 4) assess_aid with "
+    "the extracted fields, the cost_of_attendance and coa_source from lookup_coa, deidentified true and the "
+    "sanitized_ref; 5) draft_award_notice with deidentified true and the sanitized_ref; 6) write_audit an "
+    "INTENT record (case_id {case_id}, action aid-determination, actor {req}); 7) request_signoff for "
+    "case_id {case_id}. If a tool is denied, stop and report the control. End with a short summary.")
+
 
 def signed(region, method, url, body=None):
     creds = boto3.Session().get_credentials().get_frozen_credentials()
@@ -177,6 +189,8 @@ def main():
     if ing.get("case_ref"):
         ex = sfn.start_execution(stateMachineArn=wf["ControllerArn"], name="bgproof-" + case_b.lower(),
                                  input=json.dumps({"case_id": case_b, "requester": "bg-cw-b", "case_ref": ing["case_ref"],
+                                                   "institution": {"school": "", "unitid": "139959"},
+                                                   "selected_for_verification": False,
                                                    **ing.get("tenant_binding", {})}))["executionArn"]
         for _ in range(36):
             time.sleep(5)
@@ -205,14 +219,19 @@ def main():
     # R3-2: the DraftNotice payload carries refs only (no case_id), so the row is joined by the execution ARN
     # in its correlation block (case key "BUDGET"), exactly like every other drafter-side record.
     C["workflow_denial_recorded_by_drafter"] = any(r.get("action") == "budget.deny" and r.get("phase") == "DENIED"
-                                                    and r.get("actor") == "draft_notice" and r.get("execution_arn") == ex for r in den_b)
+                                                    and r.get("actor") == "draft_award_notice" and r.get("execution_arn") == ex for r in den_b)
     ev["steps"].append({"step": "tenant_b_capped", "gateway": pb, "runtime": rtb, "execution": {"status": ex_status, "states": ex_states, "draft": draft_out},
                         "denials": den_b})
     set_cap(ddb, table, tb, clear=True)
 
     # ---- 2. tenant A: full run, meter == model log ---------------------------------------------------
     t_run1 = int(time.time() * 1000) - 5000
-    run1 = rt_invoke.invoke(a.runtime_arn, tok_a, "BG-A1-" + uuid.uuid4().hex[:4].upper(), "bg-cw-a", region=region, timeout=900)
+    ca1 = "BG-A1-" + uuid.uuid4().hex[:4].upper()
+    ing1 = json.loads(lam.invoke(FunctionName=f"{prefix}-ingest-case",
+                                 Payload=json.dumps({"application": SYNTHETIC_CASE, "case_id": ca1,
+                                                     "access_token": tok_a}).encode())["Payload"].read())
+    run1 = rt_invoke.invoke(a.runtime_arn, tok_a, ca1, "bg-cw-a", region=region, timeout=900,
+                            prompt=RUNTIME_PROMPT.format(case_id=ca1, req="bg-cw-a", ref=ing1.get("case_ref", "")))
     m1 = meter(ddb, table, ta)
     C["run1_completed"] = run1.get("status") == 200 and "result" in (run1.get("response") or {}) and not (run1.get("response") or {}).get("refused")
     d = {k: m1[k] - m0[ta][k] for k in ("used", "tokens_in", "tokens_out", "usd_micro", "calls")}   # this run's delta
@@ -232,7 +251,12 @@ def main():
     cap2 = m1["used"] + reserve + 1000
     set_cap(ddb, table, ta, cap2)
     time.sleep(35)
-    run2 = rt_invoke.invoke(a.runtime_arn, tok_a, "BG-A2-" + uuid.uuid4().hex[:4].upper(), "bg-cw-a", region=region, timeout=900)
+    ca2 = "BG-A2-" + uuid.uuid4().hex[:4].upper()
+    ing2 = json.loads(lam.invoke(FunctionName=f"{prefix}-ingest-case",
+                                 Payload=json.dumps({"application": SYNTHETIC_CASE, "case_id": ca2,
+                                                     "access_token": tok_a}).encode())["Payload"].read())
+    run2 = rt_invoke.invoke(a.runtime_arn, tok_a, ca2, "bg-cw-a", region=region, timeout=900,
+                            prompt=RUNTIME_PROMPT.format(case_id=ca2, req="bg-cw-a", ref=ing2.get("case_ref", "")))
     m2 = meter(ddb, table, ta)
     r2 = run2.get("response") if isinstance(run2.get("response"), dict) else {}
     C["run2_stopped_mid_session_by_budget"] = r2.get("stopped") == "mid-session" and r2.get("guardrail_action") == "BUDGET"

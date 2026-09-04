@@ -175,7 +175,7 @@ function circle(s, x, y, d, fill, txt, txtColor = WHITE, fs = 16) {
   const s = p.addSlide(); bg(s, CLOUD);
   eyebrow(s, "Where it stands today");
   title(s, "Proven end-to-end on AWS — not a slideware demo");
-  const stats = [["175/175", "automated tests green in CI", MINT], ["End-to-end", "proven live - inside a locked-down private network", TEAL], ["100%", "of determinations gated by an aid officer", AMBER]];
+  const stats = [["190/190", "automated tests green in CI", MINT], ["End-to-end", "proven live - inside a locked-down private network", TEAL], ["100%", "of determinations gated by an aid officer", AMBER]];
   const sw = 3.9, gap = 0.2, x0 = 0.62, y = 1.55;
   stats.forEach((st, i) => {
     const x = x0 + i * (sw + gap);

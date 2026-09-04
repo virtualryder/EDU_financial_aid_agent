@@ -8,6 +8,7 @@ refusal the proofs deliberately provoked) or UNEXPECTED. Read-only. Exit 0 iff n
 Usage: python scripts/e2e_regression.py --env mt4 --since-minutes 60 --runtime-log-group <group> [--out x.json]"""
 import argparse
 import json
+import bisect
 import re
 import sys
 import time
@@ -31,9 +32,26 @@ EXPECTED = [
     # task 128: every refusal the budget proof deliberately provokes (capped tenant at gateway / runtime /
     # drafter, mid-session stop, synthetic AWS Budgets breach -> kill switch) + the STANDBY-locked action
     (r"BudgetExceeded|budget exceeded|denied:budget|budget_exceeded|AWS Budgets|ResourceLockedException", "task 128: budget refusals provoked by scripts/budget_proof.py (capped tenant; synthetic USD-ceiling breach)"),
+    # task 127/128 session teardown: when the kill-switch / budget stop unwinds the in-flight agent, the
+    # AgentCore MCP client closes and any pending tool call fails "Connection to the MCP server was closed"
+    # (RuntimeError). The runtime catches the final one and returns a governed mid-session stop
+    # (lib/runtime/agent.py); strands still logs each pending call. This is the containment teardown, not a
+    # fault - a real MCP connectivity failure is caught by the obs/mt proofs (runtime_invoked_200).
+    (r"Connection to the MCP server was closed", "task 127/128: MCP session teardown as the kill-switch/budget stop unwinds the in-flight agent (governed mid-session stop, lib/runtime/agent.py)"),
 ]
 # warnings that are NOT errors but must be REPORTED (a working fallback hid a misconfiguration once)
-WARN_ONLY = [(r"SSM gateway lookup failed", "runtime fell back to the GATEWAY_URL env (the SSM grant did not cover the deployment's parameter path) - fixed in lib/runtime/_obs_setup.sh 2026-09-02")]
+WARN_ONLY = [(r"SSM gateway lookup failed", "runtime fell back to the GATEWAY_URL env (the SSM grant did not cover the deployment's parameter path) - fixed in lib/runtime/_obs_setup.sh 2026-09-02"),
+             # The AgentCore gateway logs a GENERIC envelope ("An error occurred while executing tool:
+             # <target>___<tool> from target <id>") for EVERY tool isError, then a SEPARATE detail row
+             # carrying the real reason (KillSwitchEngaged / budget_exceeded / TenantError), which is
+             # classified on its own. The envelope has no reason, so it is a warning, not a verdict: a
+             # genuine tool bug still surfaces via its own detail row (errorType/Traceback -> unexpected).
+             (r"An error occurred while executing tool: [\w-]+___[\w-]+ from target", "gateway isError envelope for a tool refusal; the governed reason is on the paired detail row, classified on its own"),
+             # Runtime-side companion: Strands' MCPClient logs a bare "tool execution failed" for EVERY
+             # tool isError. During the kill-switch / budget proofs the governed tools refuse in-flight
+             # calls (KillSwitchEngaged / budget), so each refusal surfaces here with no reason attached.
+             # A genuine tool fault still fails the sweep via its gateway detail row (errorType/Traceback).
+             (r"tool execution failed", "strands MCPClient envelope for a tool isError (logged in both plain-text and OTEL-JSON form); during task 127/128 these are the governed containment refusals, reason on the tool's own detail row / gateway errorType")]
 PATTERNS = ["ERROR", "Traceback", "Task timed out", "Exception", "FAILED", "errorType"]
 
 
@@ -108,6 +126,21 @@ def main():
             if kind == "unexpected" and re.search(r'"severityText":"INFO"|"level": "INFO"|"aegis": "call"', m) and "Traceback" not in m and "exception" not in m.lower():
                 kind, why = "expected", "INFO-level line matched a pattern word (not an error)"
             rows.append({"ts": e.get("timestamp"), "stream": (e.get("logStreamName") or "")[:60], "kind": kind, "why": why, "excerpt": m[:260].replace("\n", " ")})
+        # Second pass: a Python traceback is logged as several SEPARATE CloudWatch events; only its header
+        # ("Traceback (most recent call last):") and ExceptionGroup decoration lines match a PATTERN word,
+        # and on their own they carry no error identity. Attribute such a bare structural line to the
+        # nearest GOVERNED exception in the same group: if a classified-EXPECTED refusal (KillSwitch /
+        # budget / Connection-closed teardown / TenantError) is logged within 6 s, the traceback is that
+        # refusal's stack and is expected too. A genuine fault keeps its own identity event (otel
+        # exception.type / errorType / the exception-message line), which is classified on its own.
+        _struct = re.compile(r"^Traceback \(most recent call last\)|Exception Group Traceback|unhandled errors in a TaskGroup|^\s*\| ExceptionGroup:")
+        _exp_ts = sorted(r["ts"] for r in rows if r["kind"] == "expected" and r.get("ts"))
+        if _exp_ts:
+            for r in rows:
+                if r["kind"] == "unexpected" and r.get("ts") and _struct.search(r["excerpt"]):
+                    j = bisect.bisect_left(_exp_ts, r["ts"])
+                    if any(0 <= k < len(_exp_ts) and abs(_exp_ts[k] - r["ts"]) <= 6000 for k in (j - 1, j)):
+                        r["kind"], r["why"] = "expected", "traceback of a governed refusal (an EXPECTED containment/budget event is logged within 6 s in this group)"
         n_unexp = sum(1 for r in rows if r["kind"] == "unexpected")
         unexpected_total += n_unexp
         rep["log_groups"][g] = {"events": len(rows), "unexpected": n_unexp, "warnings": sum(1 for r in rows if r["kind"] == "warning"),
@@ -168,7 +201,7 @@ def main():
                                      StartTime=time.time() - a.since_minutes * 60, EndTime=time.time(), Period=a.since_minutes * 60, Statistics=["Sum"])
         rep["lambda_errors_metric"][fn] = int(sum(p["Sum"] for p in r["Datapoints"]))
     # invocation-level Lambda errors are EXPECTED only for the fail-closed TenantError paths (intake/write_audit in the no-binding tests)
-    rep["lambda_errors_note"] = "Errors>0 on intake-fafsa/assess-aid/write-audit are the deliberate fail-closed TenantError refusals; see log_groups classification"
+    rep["lambda_errors_note"] = "Errors>0 on intake-fafsa/assess-aid/write-audit are the deliberate fail-closed TenantError refusals, and on mask-pii the in-flight kill-switch containment denials (task 127); see log_groups classification"
 
     rep["unexpected_total"] = unexpected_total
     rep["verdict"] = "PASS" if unexpected_total == 0 else "FAIL"

@@ -222,11 +222,17 @@ def main():
     # start a runtime session that will still be RUNNING when we engage (in-flight stop): a prompt that
     # forces ten separate tool calls (each = model call + gateway call) keeps the session busy ~1-2 min.
     inflight = {}
-    lines = "\n".join("%d. Applicant %s Sample, SSN 900-12-34%02d, 12 Elm St Springfield." % (i, n, i)
-                      for i, n in enumerate(("Ann", "Bob", "Cy", "Di", "Ed", "Fay", "Gus", "Hal", "Ivy", "Jo"), 1))
-    busy_prompt = ("For EACH of the ten numbered lines below, call the mask_pii tool separately on that single "
-                   "line (ten separate calls, never batch them, do not skip any), then reply with one summary "
-                   "line. Lines:\n" + lines)
+    # The runtime kill-switch cache has a TTL (default 15 s) and the proof engages ~15 s after the agent
+    # starts, so the in-flight session must keep making model calls for well over 30 s or it can finish
+    # before containment takes effect (seen 2026-09-04). Twenty-four separate mask_pii calls guarantee the
+    # session is still running — sequential tool calls, never batched — when the switch engages mid-flight.
+    _names = ("Ann", "Bob", "Cy", "Di", "Ed", "Fay", "Gus", "Hal", "Ivy", "Jo", "Kai", "Lu",
+              "Mo", "Ned", "Ola", "Pat", "Qui", "Ray", "Sam", "Tia", "Uma", "Val", "Wes", "Xia")
+    lines = "\n".join("%d. Applicant %s Sample, SSN 900-12-%04d, 12 Elm St Springfield." % (i, n, 3400 + i)
+                      for i, n in enumerate(_names, 1))
+    busy_prompt = ("For EACH of the twenty-four numbered lines below, call the mask_pii tool separately on that "
+                   "single line (twenty-four separate calls, never batch them, do not skip any), then reply with "
+                   "one summary line. Lines:\n" + lines)
     def _run():
         inflight.update(rt_invoke.invoke(a.runtime_arn, tok_b, "KS-INFLIGHT-" + uuid.uuid4().hex[:4].upper(),
                                          "ks-cw-b", region=region, prompt=busy_prompt, timeout=900))
@@ -270,6 +276,7 @@ def main():
     if wf.get("ControllerArn") and ing.get("case_ref"):
         ex = sfn.start_execution(stateMachineArn=wf["ControllerArn"], name="ksproof-" + case_id.lower(),
                                  input=json.dumps({"case_id": case_id, "requester": "ks-cw-a", "case_ref": ing["case_ref"],
+                                                   "institution": {"school": "", "unitid": "139959"}, 
                                                    **binding}))["executionArn"]
         for _ in range(24):
             time.sleep(5)
