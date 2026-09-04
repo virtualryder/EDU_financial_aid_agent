@@ -2,6 +2,8 @@ import json
 
 import provenance
 import sanitized
+import tenancy    # noqa: E402  (phase 107: interceptor-injected, HMAC-signed tenant)
+import telemetry  # noqa: E402  (phase 110: correlation keys -> one aegis.call log line per invocation)
 
 # workflow_guards — the machine-verifiable transition evidence for the DETERMINISTIC workflow
 # controller (P0-2). The Step Functions controller (cdk/ WorkflowStack) invokes this single Lambda
@@ -146,7 +148,11 @@ def _emit_metric(guard, ok):
         pass   # metrics must never affect the control decision
 
 
+@telemetry.instrument('workflow_guards')
 def handler(event, context):
+    # Phase 107 (hybrid multi-tenant): bind the interceptor-injected, HMAC-signed tenant so any store
+    # read a guard performs routes to the acting tenant and the aegis.call line is tenant-tagged.
+    tenancy.bind_tenant_from_args(event)
     e = _coerce(event)
     name = str(e.get("guard", ""))
     fn = _GUARDS.get(name)

@@ -24,7 +24,7 @@ _TTL_SECONDS = int(os.environ.get("CASE_TTL_SECONDS", "604800"))  # 7d working d
 
 
 def _table():
-    name = os.environ.get(_TABLE_ENV, "")
+    name = tenancy.route_store(os.environ.get(_TABLE_ENV, ""), "case-store")
     if not name:
         return None
     import boto3

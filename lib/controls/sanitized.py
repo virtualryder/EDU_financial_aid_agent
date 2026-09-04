@@ -87,7 +87,8 @@ class DynamoStore:
 
 def default_store():
     """DDB store when SANITIZED_TABLE is configured; else None (hash-binding still enforces integrity)."""
-    name = os.environ.get(_TABLE_ENV, "")
+    import tenancy   # phase 107: route the sanitized store to the acting tenant's own table (bundled at deploy)
+    name = tenancy.route_store(os.environ.get(_TABLE_ENV, ""), "sanitized-artifacts")
     if not name:
         return None
     try:
