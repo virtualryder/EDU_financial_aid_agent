@@ -13,7 +13,7 @@ const body = [
   callout("Read this first", [["Customer deployments use AWS CDK at the validated release tag v0.1.3-pilot-rc1 - never main, never the shell engine. The CDK path was validated live (EP1, evidence/EP1-VALIDATION.md) with the full Gate-B hardening posture: private networking with an egress firewall allowlisting ONLY the College Scorecard API (.api.data.gov), customer-managed KMS, MFA-required identity, pinned tenancy - and a strict PII canary (zero FAFSA/PII in any telemetry, including Step Functions execution history). This section is a summary; DEPLOYMENT-GUIDE.md in the repository root is the authoritative step-by-step guide."]], G.colors.TEAL),
   H2("0.1 Deploy"),
   codeBlock([
-    "git checkout v0.1.3-pilot-rc1     # a validated release tag, never main",
+    "git checkout v0.4.0-pilot-rc1     # a validated release tag, never main",
     "cd cdk && pip install -r requirements.txt",
     "npx --yes aws-cdk@2 bootstrap aws://<acct>/us-east-1   # once per account (--yes: bare npx hangs on an install prompt)",
     "npx --yes aws-cdk@2 deploy --all --require-approval never -c env=pilot -c retention_profile=pilot -c kms=customer-managed \\",

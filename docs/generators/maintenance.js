@@ -9,7 +9,7 @@ const cover = coverAndToc(
 );
 
 const body = [
-  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (`git checkout v0.1.3-pilot-rc1` then `cdk deploy`/`destroy --all`). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
+  callout("Supported path", [["Deploy, upgrade, and tear down via AWS CDK at the validated release tag (`git checkout v0.4.0-pilot-rc1` then `cdk deploy`/`destroy --all`). The shell-engine (deploy.sh/demo.sh/destroy.sh) commands below are LEGACY internal reference. Upgrades: deploy a new tagged release (change-sets are reviewable), never patch in place; roll back by redeploying the prior tag. See DEPLOYMENT-GUIDE.md and docs/KEY-MANAGEMENT.md."]], G.colors.TEAL),
   H1("1. Operating model"),
   P("The deployment has three lifecycles, and keeping them straight is the key to safe operations:"),
   table(["Lifecycle", "What it contains", "Cadence"], [

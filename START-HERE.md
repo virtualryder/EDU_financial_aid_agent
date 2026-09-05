@@ -1,7 +1,7 @@
 # START HERE — Financial Aid Verification & Student Communication Assistant
 
 *One page. What this is, what's proven, how to evaluate it, and what a pilot looks like. Target
-validated release: **[`v0.1.3-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.1.3-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
+validated release: **[`v0.4.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.4.0-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
 `main`). Supported deployment path: **AWS CDK** (`cdk/`); the shell engine is legacy/internal.*
 
 > **Evaluating for a pilot?** Read [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — it
