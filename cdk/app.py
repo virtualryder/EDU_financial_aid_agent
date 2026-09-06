@@ -93,6 +93,13 @@ def guardrail_from_manifest():
     return g
 
 
+def model_id_from_manifest():
+    """R4-3: the manifest `model.draft_model_id` - the single model the drafter and the runtime may invoke."""
+    import yaml
+    m = yaml.safe_load(open(os.path.join(REPO, "agents", "financial-aid", "manifest.yaml"), encoding="utf-8"))
+    return (m.get("model") or {}).get("draft_model_id") or "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+
+
 def runtime_name_from_manifest():
     """The AgentCore runtime name (manifest `runtime.name`, falling back to the render.py default) - the
     IaC execution role scopes its log-group and workload-identity resources to it (RT-3)."""
@@ -141,6 +148,8 @@ identity = IdentityStack(
         "client_secret_arn": app.node.try_get_context("oidc_client_secret_arn") or "",
     })
 compute = ComputeStack(app, f"{prefix}-compute", prefix=prefix, asset_dir=asset_dir, data=data, runtime_name=runtime_name_from_manifest(),
+                       # R4-3: the only model the drafter + runtime may invoke (IAM scoped to it)
+                       model_id=model_id_from_manifest(),
                        provenance_secret=app.node.try_get_context("provenance_secret") or "",
                        network=network,
                        tenant=app.node.try_get_context("tenant") or "",
@@ -161,8 +170,12 @@ compute = ComputeStack(app, f"{prefix}-compute", prefix=prefix, asset_dir=asset_
                        budget=budget_from_manifest(app))
 workflow = WorkflowStack(app, f"{prefix}-workflow", prefix=prefix, compute=compute, data=data,
                          multitenant=multitenant)
+# -c perimeter=1 attaches the #160/#161 perimeter Cedar gates (entitlement, temporal, consent/purpose,
+# budget, quantitative) and declares the context.input fields they read. Opt-in so the proven baseline
+# policy set is byte-for-byte unchanged (PAR-1 step 5).
+perimeter = str(app.node.try_get_context("perimeter") or "").lower() in ("1", "true", "yes")
 gateway = GatewayStack(app, f"{prefix}-gateway", prefix=prefix, compute=compute, identity=identity,
-                       multitenant=multitenant)
+                       multitenant=multitenant, perimeter=perimeter)
 # #168 (capture EVERY API call in the account; PAR-1 port from benefits 2026-09-06): -c capture_all=1
 # provisions ONE account trail (management ALL + S3/Lambda/Bedrock/AgentCore DATA events, multi-region,
 # file validation) delivered to CloudWatch Logs AND a WORM Object-Lock bucket, so scripts/lineage_proof.py

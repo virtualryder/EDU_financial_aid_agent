@@ -22,3 +22,23 @@ Two rules of the engine make this airtight: **deny-by-default** (no statement, n
 **forbid wins** (a forbid overrides any permit). The demo
 (`bash lib/engine/demo.sh agents/financial-aid`) proves each of these live in ENFORCE mode — a
 31-check pass — and each denial names the exact policy that fired.
+
+## Perimeter profile (PAR-1 step 5, 2026-09-06) — attached only with `-c perimeter=1`
+
+Ported from the benefits pack so this pack carries the same #160/#161 model. `consent`, `purpose`,
+`budget_ok` and `within_service_window` are **authoritative**: the gateway interceptor strips any
+caller-supplied copy and re-injects them from the server clock, the live per-tenant meter and the
+server-side authz store (`lib/controls/authoritative_context.py`, whose record `ingest_case` writes from
+the verified aid officer's `consent_attested` + `purpose` attestation). A missing value fails the guard, so
+the forbid fires — fail-closed.
+
+| Policy | Condition |
+|---|---|
+| `require_entitlement` | **entitlement** — zero-default tools (#160): no non-empty `custom:tools` claim and no `tools_granted` membership ⇒ zero tools |
+| `require_service_window` | **temporal** — the governed decision actions are refused outside the deployment's service window |
+| `consent_purpose_before_assess_aid` | **consent + purpose** — the aid determination (FERPA-adjacent) needs the student's recorded authorization and an authorized purpose (`aid_determination` / `verification`) |
+| `budget_before_draft_award_notice` | **budget** — the model-spending drafter is refused when the live per-tenant meter is at cap |
+
+| `amount_cap_assess_aid` | **quantitative** — a cost of attendance above the institutional ceiling (100,000) is not an automated determination; the aid officer must review it |
+
+All five conditions are live in this pack; `reviewer's` above is the aid officer.

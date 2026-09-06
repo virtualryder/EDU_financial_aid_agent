@@ -187,6 +187,17 @@ policies:
   - { name: mask_before_draft,             kind: forbid, action: draft_award_notice,  unless_deidentified: true }
   - { name: no_self_commit,                kind: forbid, action: finalize_award }
   - { name: no_self_professional_judgment, kind: forbid, action: commit_professional_judgment }
+  # --- Perimeter profile (PAR-1 step 5, 2026-09-06): the #160/#161 conditions, attached ONLY with
+  # -c perimeter=1 (scope: perimeter). consent / purpose / budget_ok / within_service_window are
+  # AUTHORITATIVE - the gateway interceptor strips caller-supplied copies and injects them from the
+  # server clock, the live meter and the authz store (authoritative_context resolver, #3).
+  - { name: require_entitlement, kind: forbid, require_entitlement: true, scope: perimeter }
+  - { name: require_service_window, kind: forbid, require_service_window: true, scope: perimeter, actions: [assess_aid, record_professional_judgment, draft_award_notice] }
+  - { name: consent_purpose_before_assess_aid, kind: forbid, action: assess_aid, require_consent: true, allowed_purposes: [aid_determination, verification], scope: perimeter }
+  - { name: budget_before_draft_award_notice, kind: forbid, action: draft_award_notice, require_budget_ok: true, scope: perimeter }
+  - { name: amount_cap_assess_aid, kind: forbid, action: assess_aid, amount_limit: 100000, amount_field: cost_of_attendance, scope: perimeter }
+  # phase 108 (hybrid multi-tenant): un-tenanted identities are refused at the gateway.
+  - { name: require_tenant, kind: forbid, require_tenant: true, scope: multitenant }
 
 workflow:
   entrypoint: agent.py
