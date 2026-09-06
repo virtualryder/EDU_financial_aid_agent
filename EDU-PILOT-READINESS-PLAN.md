@@ -4,7 +4,7 @@
 adjudication agent — it prepares work for aid officers; humans commit every consequential action).
 **Repo:** `github.com/virtualryder/EDU_financial_aid_agent` · **Release:** `v0.1.0-pilot-rc1` ·
 **Build state:** EP0 (control-plane port) + EP1 (author-produced clean-account live validation) complete;
-suite **205 tests**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
+suite **217 tests**. **Owner:** David Ryder (AWS HCLS SA). **Last updated:** 2026-07-26.
 
 ---
 
@@ -49,7 +49,7 @@ The reviewer required these before any internal share; all are now closed:
 | `cdk/app.py` titled "Housing eligibility agent" | → EDU Financial Aid Assistant | ✅ |
 | Key-version example `hud:sm:` | → `scorecard:sm:` (matches GA-2 `scorecard` domain) | ✅ |
 | `cdk/cdk.out` synth artifacts (with Housing lambda copies) tracked in git | Untracked + gitignored | ✅ |
-| Test counts reconciled | 137/137 stated everywhere at the close of that cycle <!-- count-gate:historical --> | ✅ |
+| Test counts reconciled | 137/137 <!-- count-gate:historical --> stated everywhere at the close of that cycle | ✅ |
 | Evidence not labeled as author-produced | Added explicit author-produced/synthetic-only disclaimer to `evidence/EP1-VALIDATION.md` | ✅ |
 
 ---
@@ -57,8 +57,8 @@ The reviewer required these before any internal share; all are now closed:
 ## 1b. Gate B P1 bundle — build status (this cycle)
 
 The operating-model docs, the plain-language control, and the config/award-year CI gates were built
-this cycle. That cycle closed with the suite at **153 tests** (137 + 13 + 3 CI-completeness gates) <!-- count-gate:historical -->;
-the current authoritative count is **205 tests** (`RELEASE-MANIFEST.md`). Remaining Gate-B items are engagement actions
+this cycle. That cycle closed with the suite at **153 tests** <!-- count-gate:historical --> (137 + 13 + 3 CI-completeness gates);
+the current authoritative count is **217 tests** (`RELEASE-MANIFEST.md`). Remaining Gate-B items are engagement actions
 (SME red-line, accessibility-office review), not build items.
 
 | Item | Deliverable | Status |

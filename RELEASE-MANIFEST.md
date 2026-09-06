@@ -11,13 +11,13 @@ this table, this table is correct and the other file is a bug.*
 | Field | Value |
 |---|---|
 | **Product** | Financial Aid Verification & Student Communication **Assistant** (not an awarding / eligibility-adjudication agent) |
-| **Supported tag** | `v0.4.0-pilot-rc1` — cut from this tree after the **governed-core 1.9.0 re-pin was live-gated** on a from-zero two-tenant AgentCore deployment (2026-09-04; see the governed-core row). Supersedes `v0.2.0-pilot-rc1` (governed-core dependency migration, offline only) and `v0.1.3-pilot-rc1` (reconciled docs + Gate-B bundle, which stood at 153 offline tests). <!-- count-gate:historical --> **`v0.4.0-pilot-rc1` (2026-09-05) supersedes `v0.3.0-pilot-rc1 / v0.1.3-pilot-rc1`**: the same tree with `lib/` relocked at the pinned **governed-core 1.10.1** (fault-semantics batch — durable-evidence gating, un-strandable approvals, authoritative Cedar context — plus deepened PII/PHI detection); **offline-gated** (all pass locally except one CI-only gate; 205 collected). The last LIVE gate on this pack ran on governed-core 1.9.0 (2026-09-04, from-zero two-tenant AgentCore deployment; tag `v0.3.0-pilot-rc1`); a live re-gate on 1.10.1 is the next milestone for this pack (third external review, REL-2). |
+| **Supported tag** | `v0.4.0-pilot-rc1` — cut from this tree after the **governed-core 1.9.0 re-pin was live-gated** on a from-zero two-tenant AgentCore deployment (2026-09-04; see the governed-core row). Supersedes `v0.2.0-pilot-rc1` (governed-core dependency migration, offline only) and `v0.1.3-pilot-rc1` (reconciled docs + Gate-B bundle, which stood at 153 offline tests). <!-- count-gate:historical --> **`v0.4.0-pilot-rc1` (2026-09-05) supersedes `v0.3.0-pilot-rc1 / v0.1.3-pilot-rc1`**: the same tree with `lib/` relocked at the pinned **governed-core 1.10.1** (fault-semantics batch — durable-evidence gating, un-strandable approvals, authoritative Cedar context — plus deepened PII/PHI detection); **offline-gated** (all pass locally except one CI-only gate; 217 collected). The last LIVE gate on this pack ran on governed-core 1.9.0 (2026-09-04, from-zero two-tenant AgentCore deployment; tag `v0.3.0-pilot-rc1`); a live re-gate on 1.10.1 is the next milestone for this pack (third external review, REL-2). |
 | **governed-core** | **1.10.1** pinned (`lib/CORE_VERSION`, `lib/core.lock`; offline-gated, 2026-09-05). Last LIVE-gated core: **1.9.0** on 2026-09-04 (GAP-1 of the 2026-09-03 platform review, tag `v0.3.0-pilot-rc1`). From-zero `fa-mt` two-tenant deployment (8 stacks) — isolation + per-tenant audit routing 12/12, full transparency 13/13 per tenant (model invocations tenant-tagged, masked-before-model), strict PII canary 0 hits, kill switch 29/29, per-tenant token+USD budget 24/24, e2e regression 0 unexpected; then torn down to zero residue. Evidence: `evidence/AGENTCORE-111-GATE-2026-09-04.md` (+ `-mt`/`-obs`/`-regression` json, `-sp-a`/`-sp-b` timelines, `AGENTCORE-KILL-SWITCH-2026-09-04.json`, `AGENTCORE-BUDGET-2026-09-04.json`). Account ids redacted to `111122223333`. |
 | **EP1 validation** | ran on the code first cut as `v0.1.0-pilot-rc1`; `v0.1.1` = `v0.1.0` + **documentation reconciliation + operating-model bundle + 18 offline tests (132→150)**, **no infrastructure change** — so the EP1 live evidence carries forward unchanged |
 | **EP1 validation date** | 2026-07-26 |
 | **Region** | us-east-1 |
 | **AWS account** | clean isolated account (id redacted in all committed files) |
-| **Offline test suite** | **204 / 190** passing on current main (unit + eval + Cedar policy + **27 CDK stack-synthesis** assertions + the doc-count gate). 189 run locally; 1 CI-completeness gate runs only in CI. |
+| **Offline test suite** | **217 / 216** passing on current main (unit + eval + Cedar policy + **34 CDK stack-synthesis** assertions + the doc-count gate). 216 run locally; 1 CI-completeness gate runs only in CI. |
 | **Legacy demo checks** | 32-check governance demo — **shell engine, internal reference only, NOT a customer path** |
 | **EP1 live scenarios** | 6 (see below) |
 | **Concurrency cases** | 10 concurrent executions → 10/10 SUCCEEDED, one `FINAL#` marker each |
@@ -40,9 +40,9 @@ this table, this table is correct and the other file is a bug.*
 
 ## Count glossary (why several numbers exist — all legitimate, distinct)
 
-- **205 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 → 153 after the
+- **217 offline tests** — the CI suite (grew 132 at EP0 → 137 after doc-integrity → 150 → 153 after the
   Gate-B operating-model bundle added config/award-year/readability gates → 157 after the `fa-val2`
-  re-validation gates → 175 → 190 today, including the doc-count gate). This is the current
+  re-validation gates → 175 → 190 → 205 → 217 today, including the doc-count gate). This is the current
   authoritative offline number, and it is machine-enforced by `tests/test_doc_counts.py`: that gate
   collects the suite for real and fails if any counted document disagrees. A count that describes a
   **past run** is exempt only when the line says "at the time of this run" or carries a

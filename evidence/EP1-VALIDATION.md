@@ -9,7 +9,7 @@
 > `RuntimeError: Unsupported feature flag ... has been removed in CDKv2`. **`cdk synth` and
 > `cdk deploy` both failed**, so the documented path was impossible to follow.
 > *Why the suite missed it:* `Template.from_stack()` builds constructs in-process and **never reads
-> `cdk.json`** — only the CLI does. All 152 tests passed while the shipped artifact was undeployable. <!-- count-gate:historical -->
+> `cdk.json`** — only the CLI does. All 152 tests <!-- count-gate:historical --> passed while the shipped artifact was undeployable.
 > Fixed; `tests/test_cdk_context_flags.py` now gates it (and is in all four sibling repos).
 >
 > ### Defect 2 — the documented execution input crashed the controller (P0)
