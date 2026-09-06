@@ -414,3 +414,46 @@ def test_gateway_role_invokes_only_exact_lambda_arns():
     s = json.dumps(T_GATEWAY.to_json())
     assert "lambda:InvokeFunction" in s
     assert "starts_with" not in s and ":function:*" not in s   # exact ARNs, never discovery/wildcards
+
+
+# -- RT-3 (port from benefits, 2026-09-06): runtime execution role as IaC ----------------------------
+
+def test_runtime_execution_role_is_iac_least_privilege_with_mandatory_guardrail():
+    """The AgentCore runtime must NOT run on the CLI-generated role (AWS: development/testing only). The
+    compute stack exports an IaC execution role: the documented runtime policy scoped to this deployment +
+    region + runtime name, the runtime's governance needs (SSM, budget meter, ApplyGuardrail), a
+    SourceAccount/SourceArn-conditioned trust and - with a guardrail - the mandatory-guardrail condition."""
+    app = aws_cdk.App()
+    asset = stage_lambda_bundle()
+    data = DataStack(app, "dg", prefix="fa-test", retention_profile="sandbox-demo", kms_mode="aws-managed")
+    compute = ComputeStack(app, "cg", prefix="fa-test", asset_dir=asset, data=data, guardrail_id="gr-abc123")
+    t = Template.from_stack(compute)
+    roles = {k: v for k, v in t.find_resources("AWS::IAM::Role").items()
+             if v["Properties"].get("RoleName") == "fa-test-agentcore-runtime"}
+    assert len(roles) == 1, "IaC runtime execution role missing"
+    role = next(iter(roles.values()))["Properties"]
+    trust = json.dumps(role["AssumeRolePolicyDocument"])
+    assert "bedrock-agentcore.amazonaws.com" in trust and "aws:SourceAccount" in trust and "aws:SourceArn" in trust
+    pols = json.dumps([v for v in t.find_resources("AWS::IAM::Policy").values()
+                       if "RuntimeExecutionRole" in json.dumps(v["Properties"].get("Roles"))])
+    for needle in ("ecr:BatchGetImage", "ecr:GetAuthorizationToken", "/aws/bedrock-agentcore/runtimes/",
+                   "bedrock-agentcore:GetWorkloadAccessTokenForJWT", "workload-identity/financial_aid_runtime_agent-*",
+                   "xray:PutTraceSegments", "Aegis/Budget", "ssm:GetParameter", "-aid/*",
+                   "dynamodb:UpdateItem", "bedrock:ApplyGuardrail", "bedrock:InvokeModelWithResponseStream",
+                   "bedrock:GuardrailIdentifier"):
+        assert needle in pols, f"runtime execution role policy is missing {needle}"
+    assert '"bedrock-agentcore:*"' not in pols and '"Action": "*"' not in pols
+    t.has_output("RuntimeExecutionRoleArn", {})
+    # the drafter carries the same mandatory-guardrail condition
+    core = json.dumps([v for v in t.find_resources("AWS::IAM::Policy").values()
+                       if "CoreTools" in json.dumps(v["Properties"].get("Roles"))])
+    assert "DrafterBedrockGuardrailRequired" in core and "bedrock:GuardrailIdentifier" in core
+
+
+def test_runtime_execution_role_without_guardrail_has_no_guardrail_condition():
+    """Sandbox without a guardrail: the runtime role must still exist (IaC, never CLI) but not carry a
+    guardrail condition its calls could not satisfy."""
+    pols = json.dumps([v for v in T_COMPUTE.find_resources("AWS::IAM::Policy").values()
+                       if "RuntimeExecutionRole" in json.dumps(v["Properties"].get("Roles"))])
+    assert "bedrock:InvokeModel" in pols and "bedrock:GuardrailIdentifier" not in pols and "ApplyGuardrail" not in pols
+    T_COMPUTE.has_resource_properties("AWS::IAM::Role", Match.object_like({"RoleName": "fa-test-agentcore-runtime"}))
