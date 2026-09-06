@@ -17,6 +17,7 @@ import shutil
 
 import aws_cdk as cdk
 
+from fa_stacks.lineage_stack import LineageStack
 from fa_stacks.data_stack import DataStack
 from fa_stacks.network_stack import NetworkStack
 from fa_stacks.compute_stack import ComputeStack
@@ -141,6 +142,16 @@ workflow = WorkflowStack(app, f"{prefix}-workflow", prefix=prefix, compute=compu
                          multitenant=multitenant)
 gateway = GatewayStack(app, f"{prefix}-gateway", prefix=prefix, compute=compute, identity=identity,
                        multitenant=multitenant)
+# #168 (capture EVERY API call in the account; PAR-1 port from benefits 2026-09-06): -c capture_all=1
+# provisions ONE account trail (management ALL + S3/Lambda/Bedrock/AgentCore DATA events, multi-region,
+# file validation) delivered to CloudWatch Logs AND a WORM Object-Lock bucket, so scripts/lineage_proof.py
+# can prove every governed API call is captured and joinable. Account-level + cost -> opt-in.
+lineage = None
+if str(app.node.try_get_context("capture_all") or "").lower() in ("1", "true", "yes"):
+    lineage = LineageStack(app, f"{prefix}-lineage", prefix=prefix,
+                           retention_days=int(app.node.try_get_context("capture_retention_days") or 1),
+                           lock_mode=app.node.try_get_context("capture_lock_mode") or "GOVERNANCE")
+
 observability = ObservabilityStack(app, f"{prefix}-observability", prefix=prefix,
                                    compute=compute, workflow=workflow, data=data, gateway=gateway,
                                    # phase 110: -c model_logging=1 turns on Bedrock model-invocation
@@ -153,7 +164,7 @@ observability = ObservabilityStack(app, f"{prefix}-observability", prefix=prefix
                                    runtime_role_name=app.node.try_get_context("runtime_role") or "")
 
 for s in (data, compute, workflow, identity, observability, gateway) + ((network,) if network else ()) \
-        + tuple(tenant_data.values()):
+        + tuple(tenant_data.values()) + ((lineage,) if lineage else ()):
     cdk.Tags.of(s).add("app", "edu-financial-aid-agent")
     cdk.Tags.of(s).add("env", env_name)
     cdk.Tags.of(s).add("cost-center", "governed-agents")
