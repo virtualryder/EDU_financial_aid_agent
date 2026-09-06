@@ -133,12 +133,21 @@ def _kill_switch(now=None):
 
 
 def _find(exc, cls):
-    seen, e = set(), exc
-    while e is not None and id(e) not in seen:
+    """The first `cls` in the cause/context chain of `exc` - INCLUDING the members of an ExceptionGroup
+    (L19, 2026-09-06: the MCP client's anyio task group re-raises a mid-session stop as an
+    ExceptionGroup, whose members are not on __cause__/__context__)."""
+    seen, todo = set(), [exc]
+    while todo:
+        e = todo.pop()
+        if e is None or id(e) in seen:
+            continue
+        seen.add(id(e))
         if isinstance(e, cls):
             return e
-        seen.add(id(e))
-        e = e.__cause__ or e.__context__
+        members = getattr(e, "exceptions", None)
+        if isinstance(members, (list, tuple)):
+            todo.extend(members)
+        todo.append(e.__cause__ or e.__context__)
     return None
 
 
@@ -399,7 +408,11 @@ def invoke(payload, context=None):
         # an outcome, honor it. If the teardown is itself the first sign of containment, refuse closed;
         # otherwise the exception is real and re-raised.
         if outcome is None:
-            if _contained(exit_exc):
+            b = _budget_stopped(exit_exc)
+            if b is not None:      # L19: a BUDGET stop surfacing only through the teardown is still the outcome
+                outcome = {**_budget_refusal(b.decision, corr), "tools_available": [],
+                           "tenant": session_tenant, "stopped": "mid-session"}
+            elif _contained(exit_exc):
                 engaged = _kill_switch() or {"reason": str(exit_exc), "source": ",".join(KILL_SWITCH_PARAMS)}
                 outcome = {**_refusal(engaged, corr), "tools_available": [],
                            "tenant": session_tenant, "stopped": "mid-session"}
