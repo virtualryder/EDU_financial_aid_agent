@@ -74,3 +74,36 @@ def test_core_finalize_refused():
 
 def test_core_commit_pj_refused():
     assert call("aid_core", {"pj_id": "PJ-1"})["committed"] is False
+
+
+# -- L20 class: negation-aware dependency status (2026-09-06) --------------------------------------
+# This was a bare SUBSTRING check ("independent" in low), so "the student is not independent" set
+# dependency="independent". Dependency status decides whether PARENTAL income counts toward the
+# SAI, so the bug changes the aid determination itself. Found by sweeping the portfolio after the
+# benefits categorical-eligibility bug (L20) that the contextual-grounding guardrail caught live.
+
+BASE = "Student aid index 4500. Cost of attendance 22000. "
+
+
+def _dep(text):
+    return call("intake_fafsa", {"application": BASE + text})["fields"]["dependency"]
+
+
+def test_dependency_is_negation_aware():
+    assert _dep("The student is not independent.") != "independent"
+    assert _dep("Independent status was denied.") != "independent"
+
+
+def test_dependency_still_reads_a_real_assertion():
+    assert _dep("The student is independent under the FAFSA criteria.") == "independent"
+    assert _dep("The student is a dependent of both parents.") == "dependent"
+
+
+def test_dependency_prefers_independent_over_its_own_substring():
+    """"dependent" is a substring of "independent" - the word-boundaried check must not confuse them."""
+    assert _dep("Verified independent student.") == "independent"
+
+
+def test_dependency_left_undecided_when_neither_is_asserted():
+    """No default: an undecided dependency status reaches a human rather than assuming one."""
+    assert _dep("No statement about dependency was provided.") is None

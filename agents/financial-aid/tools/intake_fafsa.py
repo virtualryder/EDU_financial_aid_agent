@@ -1,6 +1,8 @@
 import json
 import re
 
+import negation
+
 # intake_fafsa — extract the decision-relevant, NON-PII fields from a raw FAFSA/ISIR or aid application
 # (free text or JSON): Student Aid Index (SAI), cost of attendance, enrollment status, SAP GPA and pace,
 # dependency. Deterministic and fail-soft. PII (name, SSN, address, DOB) is NOT needed downstream for the
@@ -78,9 +80,18 @@ def handler(event, context):
         pace = _num(m.group(1)) if m else None
     dependency = e.get("dependency")
     if dependency is None:
-        if "independent" in low:
+        # L20 class (found on benefits 2026-09-06, swept across the portfolio): this was a bare
+        # SUBSTRING check, so "the student is not independent" set dependency="independent".
+        # Dependency status decides whether PARENTAL income counts toward the SAI, so a
+        # negation-blind match changes the aid determination itself - the same shape of error as
+        # the benefits categorical-eligibility bug, in this pack's most consequential field.
+        #
+        # Word-boundaried and negation-aware, and "independent" is tested FIRST because
+        # "dependent" is a substring of it. When neither is asserted the field stays None and the
+        # case reaches a human rather than defaulting to either status.
+        if negation.asserted(low, r"\bindependent\b"):
             dependency = "independent"
-        elif "dependent" in low:
+        elif negation.asserted(low, r"\bdependent\b"):
             dependency = "dependent"
 
     fields = {"student_aid_index": sai, "cost_of_attendance": coa, "enrollment_status": enroll,
