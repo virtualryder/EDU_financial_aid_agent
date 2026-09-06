@@ -106,3 +106,89 @@ def test_drafter_stores_notice_by_ref_when_case_store_configured(monkeypatch):
     monkeypatch.delenv("CASE_TABLE")
     out2 = aid_core.handler({"deidentified": True, "sanitized_ref": sref, "case": masked}, None)
     assert "notice" in out2                              # dev/inline mode unchanged
+
+
+DETERMINATION = {"assessed": True, "determination": "ELIGIBLE", "eligible": True, "aid_track": "STANDARD",
+                 "sap_status": "SATISFACTORY", "pell_award": 4895, "enrollment_status": "FULL_TIME",
+                 "cost_of_attendance": 21000, "reason": "SAI 2500 within the Pell range",
+                 "notes": ["SMUGGLED free text must not reach the grounding source"]}
+
+
+def test_drafter_grounds_core_on_case_plus_determination_and_appends_boilerplate(monkeypatch):
+    """#190 / L14 (PAR-1 port): with a guardrail bound, the model is asked for ONLY the grounded factual core
+    (case + the deterministic determination as grounding_source, a query), the determination reaches the
+    source from an allowlist of fields only, and the fixed boilerplate is appended deterministically."""
+    _fresh()
+    import sanitized
+    import aid_core
+    importlib.reload(aid_core)
+    masked = "[REDACTED:NAME] files a FAFSA. SAI 2500, full-time, Example State University."
+    sref = sanitized.mint_ref(masked, engine="comprehend", store=sanitized.MemoryStore())
+    seen = {}
+
+    class _BR:
+        def converse(self, **kw):
+            seen.update(kw)
+            return {"output": {"message": {"content": [{"text": "Dear student, you are eligible."}]}},
+                    "stopReason": "end_turn"}
+    import boto3
+    monkeypatch.setattr(boto3, "client", lambda *_a, **_k: _BR())
+    monkeypatch.setattr(aid_core, "GUARDRAIL_ID", "gr-fa123")
+    monkeypatch.setattr(aid_core, "GUARDRAIL_VERSION", "1")
+    monkeypatch.delenv("CASE_TABLE", raising=False)
+    out = aid_core.handler({"deidentified": True, "sanitized_ref": sref, "case": masked,
+                            "determination": DETERMINATION}, None)
+    assert seen.get("guardrailConfig") == {"guardrailIdentifier": "gr-fa123", "guardrailVersion": "1"}
+    assert seen["system"] == [{"text": aid_core._SYSTEM_GROUNDED_CORE}]
+    blocks = seen["messages"][0]["content"]
+    quals = [q for b in blocks for q in b.get("guardContent", {}).get("text", {}).get("qualifiers", [])]
+    assert "grounding_source" in quals and "query" in quals
+    src = [b["guardContent"]["text"]["text"] for b in blocks
+           if "grounding_source" in b.get("guardContent", {}).get("text", {}).get("qualifiers", [])][0]
+    assert masked in src and "determination=ELIGIBLE" in src and "pell_award=4895" in src and "sap_status=SATISFACTORY" in src
+    assert "SMUGGLED" not in src
+    assert out["notice"].startswith("Dear student") and out["notice"].endswith(aid_core._NOTICE_BOILERPLATE)
+    assert out.get("guardrail_applied") is True
+
+
+def test_drafter_refuses_without_the_engine_determination_when_guardrail_bound(monkeypatch):
+    """L14: under a guardrail the deterministic determination is REQUIRED; without it the drafter refuses
+    fail-closed BEFORE any model call (no spend, no notice) - the EDU workflow already passed it as a JSON
+    string, and the drafter now actually uses it; the gateway schema requires it too."""
+    _fresh()
+    import sanitized
+    import aid_core
+    importlib.reload(aid_core)
+    masked = "[REDACTED:NAME] files a FAFSA. SAI 2500, full-time, Example State University."
+    sref = sanitized.mint_ref(masked, engine="comprehend", store=sanitized.MemoryStore())
+    called = {"converse": False}
+
+    class _Never:
+        def converse(self, **kw):
+            called["converse"] = True
+            return {"output": {"message": {"content": [{"text": "x"}]}}, "stopReason": "end_turn"}
+    import boto3
+    monkeypatch.setattr(boto3, "client", lambda *_a, **_k: _Never())
+    monkeypatch.setattr(aid_core, "GUARDRAIL_ID", "gr-fa123")
+    monkeypatch.setattr(aid_core, "GUARDRAIL_VERSION", "1")
+    out = aid_core.handler({"deidentified": True, "sanitized_ref": sref, "case": masked}, None)
+    assert out.get("drafted_by") is None and out.get("determination_present") is False
+    assert "determination required" in out.get("error", "") and called["converse"] is False
+    # a JSON-string determination (the workflow's States.JsonToString shape) is accepted
+    seen = {}
+
+    class _Spy:
+        def converse(self, **kw):
+            seen.update(kw)
+            return {"output": {"message": {"content": [{"text": "core"}]}}, "stopReason": "end_turn"}
+    monkeypatch.setattr(boto3, "client", lambda *_a, **_k: _Spy())
+    import json as _json
+    out2 = aid_core.handler({"deidentified": True, "sanitized_ref": sref, "case": masked,
+                             "determination": _json.dumps(DETERMINATION)}, None)
+    assert out2.get("drafted_by") and "determination=ELIGIBLE" in _json.dumps(seen["messages"])
+    wf = (ROOT / "cdk" / "fa_stacks" / "workflow_stack.py").read_text(encoding="utf-8")
+    assert '"determination.$": "States.JsonToString($.assessment.out)"' in wf
+    import yaml
+    m = yaml.safe_load((ROOT / "agents" / "financial-aid" / "manifest.yaml").read_text(encoding="utf-8"))
+    tool = [t for tg in m["tools"] for t in tg.get("mcp_tools", []) if t["name"] == "draft_award_notice"][0]
+    assert "determination" in tool["input"] and "determination" in tool["required"] and "sanitized_ref" in tool["required"]

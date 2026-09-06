@@ -138,9 +138,11 @@ tools:
       - name: draft_award_notice
         description: "Draft a de-identified financial-aid award/determination notice; case must be masked first."
         input:
-          case: { type: string, description: "De-identified case + aid determination JSON/text." }
+          case: { type: string, description: "De-identified case text (optional when sanitized_ref is given: the drafter loads the masked text server-side)." }
           deidentified: { type: boolean, description: "True if masked by mask_pii." }
-        required: [case, deidentified]
+          sanitized_ref: { type: object, description: "The signed sanitized_ref returned by mask_pii (proof of de-identification; pass it verbatim)." }
+          determination: { type: object, description: "The assess_aid output, verbatim (the deterministic aid determination). The grounded drafter states ONLY this determination; a draft without it is refused." }
+        required: [deidentified, sanitized_ref, determination]
       - name: finalize_award
         description: "Commit a financial-aid award; agent must never call this directly."
         input: { award_id: { type: string, description: "Award/record id." } }
@@ -194,7 +196,7 @@ workflow:
     - "lookup_coa - fetch the real Cost of Attendance for the student's institution from College Scorecard (non-PII); keep the returned cost_of_attendance and coa_source."
     - "mask_pii - de-identify the raw record; use the returned masked_case for the notice and audit."
     - "assess_aid - on the extracted fields with deidentified true, using the real cost_of_attendance and coa_source from lookup_coa, determine Pell eligibility, SAP status, and the verification track."
-    - "draft_award_notice - draft the award/determination notice, passing the masked case and deidentified true."
+    - "draft_award_notice - draft the award/determination notice, passing deidentified true, the sanitized_ref from mask_pii and the assess_aid output as determination."
     - "write_audit - record an INTENT audit entry for the award determination."
     - "request_signoff - request aid-officer sign-off to commit (a DIFFERENT qualified person must approve)."
 

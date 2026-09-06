@@ -170,7 +170,7 @@ ships ZERO users).
 ## Pilot readiness (Gate B operating model)
 
 Beyond the code and the EP1 validation, the operating model a pilot needs is documented and, where it
-can be, enforced in CI (suite **217 tests**). Start with the plan, then the specific docs:
+can be, enforced in CI (suite **222 tests**). Start with the plan, then the specific docs:
 
 - [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — the whole picture: operating model, pilot metrics (no productivity % until measured), leadership Q&A, staged gates.
 - [`docs/CONFIGURATION-WORKSHEET.md`](docs/CONFIGURATION-WORKSHEET.md) — institution-controlled values + `config/institution.config.json` (CI drift gate: `test_config_schema.py`).
@@ -222,4 +222,4 @@ earlier governed-core version references above are historical gate records, accu
 
 **Contributing to `lib/` (REL-4).** `lib/` is the hash-pinned governance-core overlay: any change there must regenerate `lib/core.lock` in the same commit (`python lib/regen_core_lock.py --set <version>`), or CI's `lib/verify_core.py` gate turns red and the supported tag falls behind the fixed core. `bash tools/install_hooks.sh` installs a pre-commit hook that refuses such a commit locally.
 
-> **Parity note (2026-09-06).** Pinning governed-core is not the same as wiring its controls into this pack's IaC. The platform's generated matrix [`WOGplatform/docs/PACK-PARITY.md`](https://github.com/virtualryder/WOGplatform/blob/main/docs/PACK-PARITY.md) shows exactly which controls are wired here versus the lead (benefits) pack; a control absent there is absent here, not "pending validation". PAR-1 (2026-09-06) ported the 2026-09-05 benefits controls here (capture-all lineage, enforcement perimeter, restore-aware model logging, pinned drafter role, regulated invocation-log store) — **offline-gated on this pack, live-proven only on benefits** until its REL-5 live re-gate.
+> **Parity note (2026-09-06).** Pinning governed-core is not the same as wiring its controls into this pack's IaC. The platform's generated matrix [`WOGplatform/docs/PACK-PARITY.md`](https://github.com/virtualryder/WOGplatform/blob/main/docs/PACK-PARITY.md) shows exactly which controls are wired here versus the lead (benefits) pack; a control absent there is absent here, not "pending validation". PAR-1 (2026-09-06) ported the 2026-09-05 benefits controls here (capture-all lineage, enforcement perimeter, restore-aware model logging, pinned drafter role, regulated invocation-log store, the output guardrail as IaC with contextual grounding, and the grounded drafter that carries the deterministic assessment INTO its grounding source — the L14 fix the benefits full-portfolio gate forced) — **offline-gated on this pack, live-proven only on benefits** until its REL-5 live re-gate.

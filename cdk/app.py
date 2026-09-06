@@ -82,6 +82,17 @@ def budget_from_manifest(app):
         b["prices_json"] = json.dumps(json.load(fh), separators=(",", ":"))
     return b
 
+def guardrail_from_manifest():
+    """#166 (PAR-1 port): the Bedrock guardrail is created as IaC from the manifest `guardrail:` block
+    (name, PII ANONYMIZE entities, prompt-attack strength) unless an external `-c guardrail_id` is
+    supplied, folding in the manifest `grounding:` thresholds for the contextual-grounding policy."""
+    import yaml
+    m = yaml.safe_load(open(os.path.join(REPO, "agents", "financial-aid", "manifest.yaml"), encoding="utf-8"))
+    g = dict((m or {}).get("guardrail") or {})
+    g["grounding"] = dict((m or {}).get("grounding") or {})
+    return g
+
+
 def runtime_name_from_manifest():
     """The AgentCore runtime name (manifest `runtime.name`, falling back to the render.py default) - the
     IaC execution role scopes its log-group and workload-identity resources to it (RT-3)."""
@@ -134,6 +145,8 @@ compute = ComputeStack(app, f"{prefix}-compute", prefix=prefix, asset_dir=asset_
                        # assessment on every generation; identity feeds approve-signoff.
                        guardrail_id=app.node.try_get_context("guardrail_id") or "",
                        guardrail_version=str(app.node.try_get_context("guardrail_version") or "1"),
+                       # #166: create the Bedrock guardrail as IaC from the manifest when no external id is given
+                       guardrail_config=guardrail_from_manifest(),
                        identity=identity,
                        approvals_client_id=app.node.try_get_context("approvals_client_id") or "",
                        # phase 107 hybrid: tenant derived per request (gateway interceptor)

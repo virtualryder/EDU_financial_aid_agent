@@ -24,6 +24,50 @@ _SYSTEM = (
     "verification hold. (4) Include a short, neutral statement of the student's right to appeal / request "
     "review. (5) This is a DRAFT estimate for human review, not a final award. Output the notice text only."
 )
+# #190 (PAR-1 port, 2026-09-06): with a guardrail bound, the model generates ONLY the GROUNDED FACTUAL CORE
+# (determination + estimated award + plain reason, strictly from the case + the deterministic aid
+# determination) tagged guardContent grounding_source + query, so the guardrail's CONTEXTUAL GROUNDING
+# filter scores the model's factual claims. The fixed notice boilerplate (appeal/review right, DRAFT
+# framing, COA basis) is appended DETERMINISTICALLY after the call so it never sinks the grounding score.
+_SYSTEM_GROUNDED_CORE = (
+    "You write ONLY the factual core of a federal student-aid award/determination notice, for a "
+    "financial-aid officer to review. You are given an ALREADY DE-IDENTIFIED case plus its deterministic "
+    "aid determination. Output 2-4 plain-language sentences stating (a) the determination (eligible / "
+    "ineligible / needs review), (b) the estimated Pell award and the Satisfactory Academic Progress status "
+    "if present, and (c) the reason, using ONLY facts present in the provided case and determination. "
+    "Preserve every [REDACTED:...] placeholder verbatim; never guess redacted values. Do NOT add appeal "
+    "rights, deadlines, dates, or any detail not in the case - those are appended separately. Output the "
+    "factual core text only."
+)
+_NOTICE_BOILERPLATE = (
+    "\n\nRight to review: you may request a review of this determination or appeal per institutional "
+    "policy [aid officer to insert process and deadline].\n"
+    "Cost-of-attendance basis: estimate on College Scorecard REFERENCE data - institutional COA is "
+    "required for any award.\n"
+    "This is a DRAFT estimate for financial-aid officer review, not a final award."
+)
+
+# L14 (benefits full-portfolio gate, 2026-09-06): the grounded drafter may state ONLY a determination that is
+# IN its grounding source. The deterministic engine's output is therefore a REQUIRED input under a
+# guardrail, rendered into the source from an ALLOWLIST of fields (never caller free text).
+_DETERMINATION_FIELDS = ("determination", "eligible", "aid_track", "sap_status", "pell_award",
+                         "enrollment_status", "cost_of_attendance", "student_aid_index", "reason", "assessed_by")
+_DET_OK = re.compile(r"[^a-zA-Z0-9\s:_@$#=/+,\-.%()\[\]']")
+
+
+def _determination_text(d):
+    if isinstance(d, str):
+        try:
+            d = json.loads(d)
+        except Exception:
+            return _DET_OK.sub("_", d.strip())[:600]
+    if not isinstance(d, dict):
+        return ""
+    parts = []
+    for k in _DETERMINATION_FIELDS:
+        if d.get(k) is not None and d.get(k) != "":
+            parts.append("%s=%s" % (k, _DET_OK.sub("_", str(d[k]))[:300]))
+    return "; ".join(parts)
 
 
 def _coerce(event):
@@ -78,10 +122,29 @@ def _draft(e):
     if case is None:
         return {"error": "refused: case content does not match the signed sanitized artifact",
                 "drafted_by": None, "sanitized_ref_verified": True, "content_bound": False}
+    # L14: the determination the notice states comes from the deterministic engine and MUST be in the
+    # grounding source; without it the drafter refuses fail-closed BEFORE any model spend.
+    det_text = _determination_text(e.get("determination"))
+    if GUARDRAIL_ID and not det_text:
+        return {"error": "refused: determination required - the grounded drafter states only a determination "
+                         "present in its grounding source; pass assess_aid's output as `determination`",
+                "drafted_by": None, "determination_present": False, "guardrail_applied": True}
+    source = case + ("\n\nDeterministic aid determination (rules engine, not the model): " + det_text
+                     if det_text else "")
+    if GUARDRAIL_ID:
+        system = [{"text": _SYSTEM_GROUNDED_CORE}]
+        content = [
+            {"guardContent": {"text": {"text": source, "qualifiers": ["grounding_source"]}}},
+            {"guardContent": {"text": {"text": "What is the aid determination, the estimated award and the "
+                                               "reason, based only on these case facts?", "qualifiers": ["query"]}}},
+        ]
+    else:
+        system = [{"text": _SYSTEM}]
+        content = [{"text": "De-identified case + determination:\n" + source}]
     kwargs = dict(
         modelId=DRAFT_MODEL_ID,
-        system=[{"text": _SYSTEM}],
-        messages=[{"role": "user", "content": [{"text": "De-identified case + determination:\n" + case}]}],
+        system=system,
+        messages=[{"role": "user", "content": content}],
         inferenceConfig={"maxTokens": 700, "temperature": 0.2},
     )
     # task 128 (governed-core 1.9.0): the budget meter on the SERVER-SIDE model call. reserve() before the
@@ -112,6 +175,10 @@ def _draft(e):
             # blocked message (non-empty text). No notice_ref is minted for a blocked draft.
             return {"error": "output guardrail blocked the draft (fail-closed)", "drafted_by": None,
                     "guardrail": "BLOCKED", "guardrail_version": GUARDRAIL_VERSION}
+        # #190: the model output is the GROUNDING-passed factual core; append the fixed notice boilerplate
+        # deterministically (not model-generated, not grounding-scored) to form the full notice.
+        if GUARDRAIL_ID:
+            notice = notice + _NOTICE_BOILERPLATE
         out = {"drafted_by": DRAFT_MODEL_ID, "chars": len(notice),
                "guardrail_applied": bool(GUARDRAIL_ID), "deidentified_input": True,
                "budget": {k: metered.get(k) for k in ("metered", "tokens", "usd_micro", "used_tokens", "pct_tokens", "price_version")},
