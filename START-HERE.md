@@ -1,7 +1,7 @@
 # START HERE — Financial Aid Verification & Student Communication Assistant
 
 *One page. What this is, what's proven, how to evaluate it, and what a pilot looks like. Target
-validated release: **[`v0.4.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.4.0-pilot-rc1)** (EP1 live-validated 2026-07-26; deploy tags, never
+validated release: **[`v0.4.0-pilot-rc1`](https://github.com/virtualryder/EDU_financial_aid_agent/releases/tag/v0.4.0-pilot-rc1)** (cut 2026-09-05, offline-gated on governed-core 1.10.1; last live gate: governed-core 1.9.0 on 2026-09-04, env `fa-mt`, tag `v0.3.0-pilot-rc1`; EP1 live-validated 2026-07-26; deploy tags, never
 `main`). Supported deployment path: **AWS CDK** (`cdk/`); the shell engine is legacy/internal.*
 
 > **Evaluating for a pilot?** Read [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — it
@@ -58,8 +58,9 @@ production cost.
 
 ## Status in one line
 
-EP0 + EP1 **complete**; current suite **190 tests**; `v0.1.3-pilot-rc1` released with captured EP1 evidence, and
-`v0.3.0-pilot-rc1` cut after the **governed-core 1.9.0 re-pin was live-gated** on a from-zero two-tenant AgentCore
+EP0 + EP1 **complete**; current suite **190 tests**; `v0.1.3-pilot-rc1` released with captured EP1 evidence,
+`v0.4.0-pilot-rc1` (2026-09-05) is the supported tag — offline-gated on governed-core 1.10.1 — and
+`v0.3.0-pilot-rc1` was cut after the **governed-core 1.9.0 re-pin was live-gated** on a from-zero two-tenant AgentCore
 deployment (2026-09-04; isolation + transparency + kill-switch + budget + e2e all green, torn down to zero residue —
 `evidence/AGENTCORE-111-GATE-2026-09-04.md`); the
 Gate-B operating-model pack is built ([`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md)).
