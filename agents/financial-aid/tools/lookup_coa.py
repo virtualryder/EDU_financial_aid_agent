@@ -28,6 +28,21 @@ import provenance  # shared signer (bundled beside this handler at deploy; on sy
 # instead of a fabricated answer.
 
 API_BASE = "https://api.data.gov/ed/collegescorecard/v1/schools"
+def _require_https(url):
+    """B310: refuse anything that is not https before opening it.
+
+    Bandit's warning is real, not noise: these URLs come from configuration (SOR_URL, a JWKS
+    endpoint, a CloudFormation ResponseURL). urlopen honours file:// and custom schemes, so a
+    config value an attacker can influence turns a fetch into local-file disclosure. Validate the
+    scheme and fail closed; the nosec on the urlopen below points at THIS check, it does not wave
+    the finding away.
+    """
+    scheme = urllib.parse.urlsplit(url).scheme
+    if scheme != "https":
+        raise ValueError("refusing non-https URL scheme %r" % (scheme or "<none>"))
+    return url
+
+
 def _resolve_key():
     """api.data.gov key: env (dev) -> Secrets Manager ARN (production; cached, CloudTrail-visible)
     -> DEMO_KEY (public fallback - acceptable ONLY because Scorecard is reference data; low rate limit)."""
@@ -62,7 +77,8 @@ def _coerce(e):
 def _query(params):
     url = API_BASE + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": "governed-financial-aid-agent/1.0"})
-    with urllib.request.urlopen(req, timeout=8) as r:
+    _require_https(url)
+    with urllib.request.urlopen(req, timeout=8) as r:  # nosec B310 - scheme checked above
         return json.loads(r.read().decode("utf-8"))
 
 

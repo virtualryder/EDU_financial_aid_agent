@@ -29,7 +29,7 @@ Scorecard figures are reference data, never institutional COA
 The control plane is a PORT of the Housing pattern (github.com/virtualryder/Housing_eligibility_agent
 `v0.9.4`), which carries five external review cycles and three live clean-account validations
 including a strict zero-PII telemetry canary. **EDU's own live validation (EP1) is CAPTURED (2026-07-26, evidence/EP1-VALIDATION.md)** —
-proof is the 298-test offline suite (incl. full CDK assertions) PLUS the captured EP1 live run. Independent third-party reproduction (the OIDC release-validation workflow) is the remaining validation step.
+proof is the 299-test offline suite (incl. full CDK assertions) PLUS the captured EP1 live run. Independent third-party reproduction (the OIDC release-validation workflow) is the remaining validation step.
 
 ## Reading order by role
 
@@ -58,7 +58,7 @@ production cost.
 
 ## Status in one line
 
-EP0 + EP1 **complete**; current suite **298 tests**; `v0.1.3-pilot-rc1` released with captured EP1 evidence,
+EP0 + EP1 **complete**; current suite **299 tests**; `v0.1.3-pilot-rc1` released with captured EP1 evidence,
 `v0.4.0-pilot-rc1` (2026-09-05) is the supported tag — offline-gated on governed-core 1.10.1 — and
 `v0.3.0-pilot-rc1` was cut after the **governed-core 1.9.0 re-pin was live-gated** on a from-zero two-tenant AgentCore
 deployment (2026-09-04; isolation + transparency + kill-switch + budget + e2e all green, torn down to zero residue —
