@@ -170,7 +170,7 @@ ships ZERO users).
 ## Pilot readiness (Gate B operating model)
 
 Beyond the code and the EP1 validation, the operating model a pilot needs is documented and, where it
-can be, enforced in CI (suite **300 tests**). Start with the plan, then the specific docs:
+can be, enforced in CI (suite **301 tests**). Start with the plan, then the specific docs:
 
 - [`EDU-PILOT-READINESS-PLAN.md`](EDU-PILOT-READINESS-PLAN.md) — the whole picture: operating model, pilot metrics (no productivity % until measured), leadership Q&A, staged gates.
 - [`docs/CONFIGURATION-WORKSHEET.md`](docs/CONFIGURATION-WORKSHEET.md) — institution-controlled values + `config/institution.config.json` (CI drift gate: `test_config_schema.py`).
@@ -212,7 +212,7 @@ Apache-2.0 — see [LICENSE](LICENSE).
 
 ## Governed-core dependency currency (2026-09-05)
 
-This pack pins **governed-core 1.10.1** (`requirements-core.txt`, `--require-hashes`), inheriting the
+This pack pins **governed-core 1.11.1** (`requirements-core.txt`, `--require-hashes`), inheriting the
 fault-semantics batch from the external-review response: a consequential commit requires the hash-chained
 ledger write AND the S3 Object-Lock WORM copy (`evidence.is_durable`, WORM repaired on replay);
 `request_signoff` / `approve_signoff` are fail-closed and un-strandable (durable evidence before any
