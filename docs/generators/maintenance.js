@@ -98,4 +98,4 @@ const body = [
 ];
 
 const doc = makeDoc(cover, body, "Financial Aid AgentCore · Maintenance & Operations Guide");
-Packer.toBuffer(doc).then((b) => { require("fs").writeFileSync("Financial-Aid-AgentCore-Maintenance.docx", b); console.log("wrote maintenance"); });
+Packer.toBuffer(doc).then((b) => { require("fs").writeFileSync(require("path").join(__dirname, "..", "Financial-Aid-AgentCore-Maintenance.docx"), b); console.log("wrote maintenance"); });

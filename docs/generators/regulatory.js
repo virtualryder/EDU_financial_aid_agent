@@ -85,4 +85,4 @@ const body = [
 ];
 
 const doc = makeDoc(cover, body, "Financial Aid AgentCore · Regulatory-Adherence Guide");
-Packer.toBuffer(doc).then((b) => { require("fs").writeFileSync("Financial-Aid-AgentCore-Regulatory-Adherence.docx", b); console.log("wrote regulatory"); });
+Packer.toBuffer(doc).then((b) => { require("fs").writeFileSync(require("path").join(__dirname, "..", "Financial-Aid-AgentCore-Regulatory-Adherence.docx"), b); console.log("wrote regulatory"); });
