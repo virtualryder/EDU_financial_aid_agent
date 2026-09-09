@@ -399,10 +399,10 @@ def test_attachment_covers_every_manifest_tool_and_enforce():
         for tool in t["tools"]:
             assert "access_token" not in tool["inputSchema"]["properties"]
     policies = _tokjson(props["PoliciesJson"])
-    assert {p["name"] for p in policies} == {
+    assert {p["name"].split("hou_gw_", 1)[-1] for p in policies} == {
         "aid_officer_permit", "mask_before_assess", "mask_before_pj",
         "mask_before_draft", "no_self_commit", "no_self_professional_judgment"}
-    assert all("__GATEWAY_ARN__" in p["definition"] for p in policies if p["name"].startswith("no_self"))
+    assert all("__GATEWAY_ARN__" in p["definition"] for p in policies if p["name"].startswith("hou_gw_no_self"))
     assert props["Enforcement"] == "ENFORCE"
     authz = props["AuthorizerConfigJson"]
     authz_s = authz if isinstance(authz, str) else "".join(
@@ -834,8 +834,8 @@ def test_perimeter_profile_attaches_the_gates_and_declares_their_fields():
     context.input fields they read on every tool schema (optional, so baseline callers are unaffected).
     Without the flag the proven baseline policy set is byte-for-byte unchanged."""
     from fa_stacks.gateway_stack import _policies, _PERIMETER_INPUT_FIELDS
-    base = {p["name"] for p in _policies(multitenant=True, perimeter=False)}
-    peri = {p["name"] for p in _policies(multitenant=True, perimeter=True)}
+    base = {p["name"].split("fa_test_", 1)[-1] for p in _policies("fa-test", multitenant=True, perimeter=False)}
+    peri = {p["name"].split("fa_test_", 1)[-1] for p in _policies("fa-test", multitenant=True, perimeter=True)}
     added = peri - base
     assert "require_entitlement" in added and "require_service_window" in added
     assert any(n.startswith("consent_purpose_before_") for n in added)
